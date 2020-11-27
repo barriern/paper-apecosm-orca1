@@ -1,0 +1,68 @@
+\listfiles
+\documentclass[review]{elsarticle}
+
+\input{texfiles/setup.tex}
+
+\begin{document}
+
+
+\begin{frontmatter}
+
+\title{Drivers of simulated fish biomass variability in the central Pacific Ocean}
+%\tnotetext[mytitlenote]{Fully documented templates are available in the elsarticle package on \href{http://www.ctan.org/tex-archive/macros/latex/contrib/elsarticle}{CTAN}.}
+
+%% Group authors per affiliation:
+\author[mymainaddress]{Nicolas Barrier\corref{mycorrespondingauthor}}
+%\address{Radarweg 29, Amsterdam}
+\fntext[myfootnote]{MARBEC, Univ. Montpellier, CNRS, Ifremer, IRD, Sète, France}
+
+\author[mymainaddress]{Olivier Maury}
+\author[mymainaddress]{Matthieu Lengaigne}
+\author[renaud]{Renaud Person}
+\author[chris]{Christian Eth\'{e}}
+
+\cortext[mycorrespondingauthor]{Corresponding author}
+
+%% or include affiliations in footnotes:
+%\author[mymainaddress,mysecondaryaddress]{Elsevier Inc}
+%\ead[url]{www.elsevier.com}
+%\author[mysecondaryaddress]{Global Customer Service\corref{mycorrespondingauthor}}
+%\ead{support@elsevier.com}
+\address[mymainaddress]{MARBEC, Univ. Montpellier, CNRS, Ifremer, IRD, Sète, France}
+\address[renaud]{LOCEAN, IRD}
+\address[chris]{IPSL, CNRS}
+
+\begin{abstract}
+
+\end{abstract}
+
+\begin{keyword}
+fish \sep biomass \sep ENSO \sep \nino \sep \nina \sep modelling
+\end{keyword}
+
+\end{frontmatter}
+
+\linenumbers
+
+%\section{Introduction}
+%
+%Assessing the impacts of \nino\ events on the fish biomass is a valuable way to infer the future state of ocean in warming ocean.\\
+%
+%\nino\ events are not comparable to each other, they have their own characteristics.
+\newpage
+
+\input{texfiles/model_des}
+\input{texfiles/pisces.tex}
+\input{texfiles/apecosm.tex}
+%\input{texfiles/eofs_analysis}
+%\input{texfiles/figs}
+\input{texfiles/discussions}
+
+\listoffigures
+\listoftables
+
+\clearpage
+
+\bibliography{ApecosmBib2}
+
+\end{document}

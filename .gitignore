@@ -6,6 +6,8 @@
 **/*.lot
 **/*.out
 **/*.aux
+**/*.xml
+**/*.spl
 *pdf
 **/*.sh
 doc
