@@ -1,0 +1,30 @@
+\section{EOF analysis}
+
+An EOF analysis of vertically integrated fish densities has been performed for each community as follows. First, the density over the 100 size classes has been binned over the [0, 3cm], [3cm, 60cm] and [60cm, 200cm] size classes. Then, yearly densities for each size bins have been computed from May (year $y$) to April (year $y + 1$), in order to better capture the peak of ENSO variability, which mainly occurs from November to January. Finally, the obtained interannual time-series were detrended and used to compute EOF weighted by the surface of the ocean cells.\\
+
+Figure \ref{fig:eofpc} shows the principal components of the first EOF computed for the three communities (rows) and the three size classes (columns). The total variance explained by this first EOF 
+is larger than $40\%$, except for the small migrant and large epipelagic communites, for which the explained variance is smaller ($34.05\%$ and $23.48\%$ respectively).\\
+
+These principal components are also compared with 
+the Ocean Nino Index (ONI\footnote{\url{https://www.cpc.ncep.noaa.gov/data/indices/oni.ascii.txt}}), averaged over November to December, when most of the variability occurs (filled curve in figure \ref{fig:eofpc}). The correlation coefficients between the principal components and the ONI index ranges from $0.53$ (for large mesopelagic) to $0.93$ (for small epilagic). Therefore, the interannual variability of density anomalies is, at first order, driven by ENSO fluctuations. \\
+
+\begin{figure}
+    \centering
+    \includegraphics[width=\textwidth]{figs/eofs_ts_0.eps}
+    \caption{Principal components of the first EOF of yearly ocean biomass density anomalies (black lines). The total variance explained is shown in figure's titles. The correlation with the November-January mean index ONI (blue and red lines) is also shown (bottom right corner).}
+    \label{fig:eofpc}
+\end{figure}
+
+The spatial patterns of the first EOF are presented in figure \ref{fig:eofmap}. 
+The EOF structure for small and intermediate epipelagic communities shows a hollow-bullet-like pattern, with negative anomalies at around 5N and 5S in the east. These negative anomalies join together at the equator near the zero meridian. Positive anonalies are also visible in the inside, although these anomalies seem weaker for small size classes. Therefore, positive ONI index seems to be related with a decrease of the small epipelagic biomass at the borders. \warn{Cause????}\\ The EOF structure for large epipelagic, on the other hand, shows positive anomalies in the western part of the domain, therefore an increase of biomass densities during positive ONI conditions.
+
+The EOF pattern for the small migrant community shows negative anomalies off Peru, with a blue tongue extending to 120W. The intermediate migrant community also shows negative anomalies off Peru, altough the largest negative anomalies are found in the western part of the domain, with a zonal anomaly centerred at 0N and extending from 150E to 150E. Large migrant community shows a tripolar pattern, with positive values off Peru and between 180W - 150W, and negative values between 120W and 90W.\\
+
+As for epipelagic, the EOF structure for small and medium mesopelagic communities are very similar, with positive anomalies extending from around 160E to 90E in a filled bullet-shape. Small negative anomalies are also found off Peru. The large mesolagic community shows pattern that ressembles the one for small and intermediate sizes, although the anomalies are of opposite signs. Therefore, small and intermediate mesopelagic communities seem to increase during positive ENSO conditions, while large mesopelagic seem to decrease during positive ENSO conditions.
+
+\begin{figure}
+    \centering
+    \includegraphics[height=\textwidth, angle=90]{figs/eofs_density_0.eps}
+    \caption{Maps of the first EOF of ocean biomass density yearly anomalies. Note that the colorbar are 0-centered but the ranges are different for each map.}
+    \label{fig:eofmap}
+\end{figure}

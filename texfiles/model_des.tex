@@ -1,0 +1,41 @@
+\section{Model description}
+
+\subsection{Marine ecosystem model}
+
+The marine ecosystem model used in the present study is the \emph{Apex Predators Ecosystem Model} (\ap, \citealt{mauryModelingEnvironmentalEffects2007,mauryOverviewAPECOSMSpatialized2010}), which simulates 
+the transfer of energy in marine ecosystems in a 5 dimensional space (space, time and size).
+The biological processes include size-based opportunistic trophic interactions, competition for food, allocation of energy between growth and reproduction, somatic and maturity maintenance, predatory and starvation mortality (see \citealt{mauryModelingEnvironmentalEffects2007} for a detailed description of the model).
+The physiological bases of the model are derived from the dynamic energy budget theory (DEB, \citealt{kooijmanDynamicEnergyMass2000}).
+All the physiological rates are temperature-dependent.  In addition to biological processes, energy density 
+is also subjected to both advection and diffusion, following \cite{faugerasAdvectiondiffusionreactionSizestructuredFish2005}.\\
+
+In the present work, three generic communities are simulated: one epipelagic community, one migrant community and one mesopelagic community (table \ref{t:com-habitat}). 
+The epilagic community distribution is influenced by temperature and oxygen, while light only influences the functional response. The 
+migrants are only influenced by light: during daytime, they remain at depth, while moving at the 
+surface at night. Mesopolagic, on the other hand, remain at depth during both night and day.\\
+
+Epilagic feed on other epilagic fish only during night daytime. Migrant feed on other migrant and epipelagic, only during night time. While mesopelagic feed on migrant and mesopelagic during daytime, and only on other mesopelagic during nighttime. \\
+
+\begin{table}
+\begin{tabular}{cccc}
+     Habitat & Epipelagic & Migrant & Mesopelagic \\
+     \hline
+     \hline
+      Temperature preference & On & Off & Off\\
+      Oxygen & On & Off & Off \\
+      Light habitat & Off & On & On \\
+      Light predation & On & On & Off \\
+      Same night/day light habitat  & Off & Off & On \\
+\end{tabular}
+\caption{Description of the three simulated communities}
+\label{t:com-habitat}
+\end{table}
+
+\subsection{Physical and biogeochemical forcings}
+
+The \ap\ ecosystem model was forced with 3-dimensional outputs of a forced, hindcast simulation of the coupled physical/biogeochemical 
+ocean model NEMO-PISCES \citep{aumontPISCESv2OceanBiogeochemical2015}. The model was run on a tripolar orca grid \citep{madecGlobalOceanMesh1996} with a
+1 degree resolution at the equator. The vertical resolution ranges from 1.m at the surface to 100m at 1 kilometer depth. \\
+
+The biogeochemical model was forced by using the JRA atmospheric reanalysis \citep{kobayashiJRA55ReanalysisGeneral2015} from 1958 to 2018.
+The fields that are used by Apecosm are temperature, ocean transports, oxygen, plankton concentration (diatoms, mesozooplankton and microzooplankton, big particulate organic matter), \ppar and ocean cell thickness, which is variable over time and space. \\
