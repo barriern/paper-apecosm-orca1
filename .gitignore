@@ -8,6 +8,7 @@
 **/*.aux
 **/*.xml
 **/*.spl
-*pdf
 **/*.sh
 doc
+/*.pdf
+*.swp
