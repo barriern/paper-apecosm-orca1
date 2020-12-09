@@ -1,5 +1,19 @@
 \section{Model description}
 
+\subsection{Physical and biogeochemical forcings}
+
+The physical and biogeochemical used in the present study is a forced, hindcast simulation of the coupled physical/biogeochemical 
+ocean model NEMO-PISCES \citep{aumontPISCESv2OceanBiogeochemical2015}. The model was run on a tripolar orca grid \citep{madecGlobalOceanMesh1996} with a
+1 degree resolution at the equator. The vertical resolution ranges from 1.m at the surface to 100m at 1 kilometer depth. \\
+
+The physical biogeochemical model was forced by using the JRA atmospheric reanalysis \citep{kobayashiJRA55ReanalysisGeneral2015} from 1958 to 2018.
+The fields that are used by Apecosm are temperature, ocean transports, 
+oxygen, plankton concentration (diatoms, mesozooplankton and microzooplankton, big particulate organic matter), 
+\ppar and ocean cell thickness, which is variable over time and space.\\
+
+The physical model uses a non-linear free surface, as described in \cite{levierbrunoFreeSurfaceVariable2007}. 
+Therefore, ocean cells have a variable thickness. 
+
 \subsection{Marine ecosystem model}
 
 The marine ecosystem model used in the present study is the \emph{Apex Predators Ecosystem Model} (\ap, \citealt{mauryModelingEnvironmentalEffects2007,mauryOverviewAPECOSMSpatialized2010}), which simulates 
@@ -30,12 +44,3 @@ Epilagic feed on other epilagic fish only during night daytime. Migrant feed on 
 \caption{Description of the three simulated communities}
 \label{t:com-habitat}
 \end{table}
-
-\subsection{Physical and biogeochemical forcings}
-
-The \ap\ ecosystem model was forced with 3-dimensional outputs of a forced, hindcast simulation of the coupled physical/biogeochemical 
-ocean model NEMO-PISCES \citep{aumontPISCESv2OceanBiogeochemical2015}. The model was run on a tripolar orca grid \citep{madecGlobalOceanMesh1996} with a
-1 degree resolution at the equator. The vertical resolution ranges from 1.m at the surface to 100m at 1 kilometer depth. \\
-
-The biogeochemical model was forced by using the JRA atmospheric reanalysis \citep{kobayashiJRA55ReanalysisGeneral2015} from 1958 to 2018.
-The fields that are used by Apecosm are temperature, ocean transports, oxygen, plankton concentration (diatoms, mesozooplankton and microzooplankton, big particulate organic matter), \ppar and ocean cell thickness, which is variable over time and space. \\
