@@ -40,7 +40,7 @@ yfinal = np.array(yfinal)
 yfinal = yfinal[yfinal >= 1958]
 
 #for varname in ['mort_day', 'OOPE', 'starvation', 'repfonct_day']:
-for varname in ['OOPE']:
+for varname in ['repfonct_day']:
     
     filename = '%s/%s_%s_meridional_mean.nc' %(dirin, pref, varname)
     print(filename)
