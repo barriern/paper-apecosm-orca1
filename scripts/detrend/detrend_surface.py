@@ -1,3 +1,5 @@
+''' Scripts that extracts Pisces yearly data at the surface, and detrend it '''
+
 import numpy as np
 from datetime import date
 import os.path
@@ -14,20 +16,14 @@ dirout = '/home1/datawork/nbarrier/apecosm/apecosm_orca1/diags/data'
 # Load the mesh mask
 mesh = xr.open_dataset("/home/datawork-marbec-pmod/forcings/APECOSM/ORCA1_HINDCAST/corrected_mesh_mask_eORCA1_v2.2.nc")
 tmask = np.squeeze(mesh['tmask'].values[0, 0])
-e1t = mesh['e1t'].values
-e2t = mesh['e2t'].values
-surf = e1t * e2t
-surf = np.squeeze(surf)
-weights = np.sqrt(surf)
-nlat, nlon = surf.shape
 lon = mesh['glamt'].values
 lat = mesh['gphit'].values
 lon = np.squeeze(lon)
 lat = np.squeeze(lat)
 
-dirin = '/home/datawork-marbec-pmod/outputs/APECOSM/ORCA1/corr_mask/cyc4/output/yearly/pisces'
 dirin =  '/home/datawork-marbec-pmod/outputs/APECOSM/ORCA1/yearly_pisces'
 
+# List of variables to extract
 varlist = ['thetao', 'ZOO', 'ZOO2', 'PHY2', 'O2']
 varlist = ['PAR', 'PHY', 'so']
 varlist = ['thetao']

@@ -1,3 +1,5 @@
+''' Extracts and averages Pisces data over the 0-200m layer '''
+
 import numpy as np
 from datetime import date
 import os.path
@@ -28,6 +30,7 @@ lat = np.squeeze(lat)
 e3t = mesh['e3t_0'].values * mesh['tmask'].values
 z1d = mesh['gdept_1d'].values[0]
 
+# extracts the z-index from 0 to 200m
 iz = np.nonzero(z1d <= zmax)[0]
 e3t = e3t[:, iz, :, :]
 
@@ -52,6 +55,7 @@ for varname in varlist:
     else:
         data = datatot[varname]
 
+    # sum the data from 0 to 200m, weighted to the layer
     data = data.to_masked_array()
     data = np.sum(data * e3t, axis=1) / np.sum(e3t, axis=1)
     dataout = detrend(year, data)

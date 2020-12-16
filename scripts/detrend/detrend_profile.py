@@ -1,3 +1,4 @@
+''' Scripts that extracts and detrend a zonal profil from yearly Pisces data. '''
 import numpy as np
 from datetime import date
 import os.path
@@ -9,6 +10,7 @@ from scipy import stats
 import xarray as xr
 from remove_trend_yearly import detrend
 
+# output directory
 dirout = '/home1/datawork/nbarrier/apecosm/apecosm_orca1/diags/data'
 zmax = 1000
 
@@ -28,15 +30,17 @@ lat = np.squeeze(lat)
 e3t = mesh['e3t_0'].values * mesh['tmask'].values
 z1d = mesh['gdept_1d'].values[0]
 
-# Hard coded value for the equatorial j index
+# extracts the latitude index between -2/+2
 latmax = 2
 ilat, ilon = np.nonzero(np.abs(lat) < latmax)
 jmin, jmax = ilat.min(), ilat.max()
 
+# extracts the surface between -2/+2 and averages longitude between these lat
 surf = surf[np.newaxis, np.newaxis, jmin:jmax+1, :]
 lon0 = lon[jmin:jmax+1, :]
 lon0 = np.mean(lon0, axis=0)
 
+# extract e3t between them
 e3t = e3t[:, :, jmin:jmax + 1, :]
 
 dirin = '/home/datawork-marbec-pmod/outputs/APECOSM/ORCA1/corr_mask/output/yearly/pisces'
@@ -57,9 +61,14 @@ for varname in varlist:
     else:
         data = datatot[varname]
 
+    # extracts the data
     data = data.to_masked_array()
     data = data[:, :, jmin:jmax+1, :]  # time, depth, lat, lon
+    
+    # computes volume weighted mean along latitude
     data = np.sum(data * surf * e3t, axis=2) / np.sum(surf * e3t, axis=2)
+    
+    # detrend data
     dataout = detrend(year, data)
 
     dsout = xr.Dataset({varname:(['year', 'depth', 'lon'], dataout), 
