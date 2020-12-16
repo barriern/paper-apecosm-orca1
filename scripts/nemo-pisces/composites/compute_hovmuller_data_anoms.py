@@ -8,7 +8,7 @@ import cartopy.crs as crs
 from scipy import stats
 import xarray as xr
 from remove_trend_yearly import detrend
-import apecosm.ts as ts
+import misc as ts
 import os.path
 from datetime import datetime
 
