@@ -17,7 +17,7 @@ pref = 'debugged_corr_mask'
 #pref = 'climTemp'
 #pref = 'climPlk'
 
-for varname in ['OOPE']:
+for varname in ['repfonct_day']:
 
     print("@@@@@@@@@@@@@@@@@@@@@@@@@@@ ", varname)
 
@@ -46,7 +46,7 @@ for varname in ['OOPE']:
     sizes = np.array([2, 20, 90])
     comm = ['Meso.', 'Mig.', 'Epi.'][::-1]
 
-    oope = data['compo_mean'].values[:, iok, :, :]
+    oope = data['compo_mean'].values[:, iok, :, :] * 100
     lon = lon[iok]
 
     #xticks = time
@@ -87,10 +87,10 @@ for varname in ['OOPE']:
             title = '%s, %s cm' %(comm[c], sizes[s])
             plt.title(title)
             cs = plt.pcolormesh(lon, time, temp, cmap='RdBu_r')
-            cl = plt.contour(lon, time, temp, colors='k', levels=levels, linewidths=1)
-            cs.set_clim(cmin, cmax)
+            #cl = plt.contour(lon, time, temp, colors='k', levels=levels, linewidths=1)
+            #cs.set_clim(cmin, cmax)
             cb = plt.colorbar(cs)
-            cb.add_lines(cl)
+            #cb.add_lines(cl)
 
             if cpt in [3, 6, 9]:
                 cb.set_label('J/m2')
