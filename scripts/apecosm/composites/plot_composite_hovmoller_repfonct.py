@@ -70,10 +70,10 @@ for varname in ['repfonct_day']:
         for s in range(3):
 
             cpt += 1
-            print('+++++++++++++++++++++++++++++++++++++++')
+            print('+++++++++++++++++++++++++++++++++++++++ c=%d, s=%d' %(c, s))
 
             ax = plt.subplot(3, 3, cpt)
-            temp = oope[:, :, c, s] * wstep[s]
+            temp = oope[:, :, c, s] 
             temp = np.ma.masked_where(temp == 0, temp)
             #print(temp)
             #ax.set_facecolor('black')
@@ -93,7 +93,7 @@ for varname in ['repfonct_day']:
             #cb.add_lines(cl)
 
             if cpt in [3, 6, 9]:
-                cb.set_label('J/m2')
+                cb.set_label('')
 
             if cpt in [1, 1 + 3, 1 + 6]:
                 plt.ylabel('Time (month)')
