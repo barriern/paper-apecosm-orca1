@@ -13,3 +13,4 @@ doc
 /*.pdf
 *.swp
 **/*.docx
+**/*.nc
