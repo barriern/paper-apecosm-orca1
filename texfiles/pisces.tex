@@ -1,18 +1,45 @@
-\section{Physical dnd biogeochemical response to ENSO variability}
+\section{Physical and biogeochemical response to ENSO variability}
 \label{sec:pisces}
 
-The ocean fish biomass is strongly influenced by the physical and geochemical state of the ocean. Therefore, a good understanding of how the ocean responds to ENSO variability is necessary to understand how the signal propagates to the higher trophic levels. The aim of the present section is to describe the response of the NEMO-Pisces model to ENSO variability. \\
+The ocean fish biomass is strongly influenced by the physical and geochemical state of the ocean. Therefore, a good understanding of how the coupled ocean-biogeochemical model 
+responds to ENSO variability is necessary to understand how the signal propagates to the higher trophic levels. 
+The aim of the present section is to describe the response of the NEMO-Pisces model to ENSO variability and, when possible, to compare it with observation based datasets.\\
 
-\subsection{Covariance analysis}
+\subsection{Ocean Nino Index and \sst\ signature}
+\label{sec:sst}
 
 As a first step, the Ocean Nino Index (ONI\footnote{\url{https://www.cpc.ncep.noaa.gov/data/indices/oni.ascii.txt}}) has been compared with the simulated one, in order to determine whether the timing of simulated ENSO events is consistent with the observed one. The correlation coefficient between the two monthly time-series over the overlapping period (1958-2018) is $0.94$, which gives confidence in the model ability to reproduce the observed ENSO variability. \\
 
-In order to infer the spatial patterns of the physical and biogeochemical response to ENSO variability, covariance between the ONI index and the NEMO-Pisces field anomalies have been computed. 
-Since the main focus is on the interannual variability, the covariances are applied on yearly time series. The ONI index has been averaged over boreal winter (from November to January), when most of the ENSO variability occurs. In order to insure continuity over the winter months, when ENSO variability usually peaks, yearly means of physical and biogeochemical variables have been computed from May (year $y$) to April (year $y + 1$), as done in \cite{racaultImpactNinoVariability2017}. Then, the obtained time-series have been detrended.\\
+In order to infer the spatial \sst\ pattern associated with the ONI index, covariance between the ONI index and the NEMO-Pisces \sst\ has been computed. Since the main focus is on the interannual variability, the covariances are applied on yearly time series. The ONI index has been averaged over boreal winter (from November to January), when most of the ENSO variability occurs. In order to insure continuity over the winter months, when ENSO variability usually peaks, yearly means of physical and biogeochemical variables have been computed from May (year $y$) to April (year $y + 1$), as done in \cite{racaultImpactNinoVariability2017}. Then, the obtained time-series have been detrended.\\
 
-The correlation between the ONI index and the sea-surface temperature is shown in figure \ref{fig:cov-sst}. For comparison, the same analysis has been performed with the Hadley SST dataset \citep{raynerGlobalAnalysesSea2003}
-The covariance patterns are very similar between Hadley and simulated SST, with warm anomalies (1\degree C) centerred at the equator and extending from 0 to 90E and from 10S to 10N.\ 
-The covariance along the equatorial temperature section (figure \ref{fig:cov-prof}a) shows that the maximum temperature anomalies is at around 50m depth at a longitude of 70E. Negative anomalies (-0.8\degree C) are located on the western part of the basin (20W). This dipolar structure is consistent with a shoaling of the thermocline in the west and a deepening in the east.\\
+The correlation between the ONI index and the sea-surface temperature is shown in figure \ref{fig:cov-sst}. For comparison, the same analysis has been performed with the Hadley SST dataset \citep{raynerGlobalAnalysesSea2003}.
+The covariance patterns are very similar between Hadley and simulated SST, with warm anomalies (1\degree C) centerred at the equator and extending from 0 to 90\degree E and from 10\degree S to 10N.\ 
+The covariance along the equatorial temperature section (figure \ref{fig:cov-prof}a) shows that the maximum temperature anomalies is at around 50m depth at a longitude of 70\degree E. Negative anomalies (-0.8\degree C) are located on the western part of the basin (20\degree W). This dipolar structure is consistent with a shoaling of the thermocline in the west and a deepening in the east.\\
+
+\begin{figure}[h!]
+	\centering
+	\includegraphics[scale=0.75] {figs/covariance_maps_hadley_model.pdf}
+	\caption{Covariance between winter ONI index and Hadley (top) and simulated (bottom) yearly SST anomalies.}
+	\label{fig:cov-sst}
+\end{figure}
+
+\subsection{Observed and simulated sea-surface chlorophyll}
+
+In order to validate the biogeochemical response of the NEMO-Pisces model, monthly anomalies of simulated sea-surface chlorophyll, averaged between 2\degree S and 2\degree N, has been compared with satellite-based observations \citep{sathyendranathOceanColourTimeSeries2019}. Time-longitude \hov\ diagrams of sea-surface chlorophyll anomalies for both simulated and observed chlorophyll are shown in figure \ref{fig:hov_chl}. Since satellite based observations are provided with a high resolution (1/24\degree), they have been interpolated to a 
+1\degree resolution, in order to be consistent with the model resolution.
+
+\begin{figure}[h!]
+	\centering
+	\includegraphics[scale=0.75] {figs/hov_chl.pdf}
+	\caption{}
+	\label{fig:hov_chl}
+\end{figure}
+
+The visual inspection of figure \ref{fig:hov_chl} indicates that at first order, the NEMO-Pisces captures the main patterns of tropical sea-surface chlorophyll variability, although the simulated amplitudes are overestimated. This is further confirmed by a temporal correlation analysis (not shown) between the observed and simulated monthly time series. The correlation coefficients varies between 0.7 and 0.5 between 150\degree E and 100\degree W, and drops below 0.4 west of 150\degree E and east of 100\degree W.
+
+\subsection{Ocean Nino Index and biogeochemical signature}
+
+In order to infer the spatial patterns of the interannual biogeochemical response to ENSO variability, the same covariance analysis as in section \ref{sec:sst} has been performed on yearly (May to April) detrended profiles of biogeochemical variables, averaged between 2\degree S and 2\degree N.\\
 
 Oxygen covariance patterns shows an increase in the oxygen concentration in the eastern part of the basin (90E) between 0 and 200m. This increase of oxygen concentration 
 is consistent with shoaling of the Oxygen Minimum Zone during \nino\ conditions associated with vertical displacements of the thermocline \citep{leungENSODrivesNearsurface2019, espinoza-morriberonOxygenVariabilityENSO2019}. \\
@@ -23,13 +50,6 @@ Zooplankton shows, as nano-phytoplankton, a decrease at the surface, and an
 increase at lower depth, the latter being more pronounced for micro-zooplankton than for meso-zooplankton (figures \ref{fig:cov-prof}e and \ref{fig:cov-prof}f). The strongest negative anomalies 
 are located near the equator for micro-zooplankton, while they are located at around 90E for meso-zooplankton. 
 Interestingly, the covariance patterns of nano-phytoplankton and micro-zooplankton on the one hand, and of diatoms and meso-zooplankton on the other hand, bear strong resemblance (compare figures \ref{fig:cov-prof}c-\ref{fig:cov-prof}e and \ref{fig:cov-prof}d-\ref{fig:cov-prof}f). \warn{Possibly something related with the size????}\\
-
-\begin{figure}[h!]
-	\centering
-	\includegraphics[scale=0.75] {figs/covariance_maps_hadley_model.pdf}
-	\caption{Covariance between winter ONI index and Hadley (top) and simulated (bottom) yearly SST anomalies.}
-	\label{fig:cov-sst}
-\end{figure}
 
 \begin{figure}[h!]
 	\centering

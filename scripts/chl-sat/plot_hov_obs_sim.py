@@ -7,6 +7,7 @@ daten, nino = read_index(filename='/home/barrier/Work/apecosm/ORCA1/DATA_APE_ORC
 import matplotlib.pyplot as plt
 import xarray as xr
 import numpy as np
+#plt.rcParams['font.size'] = 8
 
 plt.figure()
 plt.subplots_adjust(left=0.09, top = 0.95, right=0.98, bottom=0.2, wspace=0.1)
@@ -33,18 +34,36 @@ nino = nino[inino]
 
 ccc = 0.2
 
+chlmod = data['chl'].to_masked_array()
+
+xticks = np.arange(150, 150 + 6 * 30, 30)
+
+xticks1 = [150]
+labels1 = ['%dE' %(x) for x in xticks1]
+
+xticks2 = [0]
+labels2 = ['%d$^\circ$' %(x) for x in xticks2]
+
+xticks3 = [210, 240, 270, 300]
+labels3 = ['%dW' %(np.abs(360-x)) for x in xticks3]
+
+labels = labels1 + labels2 + labels3
+
 ax1 = plt.subplot(131)
 cs = plt.pcolormesh(lon, time, data['chl'])
 cs.set_clim(-ccc, ccc)
-plt.xlabel('Lon')
+#plt.xlabel('Lon')
 ax1.set_yticks(time[iticks])
 ax1.set_yticklabels(datestr[iticks], rotation=45, va='top')
 plt.grid(True)
 plt.title('Sim.')
+plt.gca().set_xticks(xticks)
+plt.gca().set_xticklabels(labels, rotation=45, ha='right')
 
 # processing obs data
 
 lonmod = lon
+print(lonmod)
 
 data = xr.open_dataset('data/anom_chl_obs.nc')
 date = data['time.year'] * 100 + data['time.month']
@@ -77,14 +96,16 @@ chl = chlint
 
 ax2 = plt.subplot(132, sharey=ax1)
 cs = plt.pcolormesh(lon, time, chlint)
-plt.xlabel('Lon')
+#plt.xlabel('Lon')
 cs.set_clim(-ccc, ccc)
 plt.title('Sat.')
+plt.gca().set_xticks(xticks)
+plt.gca().set_xticklabels(labels, rotation=45, ha='right')
+plt.grid(True)
 
 cax = plt.axes([0.17, 0.09, 0.4, 0.02])
 cb = plt.colorbar(cs, cax, orientation='horizontal')
 cb.set_label('Chl anom (mg/m3)')
-plt.grid(True)
 
 # processing nino index
 
@@ -101,4 +122,49 @@ ax3.tick_params(axis='y', labelleft=False)
 ax2.tick_params(axis='y', labelleft=False)
 
 plt.savefig('hov_chl.pdf', bbox_inches='tight')
+
+
+# computation of correlation
+print(chlmod.shape, chlint.shape)
+
+chlmodmean = np.mean(chlmod, axis=0, keepdims=1)
+chlintmean = np.mean(chlint, axis=0, keepdims=1)
+
+chlmodanom = chlmod - chlmodmean
+chlintanom = chlint - chlintmean
+
+num = np.sum(chlmodanom * chlintanom, axis=0)
+den = np.sqrt(np.sum(chlmodanom**2, axis=0)) * np.sqrt(np.sum(chlintanom**2, axis=0))
+
+print(num.shape)
+print(chlmodanom.shape)
+
+r = num / den
+
+xticks = np.arange(150, 150 + 6 * 30, 30)
+
+xticks1 = [150]
+labels1 = ['%dE' %(x) for x in xticks1]
+
+xticks2 = [0]
+labels2 = ['%d$^\circ$' %(x) for x in xticks2]
+
+xticks3 = [210, 240, 270, 300]
+labels3 = ['%dW' %(np.abs(360-x)) for x in xticks3]
+
+labels = labels1 + labels2 + labels3
+
+plt.figure()
+plt.plot(lon, r)
+#plt.gca().set_xticks(xticks)
+#plt.gca().set_xticklabels(labels)
+plt.savefig('coeff.png')
+plt.show()
+
+
+
+
+
+
+
 
