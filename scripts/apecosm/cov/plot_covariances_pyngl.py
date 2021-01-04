@@ -169,7 +169,7 @@ for c in range(3):
 
         temp = Ngl.contour_map(wks, temp, res)
         temp2 = Ngl.contour(wks, temp2, res2)
-        Ngl.overlay(temp, temp2)
+        #Ngl.overlay(temp, temp2)
 
         plot.append(temp)
 

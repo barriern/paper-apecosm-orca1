@@ -1,4 +1,4 @@
-impor numpy as np
+import numpy as np
 
 def find_percentile(data, percentage=1):
 
