@@ -1,11 +1,25 @@
 \section{Biological response to ENSO variability}
 
-In order to investigate the response of fish biomass to ENSO variability, the methodology described in section \ref{sec:pisces} has been applied on the vertically integrated fish biomass density ($J.m^{-2}$).
+\subsection{Mean state}
+
+Before analysing the biological response of fish biomass to ENSO variability, the mean state of the Apecosm model will be investigated.
 For the sake of simplicity, the focus will be laid on three size classes: 2 cm, representing small fishes, 20cm, representing intermediate sizes, and 90 cm, representing large individuals. These sizes are also
 representative of the sizes of tuna target species within the region.
 \warn{ref!!!}.  \\ 
 
-The covariance maps are shown in figure \ref{fig:cov-ape} for the three sizes and the three simulated generic communities. 
+Figure \ref{fig:mean-ape} shows the mean fish-biomass density ($J.m^{-2}$) for the three different size-classes and the three different communities.
+\warn{interpret these figures}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=\textwidth] {figs/debugged_corr_mask_mean_maps_OOPE.pdf}
+    \caption{Yearly mean of fish biomass density (log-scale, $J.m^{-2}$)}
+    \label{fig:mean-ape}
+\end{figure}
+
+\subsection{Interannual response to ENSO variability}
+
+In order to investigate the response of fish biomass to ENSO variability, the methodology described in section \ref{sec:pisces} has been applied on the vertically integrated fish biomass density ($J.m^{-2}$). The covariance maps are shown in figure \ref{fig:cov-ape} for the three sizes and the three simulated generic communities. 
 
 Small epipelagics show negative anomalies shows negative anomalies at around 5N and 5S, and shows slightly positive anomalies 
 near the equator. Intermediate epipelagics show positive anomalies in the central Pacific and negative ones in the west.
@@ -16,10 +30,11 @@ The covavariance maps for the small migrants shows anomalies in the western part
 Small mesopelagics shows positive anomalies in the central Pacific, and negative anomalies in the west.  
 This pattern is very similar to that of intermediate epipelagics, although the magnitudes are different and are westward shifted. Intermediate and large mesopelagics show positive anomalies in the western part of the basin. \\ 
 
+
 \begin{figure}[h!]
     \centering
     \includegraphics[width=\textwidth] {figs/debugged_corr_mask_covariance_maps_OOPE.pdf}
-    \caption{Covariance between winter ONI index and \ap\ vertically integrated fish biomass density ($J.m^{-2}$). Mean biomass density is shown in black contour lines (log scale).}
+    \caption{Covariance between winter ONI index and \ap\ vertically integrated fish biomass density ($J.m^{-2}$)	}
     \label{fig:cov-ape}
 \end{figure}
 
