@@ -44,15 +44,39 @@ plt.title('Sim.')
 
 # processing obs data
 
+lonmod = lon
+
 data = xr.open_dataset('data/anom_chl_obs.nc')
 date = data['time.year'] * 100 + data['time.month']
 date = date.values
 time = np.arange(len(date))
 lon = data['lon'].values
+chl_anom = data['chl_anom'].to_masked_array()
 
+delta = lon[1] - lon[0]
+nint = int(np.round(1. / delta))
+
+lonint = []
+chlint = []
+off = 0
+iii = np.arange(nint) + off
+iii = iii.astype(np.int)
+
+while(iii[-1] < len(lon)):
+    lontemp = np.mean(lon[iii])
+    chltemp = np.mean(chl_anom[:, iii], axis=1)
+    lonint.append(lontemp)
+    chlint.append(chltemp)
+    iii += nint
+
+lonint = np.array(lonint)
+chlint = np.array(chlint).T
+
+lon = lonint
+chl = chlint
 
 ax2 = plt.subplot(132, sharey=ax1)
-cs = plt.pcolormesh(lon, time, data['chl_anom'])
+cs = plt.pcolormesh(lon, time, chlint)
 plt.xlabel('Lon')
 cs.set_clim(-ccc, ccc)
 plt.title('Sat.')
@@ -76,5 +100,5 @@ plt.grid(True)
 ax3.tick_params(axis='y', labelleft=False)
 ax2.tick_params(axis='y', labelleft=False)
 
-plt.savefig('hov_chl.png')
+plt.savefig('hov_chl.pdf', bbox_inches='tight')
 
