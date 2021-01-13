@@ -9,7 +9,7 @@ from mpl_toolkits.axes_grid1 import AxesGrid
 from cartopy.mpl.geoaxes import GeoAxes
 
 # Define the settings of the grid 
-def set_grid():
+def set_grid(cpt):
 
     gl = ax.gridlines(**dictgrid)
     gl.xlabels_top = False
@@ -17,27 +17,33 @@ def set_grid():
     gl.xformatter = LONGITUDE_FORMATTER
     gl.yformatter = LATITUDE_FORMATTER
 
-# converts to recover the 
-def get_cpt(cpt):
+# converts to recover the value of the ax to used
+def get_cpet_cpt(cpt):
     conversion = [1, 3, 5, 2, 4, 6]
     return conversion[cpt - 1] - 1
 
+# recovers the letters in lower case
 letters = list(string.ascii_lowercase)
 
-dirin = '/home/barrier/Work/apecosm/ORCA1/final_figs/data'
+########################################################## shared settings
 
-ilength = [14, 45, 80]
-
+# parameters to display the grid for lon/klat
 dictgrid = {'crs':ccrs.PlateCarree(central_longitude=180), 'draw_labels':True, 'linewidth':0.5, 'color':'gray', 'alpha':0.5, 'linestyle':'--'}
+
+# parameters to display the text
 dicttext = dict(boxstyle='round', facecolor='lightgray', alpha=1)
-dictcbar = {}
 lontext = 120
 lattext = 30
+
+# length to display
+ilength = [14, 45, 80]
 
 proj = ccrs.PlateCarree(central_longitude=180)
 proj2 = ccrs.PlateCarree(central_longitude=0)
 
-# reading mesh mask
+########################################################### reading mesh mask
+dirin = '/home/barrier/Work/apecosm/ORCA1/final_figs/data'
+
 mesh = xr.open_dataset('%s/mesh_mask_eORCA1_v2.2.nc' %dirin)
 mesh = mesh.isel(t=0, z=0)
 tmask = mesh['tmask'].to_masked_array()
@@ -50,20 +56,18 @@ wstep = const['weight_step'].values
 length = const['length'].values * 100
 nlength = len(length)
 
-# init figures
+########################################################### init figures
 fig = plt.figure(figsize=(12, 8))
-axes_class = (GeoAxes,
-              dict(map_projection=proj))
+axes_class = (GeoAxes, dict(map_projection=proj))
 axgr = AxesGrid(fig, 111,  axes_class=axes_class, nrows_ncols=(3, 2), axes_pad=(1, 0.4), label_mode='', cbar_mode='each', cbar_pad=0.05)
 cbar_axes = axgr.cbar_axes
 axout = list(enumerate(axgr))
 axout = [p[1] for p in axout]
-
 cpt = 1
 
 length = length[ilength]
 
-# processing mean maps
+########################################################### processing mean maps
 dirin = '/home/barrier/Desktop/correlation_maps'
 
 data = xr.open_dataset("%s/debugged_corr_mask_yearly_mean_OOPE.nc" %dirin)
@@ -89,18 +93,18 @@ for p in range(3):
     cs = ax.pcolormesh(lon, lat, temp, transform=proj2, cmap=plt.cm.jet)
     ax.add_feature(cfeature.LAND, zorder=100, color='lightgray')
     ax.add_feature(cfeature.COASTLINE, zorder=101)
-    cb = cbar_axes[get_cpt(cpt)].colorbar(cs, **dictcbar)
+    cb = cbar_axes[get_cpt(cpt)].colorbar(cs)
     cb.set_label_text('Log10 Biom. dens. ($J.m^{-2}$)')
     ax.set_ylim(-40, 40)
     ax.set_xlim(-60, 130)
     cs.set_clim(cmin, cmax)
     ax.set_title('Length = %.2e cm' %length[p])
     ax.text(lontext, lattext, letters[cpt - 1] + ")", ha='center', va='center', transform=proj, bbox=dicttext)
-    set_grid()
+    set_grid(cpt)
 
     cpt += 1
 
-# processing covariance
+########################################################### processing covariance
 data = xr.open_dataset("%s/debugged_corr_mask_covariance_yearly_enso_epis_OOPE.nc" %dirin)
 cov = data['covariance'].to_masked_array()  # lat, lon, w
 cov = np.ma.masked_where(cov == 0, cov)
@@ -122,13 +126,13 @@ for p in range(3):
 
     ax.add_feature(cfeature.LAND, zorder=100, color='lightgray')
     ax.add_feature(cfeature.COASTLINE, zorder=101)
-    cb = cbar_axes[get_cpt(cpt)].colorbar(cs, **dictcbar)
+    cb = cbar_axes[get_cpt(cpt)].colorbar(cs)
     cs.set_clim(-perc, perc)
     cb.set_label_text('Biom. Nino. cov. ($J.m^{-2}$)')
     ax.set_ylim(-40, 40)
     ax.set_xlim(-60, 130)
     ax.set_title('Length = %.2e cm' %length[p])
-    set_grid()
+    set_grid(cpt)
     
     ax.text(lontext, lattext, letters[cpt - 1] + ")", ha='center', va='center', transform=proj, bbox=dicttext)
 
