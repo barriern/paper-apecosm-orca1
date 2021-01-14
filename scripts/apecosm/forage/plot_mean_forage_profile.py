@@ -15,7 +15,7 @@ def _east_west_formatted(longitude, num_format='g'):
     if(longitude == 180):
         longitude = 0
     output = fmt_string.format(longitude=abs(longitude), num_format=num_format,
-                             hemisphere=gridliner._lon_heimisphere(longitude),
+                             hemisphere=gridliner._lon_hemisphere(longitude),
                              degree=_DEGREE_SYMBOL)
     return output
 
