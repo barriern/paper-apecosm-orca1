@@ -68,7 +68,7 @@ forage = forage[:, ilon, :, :]
 
 fig = plt.figure(figsize=(10, 14))
 
-axgrid = AxesGrid(fig, 111, nrows_ncols=(4, 2), axes_pad=(0.5, 0.4), cbar_mode="each", aspect=False, cbar_pad=0.05)
+axgrid = AxesGrid(fig, 111, nrows_ncols=(4, 2), axes_pad=(0.9, 0.4), cbar_mode="each", aspect=False, cbar_pad=0.05)
 cax = axgrid.cbar_axes
 
 darray = [0, 1, 0, 1, 0,1, 0, 1]
@@ -93,7 +93,7 @@ for i, ax in enumerate(axgrid):
     cb = cax[i].colorbar(cs)
     #cl = ax.contour(lon, -depth, temp, 11, colors='k', linewidths=0.5)
     #cb.add_lines(cl)
-    cb.set_label_text('$J.m^{-3}$')
+    cb.set_label('$J.m^{-3}$')
     ax.set_title(classes[s])
     ax.set_ylim(-200, 0)
     ax.text(lontext, depthtext, letters[i] + ")", bbox=dicttext, ha='center', va='center')
