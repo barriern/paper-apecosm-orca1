@@ -89,9 +89,10 @@ for i, ax in enumerate(axgrid):
     cmax = temp[itemp].max()
 
     cs = ax.pcolormesh(lon, -depth, temp, cmap=plt.cm.jet)
-    cl = ax.contour(lon, -depth, temp, 11, colors='k', linewidths=0.5)
     cs.set_clim(cmin, cmax)
     cb = cax[i].colorbar(cs)
+    #cl = ax.contour(lon, -depth, temp, 11, colors='k', linewidths=0.5)
+    #cb.add_lines(cl)
     cb.set_label_text('$J.m^{-3}$')
     ax.set_title(classes[s])
     ax.set_ylim(-200, 0)
