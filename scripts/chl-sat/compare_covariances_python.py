@@ -3,7 +3,8 @@ import xarray as xr
 import cartopy.crs as ccrs
 import cartopy.feature as cfeature
 import matplotlib.pyplot as plt
-
+from mpl_toolkits.axes_grid1 import AxesGrid
+from cartopy.mpl.geoaxes import GeoAxes
 from cartopy.mpl.gridliner import LONGITUDE_FORMATTER, LATITUDE_FORMATTER
 import matplotlib.ticker as mticker
 
@@ -15,8 +16,11 @@ gridparams = {'draw_labels':True, 'linewidth':0.5, 'color':'gray', 'alpha':0.5, 
 #gl = ax.gridlines(crs=proj, draw_labels=True,
 #                  linewidth=2, color='gray', alpha=0.5, linestyle='--')
 
-plt.figure()
-plt.subplots_adjust(top=0.95, bottom=0.2, hspace=0.25)
+plt.figure(figsize=(12, 8))
+fig = plt.figure(figsize=(12, 8))
+axes_class = (GeoAxes, dict(map_projection=proj))
+axgr = AxesGrid(fig, 111,  axes_class=axes_class, nrows_ncols=(2, 1), axes_pad=(1, 0.5), label_mode='', cbar_mode='single', cbar_size=0.1, cbar_pad=0., cbar_location="bottom", share_all=True)
+
 ccc = 0.05
 space = 0.01
 levels = np.arange(-0.1, 0.1 + space, space)
@@ -28,11 +32,11 @@ cov = np.ma.masked_where(cov == 0, cov)
 lon = data['lon'].values
 lat = data['lat'].values
 
-ax = plt.subplot(2, 1, 1, projection=proj)
+ax = axgr[0]
 ax.set_ylim(-40, 40)
 ax.set_xlim(-60, 130)
 
-cs = plt.pcolormesh(lon, lat, cov, transform=ccrs.PlateCarree())
+cs = ax.pcolormesh(lon, lat, cov, transform=ccrs.PlateCarree())
 cs.set_clim(-ccc, ccc)
 ax.add_feature(cfeature.LAND, zorder=1000, color='lightgray')
 ax.add_feature(cfeature.COASTLINE, zorder=1001)
@@ -40,12 +44,11 @@ ax.add_feature(cfeature.COASTLINE, zorder=1001)
 gl = ax.gridlines(**gridparams)
 gl.xlabels_top = False
 gl.ylabels_right = False
-#gl.xlines = False
 gl.xformatter = LONGITUDE_FORMATTER
 gl.yformatter = LATITUDE_FORMATTER
 gl.xlocator = mticker.FixedLocator([150, 180, -180, -150, -120, -90, -60])
 
-plt.title('Obs.')
+ax.set_title('Obs.')
 
 #######
 
@@ -60,19 +63,19 @@ cov = data['cov'].values
 cov = np.ma.masked_where(tmask == 0, cov)
 print(cov.min(), cov.max())
 
-ax2 = plt.subplot(2, 1, 2, projection=proj, sharex=ax, sharey=ax)
+ax2 = axgr[1]
 
-cs = plt.pcolormesh(lon, lat, cov, transform=proj2)
+cs = ax2.pcolormesh(lon, lat, cov, transform=proj2)
 cs.set_clim(-ccc, ccc)
 ax2.add_feature(cfeature.LAND, zorder=1000, color='lightgray')
 ax2.add_feature(cfeature.COASTLINE, zorder=1001)
 
-plt.title('Model')
+ax2.set_title('Model')
 
 xmin = 0.2
-cax = plt.axes([xmin, 0.1, 1-2*xmin, 0.03])
-cb = plt.colorbar(cs, cax, orientation='horizontal')
-cb.set_label("Chl. cov (mg/m3)")
+#cax = plt.axes([xmin, 0.1, 1-2*xmin, 0.03])
+cb = axgr.cbar_axes[0].colorbar(cs)
+cb.set_label_text("Chl. cov (mg/m3)")
 
 gl = ax2.gridlines(**gridparams)
 gl.xlabels_top = False
