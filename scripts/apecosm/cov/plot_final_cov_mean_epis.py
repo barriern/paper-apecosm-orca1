@@ -8,6 +8,7 @@ import string
 from mpl_toolkits.axes_grid1 import AxesGrid
 from cartopy.mpl.geoaxes import GeoAxes
 import matplotlib.ticker as mticker
+#plt.rcParams['text.usetex'] = False
 
 # Define the settings of the grid 
 def set_grid(cpt):
@@ -17,11 +18,12 @@ def set_grid(cpt):
     gl.ylabels_right = False
     gl.xformatter = LONGITUDE_FORMATTER
     gl.yformatter = LATITUDE_FORMATTER
-    gl.xlocator = mticker.FixedLocator([150, 180, -150, -120, -90, -60])
+    gl.xlocator = mticker.FixedLocator([150, 180, -180, -150, -120, -90, -60])
 
 # converts to recover the value of the ax to used
 def get_cpt(cpt):
     conversion = [1, 3, 5, 2, 4, 6]
+    #return cpt - 1
     return conversion[cpt - 1] - 1
 
 # recovers the letters in lower case
@@ -51,6 +53,10 @@ mesh = mesh.isel(t=0, z=0)
 tmask = mesh['tmask'].to_masked_array()
 lon = mesh['glamt'].values
 lat = mesh['gphit'].values
+lonf = mesh['glamf'].values
+latf = mesh['gphif'].values
+
+lon[lon < 0] += 360
 
 # reading length / weight step
 const = xr.open_dataset('%s/ORCA1_JRA_CO2_CYC4_ConstantFields.nc' %dirin)
@@ -82,21 +88,20 @@ cov = np.log10(cov)
 
 cov = cov[:, :, ilength]
 
-
 for p in range(3):
 
-    temp = cov[:, :, p]
+    temp = cov[1:, 1:, p]
 
     iok = np.nonzero(temp.mask == False)
     cmax = np.percentile(temp[iok], 99)
     cmin = np.percentile(temp[iok], 1)
 
     ax = axout[get_cpt(cpt)]
-    cs = ax.pcolormesh(lon, lat, temp, transform=proj2, cmap=plt.cm.jet)
+    cs = ax.pcolormesh(lon, lat, temp, transform=proj2, cmap=plt.cm.jet, shading='auto')
     ax.add_feature(cfeature.LAND, zorder=100, color='lightgray')
     ax.add_feature(cfeature.COASTLINE, zorder=101)
     cb = cbar_axes[get_cpt(cpt)].colorbar(cs)
-    cb.set_label_text('Log10 Biom. dens. ($J.m^{-2}$)')
+    cb.set_label('Log10 Biom. dens. ($J.m^{-2}$)')
     ax.set_ylim(-40, 40)
     ax.set_xlim(-60, 130)
     cs.set_clim(cmin, cmax)
@@ -118,19 +123,20 @@ cov = cov[ilength]
 for p in range(3):
 
     temp = cov[p].T
+    temp = temp[1:, 1:]
 
     iok = np.nonzero(temp.mask == False)
     perc = np.percentile(np.abs(temp[iok]), 99)
 
     #ax = plt.subplot(sp0, sp1, get_cpt(cpt), projection=proj)
     ax = axout[get_cpt(cpt)]
-    cs = ax.pcolormesh(lon, lat, temp, transform=proj2, cmap=plt.get_cmap('RdBu_r'))
+    cs = ax.pcolormesh(lonf, latf, temp, transform=proj2, cmap=plt.get_cmap('RdBu_r'))
 
     ax.add_feature(cfeature.LAND, zorder=100, color='lightgray')
     ax.add_feature(cfeature.COASTLINE, zorder=101)
     cb = cbar_axes[get_cpt(cpt)].colorbar(cs)
     cs.set_clim(-perc, perc)
-    cb.set_label_text('Biom. Nino. cov. ($J.m^{-2}$)')
+    cb.set_label('Biom. Nino. cov. ($J.m^{-2}$)')
     ax.set_ylim(-40, 40)
     ax.set_xlim(-60, 130)
     ax.set_title('Length = %.2e cm' %length[p])
