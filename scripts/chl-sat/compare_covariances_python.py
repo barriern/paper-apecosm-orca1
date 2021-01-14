@@ -10,7 +10,7 @@ import matplotlib.ticker as mticker
 proj = ccrs.PlateCarree(central_longitude=180)
 proj2 = ccrs.PlateCarree(central_longitude=0)
 
-gridparams = {'crs':proj, 'draw_labels':True, 'linewidth':0.5, 'color':'gray', 'alpha':0.5, 'linestyle':'--'}
+gridparams = {'draw_labels':True, 'linewidth':0.5, 'color':'gray', 'alpha':0.5, 'linestyle':'--'}
 
 #gl = ax.gridlines(crs=proj, draw_labels=True,
 #                  linewidth=2, color='gray', alpha=0.5, linestyle='--')
@@ -43,6 +43,7 @@ gl.ylabels_right = False
 #gl.xlines = False
 gl.xformatter = LONGITUDE_FORMATTER
 gl.yformatter = LATITUDE_FORMATTER
+gl.xlocator = mticker.FixedLocator([150, 180, -150, -120, -90, -60])
 
 plt.title('Obs.')
 
@@ -80,5 +81,6 @@ gl.ylabels_right = False
 #gl.xlines = False
 gl.xformatter = LONGITUDE_FORMATTER
 gl.yformatter = LATITUDE_FORMATTER
+gl.xlocator = mticker.FixedLocator([150, 180, -150, -120, -90, -60])
 
 plt.savefig('compare_covariance_chl.png', bbox_inches='tight')
