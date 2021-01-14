@@ -57,6 +57,8 @@ mesh = mesh.isel(t=0)
 lon = mesh['glamt'].values
 lat = mesh['gphit'].values
 tmask = mesh['tmask'].values[0]
+lonf = mesh['glamf'].values
+latf = mesh['gphit'].values
 
 data = xr.open_dataset("model/covariance_model_data.nc")
 cov = data['cov'].values
@@ -65,7 +67,7 @@ print(cov.min(), cov.max())
 
 ax2 = axgr[1]
 
-cs = ax2.pcolormesh(lon, lat, cov, transform=proj2)
+cs = ax2.pcolormesh(lonf, latf, cov[1:, 1:], transform=proj2)
 cs.set_clim(-ccc, ccc)
 ax2.add_feature(cfeature.LAND, zorder=1000, color='lightgray')
 ax2.add_feature(cfeature.COASTLINE, zorder=1001)
@@ -75,7 +77,7 @@ ax2.set_title('Model')
 xmin = 0.2
 #cax = plt.axes([xmin, 0.1, 1-2*xmin, 0.03])
 cb = axgr.cbar_axes[0].colorbar(cs)
-cb.set_label_text("Chl. cov (mg/m3)")
+cb.set_label("Chl. cov (mg/m3)")
 
 gl = ax2.gridlines(**gridparams)
 gl.xlabels_top = False
