@@ -7,6 +7,7 @@ from cartopy.mpl.gridliner import LONGITUDE_FORMATTER, LATITUDE_FORMATTER
 import string
 from mpl_toolkits.axes_grid1 import AxesGrid
 from cartopy.mpl.geoaxes import GeoAxes
+import matplotlib.ticker as mticker
 
 # Define the settings of the grid 
 def set_grid(cpt):
@@ -16,9 +17,10 @@ def set_grid(cpt):
     gl.ylabels_right = False
     gl.xformatter = LONGITUDE_FORMATTER
     gl.yformatter = LATITUDE_FORMATTER
+    gl.xlocator = mticker.FixedLocator([150, 180, -150, -120, -90, -60])
 
 # converts to recover the value of the ax to used
-def get_cpet_cpt(cpt):
+def get_cpt(cpt):
     conversion = [1, 3, 5, 2, 4, 6]
     return conversion[cpt - 1] - 1
 
@@ -28,7 +30,7 @@ letters = list(string.ascii_lowercase)
 ########################################################## shared settings
 
 # parameters to display the grid for lon/klat
-dictgrid = {'crs':ccrs.PlateCarree(central_longitude=180), 'draw_labels':True, 'linewidth':0.5, 'color':'gray', 'alpha':0.5, 'linestyle':'--'}
+dictgrid = {'crs':ccrs.PlateCarree(central_longitude=0), 'draw_labels':True, 'linewidth':0.5, 'color':'gray', 'alpha':0.5, 'linestyle':'--'}
 
 # parameters to display the text
 dicttext = dict(boxstyle='round', facecolor='lightgray', alpha=1)
@@ -68,7 +70,7 @@ cpt = 1
 length = length[ilength]
 
 ########################################################### processing mean maps
-dirin = '/home/barrier/Desktop/correlation_maps'
+dirin = '../../correlation_maps'
 
 data = xr.open_dataset("%s/debugged_corr_mask_yearly_mean_OOPE.nc" %dirin)
 cov = data['OOPE'].to_masked_array()  # lat, lon, w
@@ -137,6 +139,5 @@ for p in range(3):
     ax.text(lontext, lattext, letters[cpt - 1] + ")", ha='center', va='center', transform=proj, bbox=dicttext)
 
     cpt += 1
-
 
 plt.savefig('covariance_mean_epi.png', bbox_inches='tight')
