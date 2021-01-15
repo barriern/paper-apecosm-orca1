@@ -73,7 +73,6 @@ axout = list(enumerate(axgr))
 axout = [p[1] for p in axout]
 cpt = 1
 
-length = length[ilength]
 
 ########################################################### processing mean maps
 dirin = '../../correlation_maps'
@@ -84,9 +83,25 @@ cov = np.squeeze(cov)
 
 cov = np.ma.masked_where(cov == 0, cov)
 cov = cov * wstep
-cov = np.log10(cov)
+
+covout = np.zeros((332, 362, 3))
+
+imin = 0
+for p in range(3):
+    imax = ilength[p]
+    sss = slice(imin, imax)
+    covout[:, :, p] = np.sum(cov[:, :, sss], axis=-1)
+    if(p == 2): break
+    imin = ilength[p]
+    imax = ilength[p + 1]
 
 cov = cov[:, :, ilength]
+cov = np.log10(cov)
+length = length[ilength]
+
+covout = np.ma.masked_where(cov.mask, covout)
+#cov = covout
+#cov = np.log10(cov)
 
 for p in range(3):
 
@@ -97,7 +112,7 @@ for p in range(3):
     cmin = np.percentile(temp[iok], 1)
 
     ax = axout[get_cpt(cpt)]
-    cs = ax.pcolormesh(lon, lat, temp, transform=proj2, cmap=plt.cm.jet, shading='auto')
+    cs = ax.pcolormesh(lonf, latf, temp, transform=proj2, cmap=plt.cm.jet, shading='auto')
     ax.add_feature(cfeature.LAND, zorder=100, color='lightgray')
     ax.add_feature(cfeature.COASTLINE, zorder=101)
     cb = cbar_axes[get_cpt(cpt)].colorbar(cs)
