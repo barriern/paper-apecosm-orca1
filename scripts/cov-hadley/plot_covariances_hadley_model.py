@@ -40,6 +40,9 @@ axout = list(enumerate(axgr))
 axout = [p[1] for p in axout]
 
 ax = axgr[0]
+ccc = 1.5
+step = 0.1
+levels = np.arange(-ccc, ccc + step, step)
 
 cs = ax.pcolormesh(lonhad, lathad, hadley, transform=proj2, shading='auto')
 cs.set_clim(-ccc, ccc)
@@ -59,7 +62,7 @@ ax.set_title('Hadley SST')
 
 ax = axgr[1]
 
-cs = ax.pcolormesh(lon, lat, model[1:, 1:], transform=proj2)
+cs = ax.pcolormesh(lonf, latf, model[1:, 1:], transform=proj2)
 cs.set_clim(-ccc, ccc)
 ax.add_feature(cfeature.LAND, zorder=1000, color='lightgray')
 ax.add_feature(cfeature.COASTLINE, zorder=1001)
