@@ -8,33 +8,43 @@ import string
 from mpl_toolkits.axes_grid1 import AxesGrid
 from cartopy.mpl.geoaxes import GeoAxes
 import matplotlib.ticker as mticker
-#plt.rcParams['text.usetex'] = False
+from cycler import cycler
 
-def plot_domain(ax):
-    return
-    _plot_domain(ax, lonmin0, latmin0)
-    _plot_domain(ax, lonmin1, latmin1)
-    _plot_domain(ax, lonmin2, latmin2)
-    _plot_domain(ax, lonmin3, latmin3)
-    _plot_domain(ax, lonmin4, latmin4)
-    _plot_domain(ax, lonmin5, latmin5)
+colcyc =  cycler(color=["cyan", 'magenta', 'gold', 'plum', 'green', 'orange'])
+plt.rc('axes', prop_cycle=colcyc)
+plt.rcParams['lines.markersize'] = 10
 
-def _plot_domain(axxx, lonmin, latmin):
+def plot_domain(ax, cpt):
+    if(True):
+    #if cpt == 1:
+        _plot_domain(ax, lonmin0, latmin0, label='Dom 1')
+        _plot_domain(ax, lonmin1, latmin1, label='Dom 2')
+        #ax.legend()
+    #elif cpt == 3:
+        _plot_domain(ax, lonmin2, latmin2, label='Dom 3')
+        _plot_domain(ax, lonmin3, latmin3, label='Dom 4')
+        #ax.legend()
+    #elif cpt == 5:
+        _plot_domain(ax, lonmin4, latmin4, label='Dom 5')
+        _plot_domain(ax, lonmin5, latmin5, label='Dom 6')
+        #ax.legend()
+
+def _plot_domain(axxx, lonmin, latmin, label=''):
 
     lonout = [lonmin]
     latout = [latmin]
 
     proj = ccrs.PlateCarree(central_longitude=0)
     proj2 = ccrs.PlateCarree(central_longitude=180)
-    axxx.plot(lonout, latout, transform=proj, zorder=1000, marker='o')
+    axxx.plot(lonout, latout, transform=proj, zorder=1000, marker='.', label=label)
 
-lonmin0, latmin0 = 175, 5
-lonmin1, latmin1 = -150, -4
-lonmin2, latmin2 = 165, 8
-lonmin3, latmin3 = -175, -4
+lonmin0, latmin0 = 172.5, 4.5
+lonmin1, latmin1 = -150.5, -4
+lonmin2, latmin2 = 165.5, 8
+lonmin3, latmin3 = -175.5, -4
 
-lonmin4, latmin4 = -178, 3
-lonmin5, latmin5 = 145, 5
+lonmin4, latmin4 = -178.5, 3
+lonmin5, latmin5 = 145.5, 5
 
 # Define the settings of the grid 
 def set_grid(cpt):
@@ -151,7 +161,7 @@ for p in range(3):
     ax.set_title('Length = %.2e cm' %length[p])
     ax.text(lontext, lattext, letters[cpt - 1] + ")", ha='center', va='center', transform=proj, bbox=dicttext)
     set_grid(cpt)
-    plot_domain(ax)
+    plot_domain(ax, get_cpt(cpt))
     ax.set_ylim(-40, 40)
     ax.set_xlim(-60, 130)
 
@@ -188,7 +198,7 @@ for p in range(3):
     set_grid(cpt)
     
     ax.text(lontext, lattext, letters[cpt - 1] + ")", ha='center', va='center', transform=proj, bbox=dicttext)
-    plot_domain(ax)
+    plot_domain(ax, get_cpt(cpt))
 
     cpt += 1
 
