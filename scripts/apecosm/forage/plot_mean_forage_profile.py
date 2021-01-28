@@ -60,6 +60,7 @@ data = data.sortby(data['x'])
 lon = data['x'].values
 forage = data['FORAGE'].to_masked_array()
 forage = np.squeeze(forage)
+#forage = np.log10(forage)
 
 ilon = np.nonzero((lon <= 300) & (lon >= 130))[0]
 
@@ -82,13 +83,14 @@ for i, ax in enumerate(axgrid):
     temp = forage[d, :, :, s].T
     temp = np.ma.masked_where(temp == 0, temp)
     itemp = np.nonzero((temp.mask == False) & (temp != 0))
-    cmin = np.percentile(temp[itemp], 1)
-    cmax = np.percentile(temp[itemp], 99)
+    perc = 0.5
+    cmin = np.percentile(temp[itemp], 0.5)
+    cmax = np.percentile(temp[itemp], 100 - perc)
 
-    cmin = temp[itemp].min()
-    cmax = temp[itemp].max()
+    #cmin = temp[itemp].min()
+    #cmax = temp[itemp].max()
 
-    cs = ax.pcolormesh(lon, -depth, temp, cmap=plt.cm.jet)
+    cs = ax.pcolormesh(lon, -depth, temp, cmap=plt.cm.jet, shading='auto')
     cs.set_clim(cmin, cmax)
     cb = cax[i].colorbar(cs)
     #cl = ax.contour(lon, -depth, temp, 11, colors='k', linewidths=0.5)
