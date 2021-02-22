@@ -46,15 +46,18 @@ def compute_yearly_mean(year, month, value, varname):
         dataout.attrs['date'] = str(datetime.today())
         dataout.attrs['description'] = 'mean over %s' %(str(date[iok]))
         fileout = '%s/%s_yearly_mean_%s_year_%.4d.nc' %(dirout, prefix, varname, y)
-        dataout.to_netcdf(fileout)
+        dataout.to_netcdf(fileout, unlimited_dims='time')
 
     return dataout
 
 # list of apecosm simulation to process
-preflist = ['debugged_corr_mask']
+preflist = ['final-runs']
 
 # list of variables to process
-varlist = ['OOPE']
+varlist = ['mort_day', 'repfonct_day']
+varlist = ['diff', 'madv_trend', 'mdiff_trend', 'u_active', 'u_passive', 'v_passive', 'v_active', 'zadv_trend', 'zdiff_trend']
+varlist = ['mdiff_trend', 'u_active', 'u_passive', 'v_passive', 'v_active', 'zadv_trend', 'zdiff_trend', 'diff']
+#varlist = ['OOPE']
 
 # loop over all simulations
 for prefix in preflist:
@@ -72,6 +75,8 @@ for prefix in preflist:
 
         print('++++++++++++++++++++++++++++++++++ Computing %s yearly mean' %var)
         # open all files in one raw and compute average
+        pattern = '%s/*%s*nc' %(dirin, var)
+        print(pattern)
         data = xr.open_mfdataset('%s/*%s*nc' %(dirin, var), combine='by_coords')
         data = data[var]
         year = data['time.year'].values
