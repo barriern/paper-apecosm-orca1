@@ -12,41 +12,15 @@ import cartopy.crs as crs
 from scipy import stats
 
 ''' Removes the linear trend of Y, considering x as time and y of dimensions (time, ...) '''
-def detrend(x, y):
+def detrend(y):
 
-    # compute the anomaly
-    y = y - np.mean(y, axis=0, keepdims=1)
+    output = y.T   # w, c, x, y, t 
+    print(output.shape)
 
-    # compute the shape of the rightmost dimensions
-    yshape = y.shape
-    ntime = y.shape[0]
-    otherdims = y.shape[1:]
-
-    # alldims = product of all dimensions but time
-    alldims = np.prod(otherdims)
+    iok = np.nonzero(output.mask == False)
+    output[iok].shape
     
-    # reshape onto (time, alldims)
-    y1d = np.reshape(y, (ntime, alldims))
-
-    # compute the linear regressions by looping on the other dimensions
-    linreg = [stats.linregress(x, ytemp) for ytemp in y1d.T]
-
-    # extracting the slopes and intercept
-    # dimensions = ncells
-    slopes = np.array([t[0] for t in linreg]) 
-    intercept = np.array([t[1] for t in linreg])
-
-    # x dimesions = ntime
-    # computing linear trend
-    trend = slopes[np.newaxis, :] * x[:, np.newaxis] + intercept[np.newaxis, :]
-    
-    # move array to the right shape
-    trend = np.reshape(np.array(trend), yshape)
-    
-    # remove linear trend from the output variable.
-    output = y - trend
-
-    return output
+    return output.T
 
 if __name__ == '__main__':
 
@@ -82,7 +56,7 @@ if __name__ == '__main__':
             pattern = '%s/*%s*.nc' %(dirin, varname)
             # opens the yearly OOPE file and extracts the size classes
             data = xr.open_mfdataset(pattern, combine='by_coords')
-            data = data.isel(w=ilength)
+            data = data.isel(w=ilength)  # time, y, x, com, w
             year = data['time'].values
             
             # extracts the dimension names
@@ -91,7 +65,7 @@ if __name__ == '__main__':
             # extracts the OOPE and detrend it using year
             dens = data[varname].to_masked_array()
             year = np.unique(year)
-            dens = detrend(year, dens)
+            dens = detrend(dens)
 
             # Save detrended variables into file
             dataout = xr.Dataset()
