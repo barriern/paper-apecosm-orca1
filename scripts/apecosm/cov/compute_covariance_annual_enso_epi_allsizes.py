@@ -20,10 +20,8 @@ for varname in ['OOPE']:
 
     print("@@@@@@@@@@@@@@@@@@ ", varname)
 
-    data = xr.open_dataset('%s/%s_detrended_global_annual_%s.nc' %(dirin, prefix, varname))
-    print(data)
+    data = xr.open_dataset('%s/%s_detrended_global_annual_epis_%s.nc' %(dirin, prefix, varname))
     year = data['time'].values
-    print(year)
 
     ymin = np.max([ensoy.min(), year.min()])
     ymax = np.min([ensoy.max(), year.max()])
@@ -62,7 +60,7 @@ for varname in ['OOPE']:
     # reshape covariance into it's proper form
     cov = np.reshape(cov, (shape1))
 
-    fileout = '%s/%s_covariance_yearly_enso_%s.nc' %(dirin, prefix, varname)
+    fileout = '%s/%s_covariance_yearly_enso_epis_%s.nc' %(dirin, prefix, varname)
     output = xr.Dataset()
     output['covariance'] = (dimnames[1:], cov)
     output.attrs['file'] = os.path.realpath(__file__)
