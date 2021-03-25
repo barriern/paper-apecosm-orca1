@@ -53,7 +53,7 @@ lon0 = lon.copy()
 
 lon[lon < 0] += 360
 
-data = xr.open_dataset("data/yearly_mean_forage_year.nc")
+data = xr.open_dataset("data/yearly_mean_forage.nc")
 data = data.isel(community=0, depth=idepth)
 data['x'] = lon
 data = data.sortby(data['x'])
