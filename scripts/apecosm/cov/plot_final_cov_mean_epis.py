@@ -15,7 +15,7 @@ plt.rc('axes', prop_cycle=colcyc)
 plt.rcParams['lines.markersize'] = 10
 
 def plot_domain(ax, cpt):
-    if(True):
+    if(False):
     #if cpt == 1:
         _plot_domain(ax, lonmin0, latmin0, label='Dom 1')
         _plot_domain(ax, lonmin1, latmin1, label='Dom 2')
@@ -113,18 +113,24 @@ cpt = 1
 
 ########################################################### processing mean maps
 dirin = '../../correlation_maps'
+dirin = 'data/'
 
-data = xr.open_dataset("%s/debugged_corr_mask_yearly_mean_OOPE.nc" %dirin)
+data = xr.open_dataset("%s/final-runs_yearly_mean_OOPE.nc" %dirin)
+data = data.isel(community=0)
 cov = data['OOPE'].to_masked_array()  # lat, lon, w
 cov = np.squeeze(cov)
+
+print(cov.shape)  # lat, lon, com, w
 
 cov = np.ma.masked_where(cov == 0, cov)
 cov = cov * wstep
 
+'''
 covout = np.zeros((332, 362, 3))
 
 imin = 0
 for p in range(3):
+    print("++++++++++++++++++++++++++ ", p)
     imax = ilength[p]
     sss = slice(imin, imax)
     covout[:, :, p] = np.sum(cov[:, :, sss], axis=-1)
@@ -132,11 +138,13 @@ for p in range(3):
     imin = ilength[p]
     imax = ilength[p + 1]
 
+covout = np.ma.masked_where(cov.mask, covout)
+'''
+
 cov = cov[:, :, ilength]
 cov = np.log10(cov)
 length = length[ilength]
 
-covout = np.ma.masked_where(cov.mask, covout)
 
 latmask = (np.abs(lat) <= 40)
 lonmask = (lon >= 130) & (lon <= 300)
@@ -168,7 +176,7 @@ for p in range(3):
     cpt += 1
 
 ########################################################### processing covariance
-data = xr.open_dataset("%s/debugged_corr_mask_covariance_yearly_enso_epis_OOPE.nc" %dirin)
+data = xr.open_dataset("%s/final-runs_covariance_yearly_enso_epis_OOPE.nc" %dirin)
 cov = data['covariance'].to_masked_array()  # lat, lon, w
 cov = np.ma.masked_where(cov == 0, cov)
 cov = cov * wstep
