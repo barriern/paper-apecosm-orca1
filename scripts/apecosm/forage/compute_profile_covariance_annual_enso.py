@@ -6,13 +6,15 @@ from cftime import utime
 import scipy.signal as sig
 
 # reading enso index
-index = xr.open_dataset('/home/barrier/Work/apecosm/ORCA1/final_figs/hadley/yearly_nino_index_1950_2019.nc')
+dirin = '/home1/datawork/nbarrier/apecosm/apecosm_orca1/diags/data'
+
+index = xr.open_dataset('%s/yearly_nino_index_1950_2019.nc' %dirin)
 ensof = index['nino'].values
 ensoy = index['year'].values
 
 cdftime = utime("seconds since 1900-01-01 00:00:00", "noleap")
 
-data = xr.open_mfdataset('data/forage_yearly_mean_*nc', combine='by_coords')
+data = xr.open_mfdataset('%s/yearly_mean_forage_year_*nc' %dirin, combine='by_coords')
 year = data['time'].values
 
 ymin = np.max([ensoy.min(), year.min()])
@@ -42,7 +44,7 @@ for temp in zip(i, j, k, z, w):
     ts = sig.detrend(forage[ii, jj, kk, zz, ww])
     cov[ii, jj, kk, zz, ww] = np.cov(ts, enso, ddof=1)[0, 1]
 
-fileout = 'data/profile_covariance_yearly_enso.nc'
+fileout = '%s/profile_covariance_yearly_enso.nc' %dirin
 output = xr.Dataset()
 output['covariance'] = (dimnames[1:], cov.T)
 output.attrs['file'] = os.path.realpath(__file__)
