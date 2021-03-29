@@ -14,3 +14,4 @@ doc
 *.swp
 **/*.docx
 **/*.nc
+**/__pycache__
