@@ -23,16 +23,14 @@ def _east_west_formatted(longitude, num_format='g'):
 import re
 from glob import glob
 
-pattern = 'data/final-runs_(.*)_meridional_mean_anoms.nc'
+pattern = 'data/equatorial_covariance_(.*).nc'
 regexp = re.compile(pattern)
-filelist = glob('data/*meridional_mean_anoms*nc')
+filelist = glob('data/*equatorial*nc')
 filelist.sort()
 varlist = []
 for f in filelist:
     varname = regexp.match(f).groups()[0]
     varlist.append(varname)
-
-varlist.remove('starvation')
 
 constant = xr.open_dataset('/home/barrier/Work/apecosm/ORCA1/figures_orca1/plot_hov/ORCA1_JRA_CO2_CYC4_ConstantFields.nc')
 constant = constant.isel(w=[14, 45, 80])
