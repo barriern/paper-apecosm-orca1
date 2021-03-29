@@ -1,11 +1,7 @@
 \section{Validation of the NEMO-Pisces model}
 \label{sec:pisces}
 
-The ocean fish biomass is strongly influenced by the physical and geochemical state of the ocean. 
-%Therefore, a good understanding of how the coupled ocean-biogeochemical model 
-%responds to ENSO variability is necessary to understand how the signal propagates to the higher trophic levels. 
-Therefore, it is important to determine whether the NEMO-Pisces model, which is used to force the Apecosm model, reproduces the expected response to ENSO variability.
-The aim of the present section is to compare the sea-surface temperature and chlorophyll simulated by the model with observation based datasets.\\
+The ocean fish biomass is strongly influenced by the physical and geochemical state of the ocean. Therefore, it is important to determine whether the NEMO-Pisces model, which is used to force the Apecosm model, reproduces the expected response to ENSO variability. The aim of the present section is to compare the sea-surface temperature and chlorophyll simulated by the model with observation based datasets.
 
 \subsection{Ocean Nino Index and \sst\ signature}
 \label{sec:sst}
@@ -16,13 +12,11 @@ In order to infer the spatial \sst\ pattern associated with the ONI index, covar
 
 The correlation between the ONI index and the sea-surface temperature is shown in figure \ref{fig:cov-sst}. For comparison, the same analysis has been performed with the Hadley SST dataset \citep{raynerGlobalAnalysesSea2003}.
 The covariance patterns are very similar between Hadley and simulated SST, with warm anomalies (1\degree C) centerred at the equator and extending from 0 to 90\degree E and from 10\degree S to 10N.\ 
-The covariance along the equatorial temperature section 
-%(figure \ref{fig:cov-prof}a) 
-(not shown) shows that the maximum temperature anomalies is at around 50m depth at a longitude of 70\degree E. Negative anomalies (-0.8\degree C) are located on the western part of the basin (20\degree W). This dipolar structure is consistent with a shoaling of the thermocline in the west and a deepening in the east.\\
+The covariance along the equatorial temperature section (not shown) shows that the maximum temperature anomalies is at around 50m depth at a longitude of 70\degree E. Negative anomalies (-0.8\degree C) are located on the western part of the basin (20\degree W). This dipolar structure is consistent with a shoaling of the thermocline in the west and a deepening in the east.\\
 
 \begin{figure}[h!]
 	\centering
-	\includegraphics[scale=0.75] {figs/covariance_maps_hadley_model.png}
+	\includegraphics[scale=0.75] {scripts/cov-hadley/covariance_maps_hadley_model.png}
 	\caption{Covariance between winter ONI index and Hadley (top) and simulated (bottom) yearly SST anomalies.}
 	\label{fig:cov-sst}
 \end{figure}
@@ -35,7 +29,7 @@ Covariance maps between the surface chlorophyll and the monthly ONI index are sh
 
 \begin{figure}[h!]
 	\centering
-	\includegraphics[scale=0.75] {compare_covariance_chl.png}
+	\includegraphics[scale=0.75] {scripts/cov-hadley/compare_covariance_chl.png}
 	\caption{Covariance between the monthly ONI index and the monthly surface chlorophyll anomalies, computed between 1997-09 and 20018-12.}
 	\label{fig:chl-cov}
 \end{figure}
