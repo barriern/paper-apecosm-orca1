@@ -8,6 +8,7 @@ import cartopy.crs as crs
 from scipy import stats
 import xarray as xr
 import apecosm.ts as ts
+import scipy.signal as sig
 
 dirout = './'
 
@@ -29,10 +30,15 @@ tmask = xr.open_dataset('eof_mask.nc')
 tmask = tmask['mask'].values
 ilat, ilon = np.nonzero(tmask == 1)
 
-data = xr.open_mfdataset('/home/datawork-marbec-pmod/outputs/APECOSM/ORCA1/final-runs/output/subclass/*OOPE*nc')
-dens = data['OOPE'].to_masked_array()
+data = xr.open_mfdataset('/home/datawork-marbec-pmod/outputs/APECOSM/ORCA1/final-runs/output/yearly/*OOPE*nc')
+data = data.isel(w=[14, 45, 80])
+print(data)
+dens = data['OOPE'].to_masked_array() # time, y, x, c, w
+ilat, ilon, ic, iw = np.nonzero(dens[0].mask == False)
+print(dens[:, ilat, ilon, ic, iw].shape)
+dens[:, ilat, ilon, ic, iw] = sig.detrend(dens[:, ilat, ilon, ic, iw].T).T
 time = data['time']
-clim, dens = ts.get_monthly_clim(dens)  # time, y, x, com, w
+dens = dens - np.mean(dens, axis=0, keepdims=True)
 
 dens = np.transpose(dens, (3, 4, 0, 1, 2))   # com, w, time, y, x
 print(dens.shape)
@@ -77,4 +83,4 @@ dsout['time'] = (['time'], time)
 dsout.attrs['creation_date'] = str(date.today())
 dsout.attrs['script'] = os.path.realpath(__file__)
 dsout.attrs['description'] = 'EOF for densities by class'
-dsout.to_netcdf('%s/eof_oni_annual_density.nc' %(dirout))
+dsout.to_netcdf('%s/annual_eof_oni_annual_density.nc' %(dirout))
