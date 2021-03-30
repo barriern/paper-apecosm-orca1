@@ -8,6 +8,7 @@ import cartopy.crs as crs
 from scipy import stats
 import xarray as xr
 import apecosm.ts as ts
+import scipy.signal as sig
 
 dirout = './'
 
@@ -31,8 +32,10 @@ ilat, ilon = np.nonzero(tmask == 1)
 
 data = xr.open_mfdataset('/home/datawork-marbec-pmod/outputs/APECOSM/ORCA1/final-runs/output/subclass/*OOPE*nc')
 dens = data['OOPE'].to_masked_array()
+mask = dens.mask
 time = data['time']
 clim, dens = ts.get_monthly_clim(dens)  # time, y, x, com, w
+dens = np.ma.masked_where(mask == True, dens)
 
 dens = np.transpose(dens, (3, 4, 0, 1, 2))   # com, w, time, y, x
 print(dens.shape)
@@ -49,8 +52,12 @@ for c in range(ncom):
 
         print(dens.shape)
         print(ilat.shape)
-        temp = dens[c, s, :, ilat, ilon].T
-        print(temp.shape)
+        temp = dens[c, s, :, ilat, ilon].T  # ntime, ndims
+        print('temp ', temp.shape)
+        iok = np.nonzero(temp[0].mask == False)
+        iok2 = np.nonzero(temp[0].mask == True)
+        print(iok2)
+        temp[:, iok] = sig.detrend(temp[:, iok].T).T
 
         print(weights[ilat, ilon].shape)
         solver = Eof(temp, weights=weights[ilat, ilon])
