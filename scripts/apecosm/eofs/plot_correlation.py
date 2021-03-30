@@ -68,27 +68,36 @@ for c in range(1):
 
             print("Comm = %d, Size = %d, EOF = %d" %(c, s, e + 1))
 
-            corrcoef = np.corrcoef(nino, pc[c, s, e, :])[0, 1]
+            corrcoef = np.corrcoef(pc[c, s, e, :], nino)[0, 1]
+
             if(corrcoef < 0):
                 eof[c, s, e, :, :] *= -1
                 pc[c, s, e, : ] *= -1
 
             eof[c, s, e]  *= wstep[s]
+            corr = sig.correlate(pc[c, s, e, :], nino) / ntime
+            lags = sig.correlation_lags(ntime, ntime)
+            ilags = np.nonzero(np.abs(lags) <= 3*12)[0]
+
+            lags = lags[ilags]
+            corr = corr[ilags]
+
+            test = np.abs(corr)
+            iok = np.nonzero(test == test.max())[0][0]
 
             ax = axout[cpt - 1]
-            ax.plot(time, pc[c, s, e, :], color='black')
-            ax.fill_between(time, 0, nino, where=nino>0, interpolate=True, color='firebrick')
-            ax.fill_between(time, 0, nino, where=nino<0, interpolate=True, color='steelblue')
-            ax.set_xlim(time.min(), time.max())
-            stride =  5 * 12
-            ax.set_xticks(time[::stride])
-            ax.set_xticklabels(date[::stride], rotation=45, ha='right')
+            ax.plot(lags, corr, color='black')
+            xmin = 3 * 12
+            ymin = 0.8
+            print(lags[iok], corr[iok])
+            ax.plot(lags[iok], corr[iok], marker='o', color='red', linestyle='none', zorder=1000, markersize=10)
             ax.set_title('Epi., %s, PC %d (%.2f' %(sizes[s], e + 1, var[c, s, e]) + '%)')
-            ax.set_ylim(-3, 3)
+            ax.set_ylim(-ymin, ymin)
             ax.grid(True, linestyle='--', linewidth=0.5)
+            ax.axvline(0, -1, 1, color='red')
 
             cpt += 1
 
-plt.savefig('pc_full.png', bbox_inches='tight')
+plt.savefig('correlation_full.png', bbox_inches='tight')
 plt.close(fig)
 
