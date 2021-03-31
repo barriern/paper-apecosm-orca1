@@ -1,3 +1,5 @@
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import xarray as xr
 import cartopy.crs as ccrs
@@ -11,111 +13,83 @@ from cartopy.mpl.geoaxes import GeoAxes
 import matplotlib.ticker as mticker
 from cycler import cycler
 
-mesh = xr.open_dataset("/Users/Nicolas/Work/sent/apecosm/ORCA1/mesh_mask_eORCA1_v2.2.nc")
+dirin = '/home1/datawork/nbarrier/apecosm/apecosm_orca1/diags/data'
+
+mesh = xr.open_dataset("/home/datawork-marbec-pmod/forcings/APECOSM/ORCA1_HINDCAST/corrected_mesh_mask_eORCA1_v2.2.nc")
 lonf = mesh['glamf'].values[0]
 latf = mesh['gphif'].values[0]
 
-years = np.array([t.year for t in time])
-month = np.array([t.month for t in time])
-time = np.arange(ntime)
-date = ['%.4d-%.2d' %(y, m) for y,m in zip(years, month)]
+proj = ccrs.PlateCarree(central_longitude=180)
+proj2 = ccrs.PlateCarree()
 
-ncom, nbins, neof = var.shape
-coms = ['Epi.']
-sizes = ['3cm', '20cm', '90cm']
+def plot_seasonal_cycle(varname):
 
-dictgrid = {'crs':ccrs.PlateCarree(central_longitude=0), 'draw_labels':True, 'linewidth':0.5, 'color':'gray', 'alpha':0.5, 'linestyle':'--'}
-dicttext = dict(boxstyle='round', facecolor='lightgray', alpha=1)
-lontext = 120
-lattext = 30
-            
-fig = plt.figure(figsize=(12, 8))
-axes_class = (GeoAxes, dict(map_projection=proj))
-axgr = AxesGrid(fig, 111,  axes_class=axes_class, nrows_ncols=(3, 2), axes_pad=(1.23, 0.4), label_mode='', cbar_mode='each', cbar_pad=0.05)
-cbar_axes = axgr.cbar_axes
-axout = list(enumerate(axgr))
-axout = [p[1] for p in axout]
+    print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@", varname)
 
-cpt = 1
+    data = xr.open_dataset('%s/clim_%s.nc' %(dirin, varname))
+    data = data.isel(community=0, w=[14, 45, 80])  # (12, y, x, w=3)
+    data = data[varname].to_masked_array()
+    data = np.transpose(data, (3, 0, 1, 2))  # (w, t, y, x)
+    nw, ntime, ny, nx = data.shape
+    print(data.shape)
 
-letters = list(string.ascii_lowercase)
+    coms = ['Epi.']
+    sizes = ['3cm', '20cm', '90cm']
 
-clim = [50, 5, 3]
+    dictgrid = {'crs':ccrs.PlateCarree(central_longitude=0), 'draw_labels':True, 'linewidth':0.5, 'color':'gray', 'alpha':0.5, 'linestyle':'--'}
+    dicttext = dict(boxstyle='round', facecolor='lightgray', alpha=1)
 
-for c in range(1):
-    for s in range(nbins):
-        for e in range(2):
+    for s in range(nw):
+        
+        fig = plt.figure(figsize=(12, 8))
+        axes_class = (GeoAxes, dict(map_projection=proj))
+        axgr = AxesGrid(fig, 111,  axes_class=axes_class, nrows_ncols=(4, 3), cbar_mode='single', cbar_pad=0.05, label_mode='', axes_pad=(0.1, 0.4))
+        cbar_axes = axgr.cbar_axes
+        axout = list(enumerate(axgr))
+        axout = [p[1] for p in axout]
 
-            print("Comm = %d, Size = %d, EOF = %d" %(c, s, e + 1))
+        temp = data[s]
+        iok = np.nonzero(data[s].mask == False)
+        off = 1
+        cmin = np.percentile(temp[iok], off)
+        cmax = np.percentile(temp[iok], 100 - off)
 
-            corrcoef = np.corrcoef(nino, pc[c, s, e, :])[0, 1]
-            if(corrcoef < 0):
-                eof[c, s, e, :, :] *= -1
-                pc[c, s, e, : ] *= -1
+        print(cmin, cmax)
 
-            eof[c, s, e]  *= wstep[s]
+        cpt = 1
+        for t in range(12):
 
-            #ax = plt.subplot(3, 2, cpt, projection=proj)
             ax = axout[cpt - 1]
-            temp = np.abs(eof[c, s, e, 1:, 1:])
-            perc = np.percentile(temp[temp.mask == False], 98)
-            #clim = perc
+
+            print(temp[t, 1:, 1:].min(), temp[t, 1:, 1:].max())
             
-            cs = ax.pcolormesh(lonf, latf, eof[c, s, e, 1:, 1:], transform=proj2, cmap=plt.cm.RdBu_r)
+            cs = ax.pcolormesh(lonf, latf, temp[t, 1:, 1:], transform=proj2, cmap=plt.cm.jet)
             ax.add_feature(cfeature.LAND, color='lightgray')
             ax.add_feature(cfeature.COASTLINE)
             ax.set_ylim(-40, 40)
             ax.set_xlim(-60, 130)
-            cs.set_clim(-clim[s], clim[s])
-            ax.set_title('%s, %s, EOF %d (%.2f' %(coms[c], sizes[s], e + 1, var[c, s, e]) + '%)')
-            ax.text(lontext, lattext, letters[cpt - 1] + ")", ha='center', va='center', transform=proj, bbox=dicttext)
-            #cb = plt.colorbar(cs, orientation='vertical', shrink=1)
-            cb = cbar_axes[cpt -1].colorbar(cs)
-            cb.set_label_text('J/m2')
+            cs.set_clim(cmin, cmax)
+            #ax.set_title('Month=%.2d, %s, %s, %s' %(t + 1, coms[0], sizes[s], varname.replace('_', '-'))) 
+            ax.set_title('Month = %.2d' %(t + 1))
+            #cb = cbar_axes[cpt - 1].colorbar(cs)
+            cb = cbar_axes[0].colorbar(cs)
+            
+            '''
             gl = ax.gridlines(**dictgrid)
             gl.xlabels_top = False
             gl.ylabels_right = False
             gl.xformatter = LONGITUDE_FORMATTER
             gl.yformatter = LATITUDE_FORMATTER
             gl.xlocator = mticker.FixedLocator([150, 180, -150, -120, -90, -60])
-
-            cpt += 1
-    
             '''
-            ax = plt.subplot(3, 2, cpt, xmargin=-0.2)
-            print(cpt)
-            plt.plot(time, pc[c, s, e, :], color='black')
-            plt.fill_between(time, 0, nino, where=nino>0, interpolate=True, color='firebrick')
-            plt.fill_between(time, 0, nino, where=nino<0, interpolate=True, color='steelblue')
-            ax.set_xlim(time.min(), time.max())
-            stride =  5 * 12
-            ax.set_xticks(time[::stride])
-            ax.set_xticklabels(date[::stride], rotation=45, ha='right')
-            ax.set_ylim(-3, 3)
-            print(dir(ax))
 
             cpt += 1
 
-            '''
+        plt.savefig('clim_%s_size_%d.png' %(varname, s), bbox_inches='tight')
+        plt.close(fig)
 
-plt.savefig('eof_full.png', bbox_inches='tight')
-plt.close(fig)
+if __name__ == '__main__':
 
-'''
-
-            ntime = len(nino) 
-            lags = sig.correlation_lags(ntime, ntime)
-            ilags = np.nonzero(np.abs(lags) <= 5 * 12)[0]
-            corr = sig.correlate(pc[c, s, e, :], nino) / ntime
-
-            lags = lags[ilags]
-            corr = corr[ilags]
-
-            imax = np.nonzero(np.abs(corr) == np.abs(corr).max())[0]
-            print(lags[imax], corr[imax])
-            
-            fig = plt.figure()
-            plt.plot(lags, corr)
-            plt.savefig('correlation_com_%d_size_%s_eof_%d' %(c, s, e), bbox_inches='tight')
-            plt.close(fig)
-'''
+    plot_seasonal_cycle('OOPE')
+    plot_seasonal_cycle('mort_day')
+    plot_seasonal_cycle('repfonct_day')
