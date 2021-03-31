@@ -36,7 +36,6 @@ def compute_clim(varname):
 
 if __name__ == '__main__':
 
-    #compute_clim('OOPE')
-    compute_clim('repfonct_day')
-    compute_clim('gamma1')
-    compute_clim('mort_day')
+    varlist = ['u_active', 'v_active', 'u_passive', 'v_passive', 'zdiff_trend', 'mdiff_trend', 'madv_trend', 'zadv_trend']
+    for v in varlist:
+        compute_clim(v)
