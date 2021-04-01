@@ -85,6 +85,6 @@ for d in range(2):
 
                 cpt += 1
 
-    plt.savefig('pc_full_%d.png' %d, bbox_inches='tight')
+    plt.savefig('pc_profile_%d.png' %d, bbox_inches='tight')
     plt.close(fig)
 
