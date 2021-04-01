@@ -15,7 +15,7 @@ import matplotlib.ticker as mticker
 from cycler import cycler
 
 data = xr.open_dataset('data/ORCA1_JRAC02_CORMSK_CYC1_FINAL_ConstantFields.nc')
-data = data.isel(wpred=[14, 45, 80])
+data = data.isel(w=[14, 45, 80])
 wstep = data['weight_step'].values
 print(wstep)
 
@@ -28,11 +28,12 @@ dnino = dnino[iok]
 proj = ccrs.PlateCarree(central_longitude=180)
 proj2 = ccrs.PlateCarree()
 
-mesh = xr.open_dataset("/Users/Nicolas/Work/sent/apecosm/ORCA1/mesh_mask_eORCA1_v2.2.nc")
+#mesh = xr.open_dataset("/Users/Nicolas/Work/sent/apecosm/ORCA1/mesh_mask_eORCA1_v2.2.nc")
+mesh = xr.open_dataset("/home/barrier/Work/scientific_communication/articles/ongoing/paper-apecosm-orca1/scripts/data/mesh_mask_eORCA1_v2.2.nc")
 lonf = mesh['glamf'].values[0]
 latf = mesh['gphif'].values[0]
 
-data = xr.open_dataset("data/eof_oni_annual_density.nc")
+data = xr.open_dataset("data/eof_oni_annual_density_20.nc")
 eof = data['eofmap'].to_masked_array()
 pc = data['eofpc'].values
 var = data['eofvar'].values * 100
@@ -64,7 +65,7 @@ cpt = 1
 
 letters = list(string.ascii_lowercase)
 
-clim = [50, 5, 3]
+clim = [50, 5, 2]
 
 for c in range(1):
     for s in range(nbins):
@@ -91,11 +92,14 @@ for c in range(1):
             ax.set_ylim(-40, 40)
             ax.set_xlim(-60, 130)
             cs.set_clim(-clim[s], clim[s])
-            ax.set_title('%s, %s, EOF %d (%.2f' %(coms[c], sizes[s], e + 1, var[c, s, e]) + '%)')
+            title = r'%s, %s, EOF %d (%.2f' %(coms[c], sizes[s], e + 1, var[c, s, e]) + '\%)'
+            print(title)
+            ax.set_title(title)
             ax.text(lontext, lattext, letters[cpt - 1] + ")", ha='center', va='center', transform=proj, bbox=dicttext)
             #cb = plt.colorbar(cs, orientation='vertical', shrink=1)
             cb = cbar_axes[cpt -1].colorbar(cs)
-            cb.set_label_text('J/m2')
+            #cb.set_label_text('J/m2')
+            cb.set_label('J/m2')
             gl = ax.gridlines(**dictgrid)
             gl.xlabels_top = False
             gl.ylabels_right = False

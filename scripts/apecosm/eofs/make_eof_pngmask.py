@@ -11,7 +11,7 @@ lat = data['gphit'].values
 lonf = data['glamf'].values
 latf = data['gphif'].values
 
-latmax = 40
+latmax = 20
 
 test = (np.abs(lat) <= latmax)
 test2 = (lon >= 130) | (lon <= -60)

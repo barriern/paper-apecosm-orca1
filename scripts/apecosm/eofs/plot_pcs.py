@@ -15,7 +15,7 @@ import matplotlib.ticker as mticker
 from cycler import cycler
 
 data = xr.open_dataset('data/ORCA1_JRAC02_CORMSK_CYC1_FINAL_ConstantFields.nc')
-data = data.isel(wpred=[14, 45, 80])
+data = data.isel(w=[14, 45, 80])
 wstep = data['weight_step'].values
 print(wstep)
 
@@ -25,11 +25,7 @@ iok = np.nonzero((ynino <= 2018) & (ynino >= 1958))
 nino = nino[iok]
 dnino = dnino[iok]
 
-mesh = xr.open_dataset("/Users/Nicolas/Work/sent/apecosm/ORCA1/mesh_mask_eORCA1_v2.2.nc")
-lonf = mesh['glamf'].values[0]
-latf = mesh['gphif'].values[0]
-
-data = xr.open_dataset("data/eof_oni_annual_density.nc")
+data = xr.open_dataset("data/eof_oni_annual_density_20.nc")
 eof = data['eofmap'].to_masked_array()
 pc = data['eofpc'].values
 var = data['eofvar'].values * 100
@@ -83,7 +79,7 @@ for c in range(1):
             stride =  5 * 12
             ax.set_xticks(time[::stride])
             ax.set_xticklabels(date[::stride], rotation=45, ha='right')
-            ax.set_title('Epi., %s, PC %d (%.2f' %(sizes[s], e + 1, var[c, s, e]) + '%)')
+            ax.set_title('Epi., %s, PC %d (%.2f' %(sizes[s], e + 1, var[c, s, e]) + '\%)')
             ax.set_ylim(-3, 3)
             ax.grid(True, linestyle='--', linewidth=0.5)
 
