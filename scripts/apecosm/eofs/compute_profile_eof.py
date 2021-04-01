@@ -34,7 +34,7 @@ e3t = e3t[idepth]
 lon0 = lon0[ilon]
 
 dirin = '/home1/datawork/nbarrier/apecosm/apecosm_orca1/diags/data/'
-data = xr.open_mfdataset('%s/equatorial_ORCA1_JRAC02_CORMSK_CYC3_FINAL_FORAGE_Y*195*.nc' %dirin)
+data = xr.open_mfdataset('%s/equatorial_ORCA1_JRAC02_CORMSK_CYC3_FINAL_FORAGE_Y**.nc' %dirin)
 time = data['time']
 data = data.isel(x=ilon, depth=idepth)
 dens = data['FORAGE'].to_masked_array()  # time, dn, x, depth, comm, size
@@ -74,9 +74,6 @@ for d in range(ndn):
             eofmap[d, c, s, :, :, :] = maps
             eofts[d, c, s, :, :] = solver.pcs(pcscaling=1, npcs=neofs).T
             eofvar[d, c, s, :] = solver.varianceFraction(neigs=neofs)
-            break
-        break
-    break
 
 dirout = 'data/'
 dirout = '/home1/datawork/nbarrier/apecosm/apecosm_orca1/diags/data'
