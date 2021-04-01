@@ -26,7 +26,9 @@ nlat, nlon = surf.shape
 #lon = np.squeeze(lon)
 #lat = np.squeeze(lat)
 
-tmask = xr.open_dataset('eof_mask.nc')
+latmax = 20
+
+tmask = xr.open_dataset('eof_mask_%d.nc' %latmax)
 tmask = tmask['mask'].values
 ilat, ilon = np.nonzero(tmask == 1)
 
@@ -45,7 +47,7 @@ neofs = 3
 
 eofmap = np.zeros((ncom, nbins, neofs, nlat, nlon))
 eofts = np.zeros((ncom, nbins, neofs, ntime))
-eofvar = np.zeros((ncom, neofs, nbins))
+eofvar = np.zeros((ncom, nbins, neofs))
 
 for c in range(ncom):
     for s in range(nbins):
@@ -84,4 +86,4 @@ dsout['time'] = (['time'], time)
 dsout.attrs['creation_date'] = str(date.today())
 dsout.attrs['script'] = os.path.realpath(__file__)
 dsout.attrs['description'] = 'EOF for densities by class'
-dsout.to_netcdf('%s/eof_oni_annual_density.nc' %(dirout))
+dsout.to_netcdf('%s/eof_oni_annual_density_%d.nc' %(dirout, latmax))
