@@ -27,7 +27,7 @@ tmask = xr.open_dataset('eof_mask_%d.nc' %latmax)
 tmask = tmask['mask'].values
 ilat, ilon = np.nonzero(tmask == 1)
 
-weight_tot = np.sum(weights[ilat, ilon])
+weights_tot = np.sum(weights[ilat, ilon])
 weights[ilat, ilon] /= weights_tot
 weights[ilat, ilon] = np.sqrt(weights[ilat, ilon])
 print(np.sum(weights[ilat, ilon]))
