@@ -31,24 +31,28 @@ surf = surf[np.newaxis, :, :, np.newaxis, np.newaxis]
 
 lon0 = np.mean(lon, axis=0)
 
-for varname in ['diff', 'mdiff_trend', 'zdiff_trend', 'starvation', 'u_active', 'u_passive', 'v_active', 'v_passive', 'madv_trend', 'zadv_trend']:
-#for varname in ['OOPE']:
+#for varname in ['OOPE', 'diff', 'mdiff_trend', 'zdiff_trend', 'starvation', 'u_active', 'u_passive', 'v_active', 'v_passive', 'madv_trend', 'zadv_trend']:
+for varname in ['gamma1', 'mort_day']:
 
     print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@", varname)
    
     pattern = '%s/*%s*nc' %(dirin, varname)
+    print(pattern)
 
-    data = xr.open_mfdataset(pattern, combine='by_coords')
-    data = data.isel(y=slice(jmin, jmax))
-    data = data[varname] # time, lat, lon, com, size (732, 11, 150, 3, 3)
+    try:
+        data = xr.open_mfdataset(pattern, combine='by_coords')
+        data = data.isel(y=slice(jmin, jmax))
+        data = data[varname] # time, lat, lon, com, size (732, 11, 150, 3, 3)
 
-    print(surf.shape, data.shape)
+        print(surf.shape, data.shape)
 
-    dataout = (data * surf).sum(dim='y') / (np.sum(surf, axis=1))
-    dataout.coords['x'] = lon0
+        dataout = (data * surf).sum(dim='y') / (np.sum(surf, axis=1))
+        dataout.coords['x'] = lon0
 
-    fileout = '%s/%s_%s_meridional_mean.nc' %(dirout, prefix, varname)
-    print(fileout)
-    dataout.to_netcdf(fileout)
-    dataout.attrs['file'] = os.path.realpath(__file__)
-    dataout.attrs['date'] = str(datetime.today())
+        fileout = '%s/%s_%s_meridional_mean.nc' %(dirout, prefix, varname)
+        print(fileout)
+        dataout.to_netcdf(fileout)
+        dataout.attrs['file'] = os.path.realpath(__file__)
+        dataout.attrs['date'] = str(datetime.today())
+    except:
+        pass
