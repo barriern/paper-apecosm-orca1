@@ -15,7 +15,7 @@ import matplotlib.ticker as mticker
 from cycler import cycler
 
 data = xr.open_dataset('data/ORCA1_JRAC02_CORMSK_CYC1_FINAL_ConstantFields.nc')
-data = data.isel(wpred=[14, 45, 80])
+data = data.isel(w=[14, 45, 80])
 wstep = data['weight_step'].values
 print(wstep)
 
@@ -25,11 +25,7 @@ iok = np.nonzero((ynino <= 2018) & (ynino >= 1958))
 nino = nino[iok]
 dnino = dnino[iok]
 
-mesh = xr.open_dataset("/Users/Nicolas/Work/sent/apecosm/ORCA1/mesh_mask_eORCA1_v2.2.nc")
-lonf = mesh['glamf'].values[0]
-latf = mesh['gphif'].values[0]
-
-data = xr.open_dataset("data/eof_oni_annual_density.nc")
+data = xr.open_dataset("data/eof_oni_annual_density_20.nc")
 eof = data['eofmap'].to_masked_array()
 pc = data['eofpc'].values
 var = data['eofvar'].values * 100
@@ -77,10 +73,11 @@ for c in range(1):
             eof[c, s, e]  *= wstep[s]
             corr = sig.correlate(pc[c, s, e, :], nino) / ntime
             lags = sig.correlation_lags(ntime, ntime)
-            ilags = np.nonzero(np.abs(lags) <= 3*12)[0]
+            ilags = np.nonzero((lags >= 0) & (lags <= 3*12))[0]
 
             lags = lags[ilags]
             corr = corr[ilags]
+            print(corr)
 
             test = np.abs(corr)
             iok = np.nonzero(test == test.max())[0][0]

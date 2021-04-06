@@ -24,5 +24,5 @@ tmask[index] = 1
 data = xr.Dataset()
 data['mask'] = (['y', 'x'], tmask)
 data.attrs['file'] = os.path.realpath(__file__)
-data.to_netcdf('eof_mask.nc')
+data.to_netcdf('eof_mask_20.nc')
 
