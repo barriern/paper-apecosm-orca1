@@ -51,6 +51,9 @@ classes = ['0-3cm', '3cm-20cm', '20cm-90cm', '90cm-200cm']
 comm = ['Epi.', 'Mig.', 'Meso.']
 dn = ['Day', 'Night']
 
+cmin = 999
+cmax = 0
+
 for d in range(2):
 
     fig = plt.figure(figsize=(12, 8))
@@ -58,6 +61,8 @@ for d in range(2):
     cbar_axes = axgr.cbar_axes
     axout = list(enumerate(axgr))
     axout = [p[1] for p in axout]
+
+    print("@@@@@@@@@@@@@@@@@@@ d = ", d)
 
     cpt = 1
 
@@ -68,8 +73,13 @@ for d in range(2):
                 print("Comm = %d, Size = %d, EOF = %d" %(c, s, e + 1))
 
                 corrcoef = np.corrcoef(nino, pc[d, c, s, e, :])[0, 1]
+                print(corrcoef)
                 if(corrcoef < 0):
                     pc[d, c, s, e, : ] *= -1
+
+                if(e == 0):
+                    cmin = min(cmin, abs(corrcoef))
+                    cmax = max(cmax, abs(corrcoef))
 
                 ax = axout[cpt - 1]
                 ax.plot(time, pc[d, c, s, e, :], color='black')
@@ -88,3 +98,4 @@ for d in range(2):
     plt.savefig('pc_profile_%d.png' %d, bbox_inches='tight')
     plt.close(fig)
 
+print(cmin, cmax)
