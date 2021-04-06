@@ -20,17 +20,17 @@ e2t = mesh['e2t'].values
 surf = e1t * e2t
 surf = np.squeeze(surf)
 weights = surf
-nlat, nlon = surf.shape
-#lon = mesh['glamt'].values
-#lat = mesh['gphit'].values
-#lon = np.squeeze(lon)
-#lat = np.squeeze(lat)
 
 latmax = 20
 
 tmask = xr.open_dataset('eof_mask_%d.nc' %latmax)
 tmask = tmask['mask'].values
 ilat, ilon = np.nonzero(tmask == 1)
+
+weight_tot = np.sum(weights[ilat, ilon])
+weights[ilat, ilon] /= weights_tot
+weights[ilat, ilon] = np.sqrt(weights[ilat, ilon])
+print(np.sum(weights[ilat, ilon]))
 
 data = xr.open_mfdataset('/home/datawork-marbec-pmod/outputs/APECOSM/ORCA1/final-runs/output/subclass/*OOPE*nc')
 dens = data['OOPE'].to_masked_array()
