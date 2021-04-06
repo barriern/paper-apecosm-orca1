@@ -9,7 +9,7 @@ from datetime import datetime
 units = 'seconds since 1950-01-01 00:00:00'
 calendar='noleap'
 
-lonmax = -135
+lonmax = -150
 
 dirout = '/home1/datawork/nbarrier/apecosm/apecosm_orca1/diags/data/'
 
@@ -22,13 +22,14 @@ e2t = mesh['e2t'].values[0]
 surf = e1t * e2t   # lat, lon
 
 # extraction of the proper longitude indexes
-ilat, ilon = np.nonzero(np.abs(lat) < 2)
+ilat, ilon = np.nonzero(np.abs(lat) <= 40)
 jmin = ilat.min()
 jmax = ilat.max() + 1
 ilat = slice(jmin, jmax)
 lon0 = np.mean(lon[ilat, :], axis=0)
 
-ilon, = np.nonzero((lon0 <= lonmax + 2) & (lon0 >= lonmax - 2))
+
+ilon = np.nonzero((lon0 <= lonmax + 2) & (lon0 >= lonmax - 2))[0]
 imin, imax = ilon.min(), ilon.max() + 1
 ilon = slice(imin, imax)
 
@@ -64,7 +65,7 @@ for y in years:
     forage.coords['time'].attrs['calendar'] = calendar
     forage['y'] = lat0
    
-    fout = 'meridional_forage_year_%.4d.nc' %y
+    fout = 'meridional_%f_forage_year_%.4d.nc' %(lonmax, y)
     fout = '%s/%s' %(dirout, fout)
     forage.attrs['file'] = os.path.realpath(__file__)
     forage.to_netcdf(fout, unlimited_dims='time')
