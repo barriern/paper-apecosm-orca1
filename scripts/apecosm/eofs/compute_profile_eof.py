@@ -31,6 +31,8 @@ idepth = np.nonzero(z <= 1000)[0]
 ilon = np.nonzero((lon0 >= 130) |  (lon0 <= -60))[0]
 z = z[idepth]
 e3t = e3t[idepth]
+e3t /= np.sum(e3t)
+e3t = np.sqrt(e3t)
 lon0 = lon0[ilon]
 
 dirin = '/home1/datawork/nbarrier/apecosm/apecosm_orca1/diags/data/'
