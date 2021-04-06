@@ -14,6 +14,12 @@ from cartopy.mpl.geoaxes import GeoAxes
 import matplotlib.ticker as mticker
 from cycler import cycler
 
+tpidata = xr.open_dataset("../../nino/filt_tpi.nc")
+tpi = tpidata['tpi_filt'].to_masked_array()
+#tpi = tpidata['tpi_raw'].to_masked_array()
+tpi = (tpi - np.mean(tpi)) / np.std(tpi)
+
+
 data = xr.open_dataset('data/ORCA1_JRAC02_CORMSK_CYC1_FINAL_ConstantFields.nc')
 data = data.isel(w=[14, 45, 80])
 wstep = data['weight_step'].values
@@ -73,6 +79,7 @@ for c in range(1):
 
             ax = axout[cpt - 1]
             ax.plot(time, pc[c, s, e, :], color='black')
+            ax.plot(time, tpi, color='gold')
             ax.fill_between(time, 0, nino, where=nino>0, interpolate=True, color='firebrick')
             ax.fill_between(time, 0, nino, where=nino<0, interpolate=True, color='steelblue')
             ax.set_xlim(time.min(), time.max())
