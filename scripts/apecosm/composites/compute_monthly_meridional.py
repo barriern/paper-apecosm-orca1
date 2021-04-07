@@ -55,7 +55,7 @@ for varname in ['OOPE', 'diff', 'mdiff_trend', 'zdiff_trend', 'starvation', 'u_a
         dataout = (data * surf).sum(dim='x') / (np.sum(surf, axis=2))
         dataout.coords['y'] = lat0
 
-        fileout = '%s/zonal_mean_%.f_%s_%s.nc' %(lonmax, dirout, prefix, varname)
+        fileout = '%s/zonal_mean_%.f_%s_%s.nc' %(dirout, lonmax, prefix, varname)
         print(fileout)
         dataout.to_netcdf(fileout)
         dataout.attrs['file'] = os.path.realpath(__file__)
