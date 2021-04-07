@@ -10,7 +10,7 @@
 **/*.aux
 **/*.xml
 **/*.spl
-**/*.sh
+**/*.pbs*
 doc
 /*.pdf
 *.swp
