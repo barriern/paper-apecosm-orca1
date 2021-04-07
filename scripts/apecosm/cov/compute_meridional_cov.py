@@ -35,9 +35,9 @@ for varname in varlist:
     
     print('Processing variable ', varname)
 
-    data = xr.open_dataset('%s/final-runs_%s_meridional_mean_anoms.nc' %(dirin, varname))
+    data = xr.open_dataset('%s/zonal_mean_%.f_final-runs_%s.nc' %(dirin, varname))
     data = data.isel(community=0)
-    lat = data['x'].values
+    lat = data['y'].values
     oope = data[varname].to_masked_array()  # time, y, comm, w
     mask = np.ma.getmaskarray(oope)
     clim, oope = ts.get_monthly_clim(oope)
