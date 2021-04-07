@@ -47,14 +47,17 @@ if __name__ == '__main__':
         '''
 
         # loop over the variables
-        for varname in ['u_active', 'u_passive', 'v_active', 'v_passive']:
+        #for varname in ['u_active', 'u_passive', 'v_active', 'v_passive']:
+        #for varname in ['madv_trend', 'gamma1', 'repfonct_day', 'mort_day', 'mdiff_trend', 'zdiff_trnd', 'zadv_trend']:
+        for varname in ['zdiff_trend', 'zadv_trend', 'u_active', 'u_passive', 'v_active', 'v_passive']:
+        #for varname in ['OOPE']:
 
             print('@@@@@@@@@@@@@ ', varname)
             pattern = '%s/*%s*_year_*.nc' %(dirin, varname)
 
             # opens the yearly OOPE file and extracts the size classes
             data = xr.open_mfdataset(pattern, combine='by_coords')
-            data = data.isel(community=0) # time, y, x, comm
+            data = data.isel(community=0) # time, y, x, length
             year = data['time'].values
             
             # extracts the dimension names
