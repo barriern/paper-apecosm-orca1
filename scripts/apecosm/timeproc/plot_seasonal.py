@@ -15,7 +15,11 @@ from cycler import cycler
 
 dirin = '/home1/datawork/nbarrier/apecosm/apecosm_orca1/diags/data'
 
+ilat = slice(128, 246, None)
+ilon = slice(58, 228, None)
+
 mesh = xr.open_dataset("/home/datawork-marbec-pmod/forcings/APECOSM/ORCA1_HINDCAST/corrected_mesh_mask_eORCA1_v2.2.nc")
+mesh = mesh.isel(y=ilat, x=ilon)
 lonf = mesh['glamf'].values[0]
 latf = mesh['gphif'].values[0]
 
@@ -27,11 +31,12 @@ def plot_seasonal_cycle(varname):
     print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@", varname)
 
     data = xr.open_dataset('%s/clim_%s.nc' %(dirin, varname))
-    data = data.isel(community=0, w=[14, 45, 80])  # (12, y, x, w=3)
+    data = data.isel(community=0, w=[14, 45, 80], y=ilat, x=ilon)  # (12, y, x, w=3)
     data = data[varname].to_masked_array()
     data = np.transpose(data, (3, 0, 1, 2))  # (w, t, y, x)
     nw, ntime, ny, nx = data.shape
-    print(data.shape)
+    if varname == 'OOPE':
+        data = np.log10(data, where=(data.mask == False))
 
     coms = ['Epi.']
     sizes = ['3cm', '20cm', '90cm']
@@ -54,7 +59,10 @@ def plot_seasonal_cycle(varname):
         cmin = np.percentile(temp[iok], off)
         cmax = np.percentile(temp[iok], 100 - off)
 
-        print(cmin, cmax)
+        if (('u_' in varname) | ('v_' in varname)):
+            cm = max(-cmin, cmax)
+            cmin = -cm
+            cmax = cm
 
         cpt = 1
         for t in range(12):
@@ -74,15 +82,6 @@ def plot_seasonal_cycle(varname):
             #cb = cbar_axes[cpt - 1].colorbar(cs)
             cb = cbar_axes[0].colorbar(cs)
             
-            '''
-            gl = ax.gridlines(**dictgrid)
-            gl.xlabels_top = False
-            gl.ylabels_right = False
-            gl.xformatter = LONGITUDE_FORMATTER
-            gl.yformatter = LATITUDE_FORMATTER
-            gl.xlocator = mticker.FixedLocator([150, 180, -150, -120, -90, -60])
-            '''
-
             cpt += 1
 
         plt.savefig('clim_%s_size_%d.png' %(varname, s), bbox_inches='tight')
@@ -90,6 +89,6 @@ def plot_seasonal_cycle(varname):
 
 if __name__ == '__main__':
 
-    plot_seasonal_cycle('OOPE')
-    plot_seasonal_cycle('mort_day')
-    plot_seasonal_cycle('repfonct_day')
+    varlist = ['OOPE', 'mort_day', 'repfonct_day', 'u_active', 'v_active', 'u_passive', 'v_passive']
+    for v in varlist:
+        plot_seasonal_cycle(v)
