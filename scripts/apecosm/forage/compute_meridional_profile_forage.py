@@ -22,7 +22,7 @@ e2t = mesh['e2t'].values[0]
 surf = e1t * e2t   # lat, lon
 
 # extraction of the proper longitude indexes
-ilat, ilon = np.nonzero(np.abs(lat) <= 40)
+ilat, ilon = np.nonzero(np.abs(lat) <= 20)
 jmin = ilat.min()
 jmax = ilat.max() + 1
 ilat = slice(jmin, jmax)
@@ -35,15 +35,17 @@ ilon = slice(imin, imax)
 
 lat0 = np.mean(lat[:, ilon], axis=-1)
 
-surf = surf[:, ilon]
-surf = surf[np.newaxis, np.newaxis, :, :, np.newaxis, np.newaxis]
+surf = surf[:, ilon]  # lat, lon
+surf = surf[np.newaxis, np.newaxis, :, :, np.newaxis, np.newaxis]  # time, dn, y, x, depth, w
 
-prefix = 'debugged_corr_mask'
-dirin = '/home/datawork-marbec-pmod/outputs/APECOSM/ORCA1/%s/forage-output/output' %prefix
+prefix = 'final-runs'
+dirin = '/home/datawork-marbec-pmod/outputs/APECOSM/ORCA1/%s/output' %prefix
 
 years = np.arange(1958, 2019)
 
 months = np.arange(12) + 1
+
+print(surf.shape)
 
 for y in years:
 
@@ -51,12 +53,14 @@ for y in years:
     date = np.array(date)
     time = cftime.date2num(date, units, calendar)
 
-    pattern = '%s/*FORAGE_Y%.04dD030.nc.*' %(dirin, y)
+    pattern = '%s/*FORAGE_Y%.04dD030.nc' %(dirin, y)
+    print(pattern)
     filelist = np.sort(glob(pattern))
     data = xr.open_mfdataset(filelist, combine='by_coords')
     data = data.isel(x=ilon, community=0)
-    forage = data['FORAGE']  # time, dn, y, x, depth, com, size
-    forage = forage.where(forage != -999)  # mask filled values
+    forage = data['FORAGE']  # time, dn, y, x, depth, size
+    #forage = forage.where(forage != -999)  # mask filled values
+    print(forage.shape)
     forage = forage * surf
     
     forage = forage.sum('x') / np.sum(surf, axis=3)
@@ -65,7 +69,7 @@ for y in years:
     forage.coords['time'].attrs['calendar'] = calendar
     forage['y'] = lat0
    
-    fout = 'meridional_%f_forage_year_%.4d.nc' %(lonmax, y)
+    fout = 'meridional_%.f_forage_year_%.4d.nc' %(lonmax, y)
     fout = '%s/%s' %(dirout, fout)
     forage.attrs['file'] = os.path.realpath(__file__)
     forage.to_netcdf(fout, unlimited_dims='time')
