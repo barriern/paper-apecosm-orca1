@@ -36,7 +36,7 @@ ilon = slice(imin, imax)
 lat0 = np.mean(lat[:, ilon], axis=-1)
 
 surf = surf[:, ilon]  # lat, lon
-surf = surf[np.newaxis, np.newaxis, :, :, np.newaxis, np.newaxis]  # time, dn, y, x, depth, w
+surf = surf[np.newaxis, np.newaxis, :, :, np.newaxis, np.newaxis, np.newaxis]  # time, dn, y, x, depth, w
 
 prefix = 'final-runs'
 dirin = '/home/datawork-marbec-pmod/outputs/APECOSM/ORCA1/%s/output' %prefix
@@ -57,7 +57,7 @@ for y in years:
     print(pattern)
     filelist = np.sort(glob(pattern))
     data = xr.open_mfdataset(filelist, combine='by_coords')
-    data = data.isel(x=ilon, community=0)
+    data = data.isel(x=ilon)
     forage = data['FORAGE']  # time, dn, y, x, depth, size
     #forage = forage.where(forage != -999)  # mask filled values
     print(forage.shape)
