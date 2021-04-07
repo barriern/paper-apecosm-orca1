@@ -35,13 +35,15 @@ for varname in varlist:
     
     print('Processing variable ', varname)
 
-    data = xr.open_dataset('%s/zonal_mean_%.f_final-runs_%s.nc' %(dirin, varname))
+    filename = '%s/zonal_mean_%.f_final-runs_%s.nc' %(dirin, lonmax, varname)
+    print(filename)
+    data = xr.open_dataset(filename)
     data = data.isel(community=0)
     lat = data['y'].values
     oope = data[varname].to_masked_array()  # time, y, comm, w
     mask = np.ma.getmaskarray(oope)
     clim, oope = ts.get_monthly_clim(oope)
-    oope = np.ma.masked_where(mask == True, mask)
+    oope = np.ma.masked_where(mask == True, oope)
 
     oope = oope.T  # w, lat, time
     nw, nlat, ntime = oope.shape
