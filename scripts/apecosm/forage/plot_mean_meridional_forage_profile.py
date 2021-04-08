@@ -8,6 +8,8 @@ from cartopy.mpl.gridliner import LONGITUDE_FORMATTER, LATITUDE_FORMATTER
 import cartopy.mpl.gridliner as gridliner
 
 lonmax = -150
+latmax = 20
+off = 5
 
 _DEGREE_SYMBOL = u'\u00B0'
 
@@ -19,10 +21,10 @@ def _north_south_formatted(latitude, num_format='g'):
 
 dicttext = dict(boxstyle='round', facecolor='lightgray', alpha=1)
 letters = list(string.ascii_lowercase)
-lontext = -35
+lontext = -latmax + off
 depthtext = -175
 
-lontext2 = 35
+lontext2 = latmax - off
 depthtext2 = -175
 
 classes = ['0-3cm', '3cm-20cm', '20cm-90cm', '90cm-200cm']
@@ -36,7 +38,6 @@ depth = mesh['gdept_1d'].values
 e3t = mesh['e3t_1d'].values
 lon = mesh['glamt'].values
 lat = mesh['gphit'].values
-latmax = 40
 
 idepth = np.nonzero(depth <= 1000)[0]
 depth = depth[idepth] 
@@ -61,7 +62,7 @@ cax = axgrid.cbar_axes
 darray = [0, 1, 0, 1, 0,1, 0, 1]
 sarray = [0, 0, 1, 1, 2, 2, 3, 3]
 
-ccc = [60, 20, 16, 3]
+ccc = [60, 25, 10, 1.5]
 
 for i, ax in enumerate(axgrid):
 
@@ -83,7 +84,7 @@ for i, ax in enumerate(axgrid):
     cs = ax.pcolormesh(lat, -depth, temp, cmap=plt.cm.jet, shading='auto')
     cs.set_clim(cmin, cmax)
     cb = cax[i].colorbar(cs)
-    #cl = ax.contour(lon, -depth, temp, 11, colors='k', linewidths=0.5)
+    cl = ax.contour(lat, -depth, temp, 11, colors='k', linewidths=0.5)
     #cb.add_lines(cl)
     cb.set_label_text('$J.m^{-3}$')
     ax.set_title(classes[s])
@@ -98,13 +99,14 @@ for i, ax in enumerate(axgrid):
         ax.set_xlabel('Lat')
     
     ax.set_xlim(-latmax, latmax)
-    labels = np.arange(-latmax, latmax + 10, 10)
+    step = 5
+    labels = np.arange(-latmax, latmax + step, step)
     xticks = np.array([float(l) for l in labels])
     labels = [_north_south_formatted(float(l)) for l in labels]
 
     axgrid[i].set_xticklabels(labels)
     axgrid[i].set_xticks(xticks)
-    ax.grid(linestyle='--')
+    ax.grid(linestyle='--', linewidth=0.5)
         
 
 plt.savefig('forage_meridional_mean_%.f.png' %lonmax, bbox_inches='tight')
