@@ -19,7 +19,8 @@ lon = mesh['glamt'].values[0]
 lat = mesh['gphit'].values[0]
 e1t = mesh['e1t'].values[0]
 e2t = mesh['e2t'].values[0]
-surf = e1t * e2t   # lat, lon
+tmask = mesh['tmask'].values[0, 0]
+surf = e1t * e2t * tmask  # lat, lon
 
 ilat, ilon = np.nonzero(np.abs(lat) < latmax)
 jmin = ilat.min()
