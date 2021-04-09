@@ -9,7 +9,7 @@ from datetime import datetime
 units = 'seconds since 1950-01-01 00:00:00'
 calendar='noleap'
 
-lonmax = -150
+lonmax = -100
 
 dirout = '/home1/datawork/nbarrier/apecosm/apecosm_orca1/diags/data/'
 
@@ -19,7 +19,8 @@ lon = mesh['glamt'].values[0]
 lat = mesh['gphit'].values[0]
 e1t = mesh['e1t'].values[0]
 e2t = mesh['e2t'].values[0]
-surf = e1t * e2t   # lat, lon
+tmask = mesh['tmask'].values[0, 0]
+surf = e1t * e2t * tmask   # lat, lon
 
 # extraction of the proper longitude indexes
 ilat, ilon = np.nonzero(np.abs(lat) <= 20)
@@ -32,6 +33,7 @@ lon0 = np.mean(lon[ilat, :], axis=0)
 ilon = np.nonzero((lon0 <= lonmax + 2) & (lon0 >= lonmax - 2))[0]
 imin, imax = ilon.min(), ilon.max() + 1
 ilon = slice(imin, imax)
+print("++++++++++++++++++++++++++++ processing ilon ", ilon)
 
 lat0 = np.mean(lat[:, ilon], axis=-1)
 
