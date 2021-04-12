@@ -13,9 +13,11 @@ from mpl_toolkits.axes_grid1 import AxesGrid
 from cartopy.mpl.geoaxes import GeoAxes
 import matplotlib.ticker as mticker
 from cycler import cycler
+from matplotlib.axes import Axes
+GeoAxes._pcolormesh_patched = Axes.pcolormesh
 
-data = xr.open_dataset('data/ORCA1_JRAC02_CORMSK_CYC1_FINAL_ConstantFields.nc')
-data = data.isel(w=[14, 45, 80])
+data = xr.open_dataset('../../data/ORCA1_JRAC02_CORMSK_CYC3_FINAL_ConstantFields.nc')
+data = data.isel(wpred=[14, 45, 80])
 wstep = data['weight_step'].values
 print(wstep)
 
@@ -29,7 +31,7 @@ proj = ccrs.PlateCarree(central_longitude=180)
 proj2 = ccrs.PlateCarree()
 
 #mesh = xr.open_dataset("/Users/Nicolas/Work/sent/apecosm/ORCA1/mesh_mask_eORCA1_v2.2.nc")
-mesh = xr.open_dataset("/home/barrier/Work/scientific_communication/articles/ongoing/paper-apecosm-orca1/scripts/data/mesh_mask_eORCA1_v2.2.nc")
+mesh = xr.open_dataset("../../data/mesh_mask_eORCA1_v2.2.nc")
 lonf = mesh['glamf'].values[0]
 latf = mesh['gphif'].values[0]
 
@@ -98,8 +100,10 @@ for c in range(1):
             ax.text(lontext, lattext, letters[cpt - 1] + ")", ha='center', va='center', transform=proj, bbox=dicttext)
             #cb = plt.colorbar(cs, orientation='vertical', shrink=1)
             cb = cbar_axes[cpt -1].colorbar(cs)
-            #cb.set_label_text('J/m2')
-            cb.set_label('J/m2')
+            try:
+                cb.set_label_text('J/m2')
+            except AttributeError:
+                cb.set_label('J/m2')
             gl = ax.gridlines(**dictgrid)
             gl.xlabels_top = False
             gl.ylabels_right = False
