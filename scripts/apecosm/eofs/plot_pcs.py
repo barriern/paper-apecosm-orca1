@@ -19,13 +19,12 @@ tpi = tpidata['tpi_filt'].to_masked_array()
 #tpi = tpidata['tpi_raw'].to_masked_array()
 tpi = (tpi - np.mean(tpi)) / np.std(tpi)
 
-
-data = xr.open_dataset('data/ORCA1_JRAC02_CORMSK_CYC1_FINAL_ConstantFields.nc')
-data = data.isel(w=[14, 45, 80])
+data = xr.open_dataset('../../data/ORCA1_JRAC02_CORMSK_CYC3_FINAL_ConstantFields.nc')
+data = data.isel(wpred=[14, 45, 80])
 wstep = data['weight_step'].values
 print(wstep)
 
-dnino, nino = read_index(filename='data/index/oni.data')
+dnino, nino = read_index(filename='../../data/index/oni.data')
 ynino = dnino // 100
 iok = np.nonzero((ynino <= 2018) & (ynino >= 1958))
 nino = nino[iok]
