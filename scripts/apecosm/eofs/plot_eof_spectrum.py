@@ -4,6 +4,15 @@ import numpy as np
 import scipy.signal as sig
 from scipy import interpolate
 import envtoolkit.spectral as spec
+from scipy.stats import lognorm, beta, norm
+from scipy.optimize import curve_fit
+
+def lnorm(x, mu, sigma, scale):
+
+    return scale / (x * sigma * np.sqrt(2*np.pi)) * np.exp(-(np.log(x) - mu)**2 / (2 * sigma**2))
+
+def norm(x, mu, sigma, scale):
+    return scale / (sigma * np.sqrt(2*np.pi)) * np.exp(-0.5 * ((x - mu) / (sigma))**2)
 
 const = xr.open_dataset('../../data/ORCA1_JRAC02_CORMSK_CYC3_FINAL_ConstantFields.nc')
 length = const['length'].values * 100 # length = cm
@@ -12,13 +21,14 @@ data = xr.open_dataset("data/eof_full_density_20.nc", decode_times=False)
 pc = data['eofpc'].values  # com, bins, eof, time
 pc = pc[:, 0, :]  # extraction of first EOF for first 
 isize = [0, 20, 30, 40, 50, 60, 70, 80]
+isize = [0, 30, 70]
 pc = pc[:, :]
 t = np.arange(data.dims['time'])
 
 sizes = np.array(['%.1ecm' %l for l in length])
 print(sizes)
 
-nbandw = 51
+nbandw = 11
 deltat = 1.
 
 # init. of the output spectra (raw and smoothed)
@@ -33,23 +43,18 @@ for p in range(pc.shape[0]):
     pctemp /= pctemp.std()
     [spectrum2, freq2, error2] = spec.multitaper(pctemp, nbandw=nbandw, deltat=deltat)
     
-    #freq2, spectrum2 = sig.welch(pctemp, nperseg=51)
-    
     # removing 0 frequency
     spectrum2 = spectrum2[1:]
     freq2 = freq2[1:]
-
-    peri.append(spectrum2 * freq2)
-    #peri.append(spectrum2)
-    x = np.log(freq2)
     
+    # saving of normalized frequency
     y = spectrum2 * freq2
-    pol = np.polyfit(x, y, 4)
-    ytemp = np.polyval(pol, x)
+    peri.append(y)
 
-    tck = interpolate.splrep(x, y, s=0)
-    xnew = np.linspace(x.min(), x.max(), 1000)
-    ytemp = interpolate.splev(xnew, tck, der=0)
+    # fitting with a scaled normalized lnorm function 
+    opt, cov = curve_fit(lnorm, freq2, y)
+
+    ytemp = lnorm(freq2, opt[0], opt[1], opt[2])
 
     smoothed.append(ytemp)
 
@@ -57,13 +62,10 @@ smoothed = np.array(smoothed)
 peri = np.array(peri)
 x = np.log(freq2)
 
-print(x.shape)
-print(peri.shape)
-print(smoothed.shape)
-
 plt.figure()
 x = freq2
 x = np.log(freq2)
+#x = freq2
 
 '''
 plt.subplots_adjust(hspace=0.5)
@@ -84,20 +86,23 @@ xticks = np.log(1/x0)
 
 ax = plt.gca()
 plt.title('Spectrum')
+
 l = plt.plot(x, (peri).T[:, isize])
 colors = [lt.get_color() for lt in l]
 print(colors)
-plt.legend(sizes[isize], fontsize=7)
-'''
+
 for p in range(len(isize)):
     print(isize[p])
-    #lbis = plt.plot(x, smoothed[isize[p]], linestyle='--', color=colors[p])
-    lbis = plt.plot(xnew, smoothed[isize[p]], linestyle='--')
-'''
-plt.xlabel('ln(f)')
+    print(smoothed)
+    lbis = plt.plot(x, smoothed[isize[p]])
+    #lbis = plt.plot(xnew, smoothed[isize[p]], linestyle='--')
+
+plt.legend(sizes[isize], fontsize=7)
+
+plt.xlabel('Period (years)')
 plt.ylabel('PSD * f')
 ax.set_xticks(xticks)
 ax.set_xticklabels(x0 / 12, rotation=45, ha='right')
 ax.set_xlim(x.min(), x.max())
-ax.set_xlim(ax.get_xlim()[::-1])
+#ax.set_xlim(ax.get_xlim()[::-1])
 plt.savefig('spectrum.pdf', bbox_inches='tight')
