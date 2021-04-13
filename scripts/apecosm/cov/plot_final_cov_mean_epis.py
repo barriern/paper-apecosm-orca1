@@ -84,6 +84,7 @@ proj2 = ccrs.PlateCarree(central_longitude=0)
 ########################################################### reading mesh mask
 dirin = '/home/barrier/Work/apecosm/ORCA1/final_figs/data'
 dirin = '/home/barrier/Work/scientific_communication/articles/ongoing/paper-apecosm-orca1/scripts/data'
+dirin = '../../data'
 
 mesh = xr.open_dataset('%s/mesh_mask_eORCA1_v2.2.nc' %dirin)
 mesh = mesh.isel(t=0, z=0)
@@ -96,7 +97,7 @@ latf = mesh['gphif'].values
 lon[lon < 0] += 360
 
 # reading length / weight step
-const = xr.open_dataset('%s/ORCA1_JRA_CO2_CYC4_ConstantFields.nc' %dirin)
+const = xr.open_dataset('%s/ORCA1_JRAC02_CORMSK_CYC3_FINAL_ConstantFields.nc' %dirin)
 wstep = const['weight_step'].values
 length = const['length'].values * 100
 nlength = len(length)
@@ -172,6 +173,9 @@ for p in range(3):
     plot_domain(ax, get_cpt(cpt))
     ax.set_ylim(-40, 40)
     ax.set_xlim(-60, 130)
+    #ax.vlines(-150 + 360, -30, 30)
+    #ax.vlines(-100, -30, 30)
+    #ax.vlines(-100, -30, 30)
 
     cpt += 1
 

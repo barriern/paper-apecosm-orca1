@@ -14,11 +14,11 @@ from cartopy.mpl.geoaxes import GeoAxes
 import matplotlib.ticker as mticker
 from cycler import cycler
 
-data = xr.open_dataset('data/ORCA1_JRAC02_CORMSK_CYC1_FINAL_ConstantFields.nc')
-data = data.isel(w=[14, 45, 80])
+data = xr.open_dataset('../../data/ORCA1_JRAC02_CORMSK_CYC3_FINAL_ConstantFields.nc')
+data = data.isel(wpred=[14, 45, 80])
 wstep = data['weight_step'].values
 
-dnino, nino = read_index(filename='data/index/oni.data')
+dnino, nino = read_index(filename='../../data/index/oni.data')
 ynino = dnino // 100
 iok = np.nonzero((ynino <= 2018) & (ynino >= 1958))
 nino = nino[iok]
@@ -86,6 +86,9 @@ for c in range(1):
 
             lags = lags[ilags]
             corr = corr[ilags]
+            if(e == 0):
+                print("@::::::::::::::@@@@@@@@@@@@@@@@@@@@@@@ ", corr.shape)
+                print(corr)
             '''
             if(e == 0):
                 fig = plt.figure()
