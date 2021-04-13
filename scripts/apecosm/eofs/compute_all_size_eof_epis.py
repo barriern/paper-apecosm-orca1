@@ -54,6 +54,7 @@ nbins, ntime, nlat, nlon = dens.shape
 neofs = 2
 
 eofmap = np.zeros((nbins, neofs, nlat, nlon))
+eofmap2 = np.zeros((nbins, neofs, nlat, nlon))
 eofts = np.zeros((nbins, neofs, ntime))
 eofvar = np.zeros((nbins, neofs))
 
@@ -72,18 +73,22 @@ for s in range(nbins):
     # their eigenvalues ( units are in Pa )
     #maps = solver.eofs(eofscaling=2, neofs=neofs)
     maps = solver.eofsAsCovariance(neofs=neofs)
+    maps2 = solver.eofs(eofscaling=1, neofs=neofs)
 
     eofmap[s, :, ilat, ilon] = maps.T
+    eofmap2[s, :, ilat, ilon] = maps2.T
     eofts[s, :, :] = solver.pcs(pcscaling=1, npcs=neofs).T
     eofvar[s, :] = solver.varianceFraction(neigs=neofs)
 
 eofmap = eofmap * tmask[np.newaxis, np.newaxis, :, :]
+eofmap2 = eofmap2 * tmask[np.newaxis, np.newaxis, :, :]
 eofmap = np.ma.masked_where(eofmap == 0, eofmap)
 
 dirout = 'data/'
 dirout = '/home1/datawork/nbarrier/apecosm/apecosm_orca1/diags/data'
 
 dsout = xr.Dataset({'eofmap':(['bins', 'eof', 'y', 'x'], eofmap), 
+                    'eofmap2':(['bins', 'eof', 'y', 'x'], eofmap2), 
                     'eofpc':(['bins', 'eof', 'time'], eofts),
                     'eofvar':(['bins', 'eof'], eofvar)})
 dsout['time'] = (['time'], time)
