@@ -6,6 +6,11 @@ from extract_nino import read_index
 import scipy.signal as sig
 import os.path
 
+signs = -np.ones((100))
+index = list(range(84, 93 + 1)) + [99]
+index = np.array(index)
+signs[index] *= -1
+
 const =  xr.open_dataset('../../data/ORCA1_JRAC02_CORMSK_CYC3_FINAL_ConstantFields.nc')
 length = const['length'].values
 print(length)
@@ -18,6 +23,8 @@ dnino = dnino[inino]
 data = xr.open_dataset('data/eof_full_density_20.nc')
 pc = data['eofpc'].values  # bins, eof, time
 pc = pc[:, 0, :]   # bins, time
+
+pc = (pc.T * signs).T
 nbins = pc.shape[0]
 
 tpi = xr.open_dataset('../../nino/filt_tpi.nc')
@@ -26,8 +33,6 @@ iok = np.nonzero(tpi.mask == False)
 tpi = tpi[iok]
 tpi = (tpi - tpi.mean()) / tpi.std()
 ntime2 = tpi.shape[0]
-
-
 ntime = dnino.shape[0]
 
 lags = sig.correlation_lags(ntime, ntime)
