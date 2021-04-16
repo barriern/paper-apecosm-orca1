@@ -7,6 +7,7 @@ data = xr.open_dataset('full_eof_tpi_oni_corr.nc')
 data = data.isel(l=slice(None, -1))
 lags = data['lags'].values
 length2 = data['l'].values
+iok = np.nonzero(length2 <= 100)[0]
 nlags = len(lags)
 
 corrtpi = data['corrtpi'].values  # size, lags
@@ -24,14 +25,15 @@ lags = lags[ilags]
 
 isize = np.array([ 14, 45, 80])
 
-corroni = np.abs(corroni)
-corrtpi = np.abs(corrtpi)
+#corroni = np.abs(corroni)
+#corrtpi = np.abs(corrtpi)
 cmax = 0.8
 
 print(corrtpi.max())
 
 step = 0.05
 lev = np.arange(0, 1 + step, step)
+lev = np.arange(-1, 1 + step, step)
 
 fig = plt.figure()
 axgr = ImageGrid(fig, 111,  nrows_ncols=(2, 1), label_mode='L', aspect=False, share_all=True, axes_pad=[0.2, 0.3], cbar_mode='single')
@@ -42,10 +44,11 @@ print(axout)
 print(cbar_axes)
 
 ax = axout[0]
-cs = ax.pcolormesh(lags, length, corroni, cmap=plt.cm.jet)
+cs = ax.pcolormesh(lags, length, corroni, cmap=plt.cm.RdBu_r)
 cl = ax.contour(lags, length, corroni, colors='k', linewidths=0.5, levels=lev)
+cl2 = ax.contour(lags, length, corroni, colors='k', linewidths=2, levels=0)
 cbar_axes[0].colorbar(cs)
-cs.set_clim(0, cmax)
+cs.set_clim(-cmax, cmax)
 ax.set_xlabel('Lags (month)')
 ax.set_ylabel('Length (cm)')
 ax.set_title('ONI')
@@ -53,10 +56,11 @@ ax.set_title('ONI')
 #    ax.axhline(l, linestyle='--', color='k')
 
 ax = axout[1]
-cs = ax.pcolormesh(lags, length, corrtpi, cmap=plt.cm.jet)
+cs = ax.pcolormesh(lags, length, corrtpi, cmap=plt.cm.RdBu_r)
 cl = ax.contour(lags, length, corrtpi, colors='k', linewidths=0.5, levels=lev)
+cl2 = ax.contour(lags, length, corrtpi, colors='k', linewidths=2, levels=0)
 cb = cbar_axes[1].colorbar(cs)
-cs.set_clim(0, cmax)
+cs.set_clim(-cmax, cmax)
 ax.set_xlabel('Lags (month)')
 ax.set_ylabel('Length (cm)')
 ax.set_title('Filt. TPI')
