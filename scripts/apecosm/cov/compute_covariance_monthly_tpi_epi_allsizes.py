@@ -44,7 +44,7 @@ for varname in ['OOPE']:
     N = len(enso)
     
     dimnames = data[varname].dims  # time, y, x, w
-    dimnames = dimnames.T  # w, x, y, time
+    dimnames = dimnames[::-1]  # w, x, y, time
 
     data = data[varname].to_masked_array()  # time, y, x, w
     tmask = data.mask
