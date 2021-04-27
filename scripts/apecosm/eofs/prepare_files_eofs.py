@@ -6,7 +6,7 @@ import os.path
 dirin = '/home/datawork-marbec-pmod/outputs/APECOSM/ORCA1/final-runs/output/'
 dirout = '/home1/scratch/nbarrier/'
 
-latmax = 30
+latmax = 50
 
 mesh = xr.open_dataset("../../data/mesh_mask_eORCA1_v2.2.nc")
 lon = mesh['glamt'].values[0]
