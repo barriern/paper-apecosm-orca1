@@ -161,7 +161,8 @@ with PdfPages('pc%d_all_lat.pdf' %(ieof + 1)) as pdf:
         ax.plot(time, sign3 * data3['eofpc'].isel(bins=s).to_masked_array(), label='30')
         ax.plot(time, sign4 * data4['eofpc'].isel(bins=s).to_masked_array(), label='40')
         ax.plot(time, sign5 * data5['eofpc'].isel(bins=s).to_masked_array(), label='50')
-        ax.set_ylim(-3, 3)
+        ax.set_ylim(-4, 4)
+        ax.set_xlim(time.min(), time.max())
         plt.grid()
         stride = 3 * 12
         plt.legend(ncol=2, fontsize=8)
