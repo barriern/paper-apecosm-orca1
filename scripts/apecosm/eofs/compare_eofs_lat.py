@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 plt.rcParams['lines.linewidth'] = 1
 
+ieof = 1
 
 ilon = slice(58, 229, None)
 ilat = slice(114, 265, None)
@@ -20,13 +21,13 @@ lonf = mesh['glamf'].values[0]
 latf = mesh['gphif'].values[0]
 
 data2 = xr.open_dataset("data/eof_full_density_20.nc")
-data2 = data2.isel(x=slice(1, None, None), y=slice(1, None, None), eof=0)
+data2 = data2.isel(x=slice(1, None, None), y=slice(1, None, None), eof=ieof)
 data3 = xr.open_dataset("data/eof_full_density_30.nc")
-data3 = data3.isel(x=slice(1, None, None), y=slice(1, None, None), eof=0)
+data3 = data3.isel(x=slice(1, None, None), y=slice(1, None, None), eof=ieof)
 data4 = xr.open_dataset("data/eof_full_density_40.nc")
-data4 = data4.isel(x=slice(1, None, None), y=slice(1, None, None), eof=0)
+data4 = data4.isel(x=slice(1, None, None), y=slice(1, None, None), eof=ieof)
 data5 = xr.open_dataset("data/eof_full_density_50.nc")
-data5 = data5.isel(x=slice(1, None, None), y=slice(1, None, None), eof=0)
+data5 = data5.isel(x=slice(1, None, None), y=slice(1, None, None), eof=ieof)
 time = data5['time'].values
 year = [t.year for t in time]
 month = [t.month for t in time]
@@ -41,8 +42,10 @@ proj2 = ccrs.PlateCarree()
 shrink = 0.8
 
 clim = [50, 5, 2]
+if(ieof == 1):
+    clim = clim
 
-with PdfPages('eof_all_lat.pdf') as pdf:
+with PdfPages('eof%d_all_lat.pdf' %(ieof + 1)) as pdf:
 
     toto = 0
 
@@ -99,7 +102,7 @@ with PdfPages('eof_all_lat.pdf') as pdf:
         pdf.savefig()
         plt.close(fig)
 
-with PdfPages('pc_all_lat.pdf') as pdf:
+with PdfPages('pc%d_all_lat.pdf' %(ieof + 1)) as pdf:
 
     for s in [14, 45, 80]:
         fig = plt.figure()
