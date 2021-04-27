@@ -14,88 +14,92 @@ dirout = './'
 ilon_glob = slice(58, 228)
 ilat_glob = slice(140, 233)
 
-# Load the mesh mask
-mesh = xr.open_dataset("/home/datawork-marbec-pmod/forcings/APECOSM/ORCA1_HINDCAST/corrected_mesh_mask_eORCA1_v2.2.nc")
-mesh = mesh.isel(y=ilat_glob, x=ilon_glob)
-tmask = np.squeeze(mesh['tmask'].values[0, 0])
-e1t = mesh['e1t'].values
-e2t = mesh['e2t'].values
-surf = e1t * e2t
-surf = np.squeeze(surf)
-weights = surf
+# limit at 50N/50S
+ilon_glob = slice(58, 229)
+ilat_glob = slice(114, 265)
 
-latmax = 20
+for latmax in [20, 30, 40, 50]:
 
-tmask = xr.open_dataset('eof_mask_%d.nc' %latmax)
-tmask = tmask.isel(y=ilat_glob, x=ilon_glob)
-tmask = tmask['mask'].values
-print(tmask.shape)
-print(weights.shape)
-ilat, ilon = np.nonzero(tmask == 1)
+    # Load the mesh mask
+    mesh = xr.open_dataset("/home/datawork-marbec-pmod/forcings/APECOSM/ORCA1_HINDCAST/corrected_mesh_mask_eORCA1_v2.2.nc")
+    mesh = mesh.isel(y=ilat_glob, x=ilon_glob)
+    tmask = np.squeeze(mesh['tmask'].values[0, 0])
+    e1t = mesh['e1t'].values
+    e2t = mesh['e2t'].values
+    surf = e1t * e2t
+    surf = np.squeeze(surf)
+    weights = surf
 
-weights_tot = np.sum(weights[ilat, ilon])
-weights[ilat, ilon] /= weights_tot
-print(np.sum(weights[ilat, ilon]))
-weights[ilat, ilon] = np.sqrt(weights[ilat, ilon])
+    tmask = xr.open_dataset('eof_mask_%d.nc' %latmax)
+    tmask = tmask.isel(y=ilat_glob, x=ilon_glob)
+    tmask = tmask['mask'].values
+    print(tmask.shape)
+    print(weights.shape)
+    ilat, ilon = np.nonzero(tmask == 1)
 
-data = xr.open_mfdataset('/home1/scratch/nbarrier/*OOPE*nc')
-dens = data['OOPE'].to_masked_array() 
-print(dens.shape)
-mask = dens.mask
-time = data['time']
-clim, dens = ts.get_monthly_clim(dens)  # time, y, x, w
-del(clim)
-dens = np.ma.masked_where(mask == True, dens)
-del(mask)
+    weights_tot = np.sum(weights[ilat, ilon])
+    weights[ilat, ilon] /= weights_tot
+    print(np.sum(weights[ilat, ilon]))
+    weights[ilat, ilon] = np.sqrt(weights[ilat, ilon])
 
-dens = np.transpose(dens, (3, 0, 1, 2))   # w, time, y, x
-nbins, ntime, nlat, nlon = dens.shape
-
-neofs = 2
-
-eofmap = np.zeros((nbins, neofs, nlat, nlon))
-eofmap2 = np.zeros((nbins, neofs, nlat, nlon))
-eofts = np.zeros((nbins, neofs, ntime))
-eofvar = np.zeros((nbins, neofs))
-
-for s in range(nbins):
-
+    data = xr.open_mfdataset('/home1/scratch/nbarrier/*OOPE*nc')
+    dens = data['OOPE'].to_masked_array() 
     print(dens.shape)
-    print(ilat.shape)
-    temp = dens[s, :, ilat, ilon].T  # ntime, ndims
-    print('temp ', temp.shape)
-    iok = np.nonzero(temp[0].mask == False)
-    temp[:, iok] = sig.detrend(temp[:, iok].T).T
+    mask = dens.mask
+    time = data['time']
+    clim, dens = ts.get_monthly_clim(dens)  # time, y, x, w
+    del(clim)
+    dens = np.ma.masked_where(mask == True, dens)
+    del(mask)
 
-    print(weights[ilat, ilon].shape)
-    solver = Eof(temp, weights=weights[ilat, ilon])
-    # EOFs are multiplied by the square - root of
-    # their eigenvalues ( units are in Pa )
-    #maps = solver.eofs(eofscaling=2, neofs=neofs)
-    maps = solver.eofsAsCovariance(neofs=neofs)
-    maps2 = solver.eofs(eofscaling=1, neofs=neofs)
+    dens = np.transpose(dens, (3, 0, 1, 2))   # w, time, y, x
+    nbins, ntime, nlat, nlon = dens.shape
 
-    eofmap[s, :, ilat, ilon] = maps.T
-    eofmap2[s, :, ilat, ilon] = maps2.T
-    eofts[s, :, :] = solver.pcs(pcscaling=1, npcs=neofs).T
-    eofvar[s, :] = solver.varianceFraction(neigs=neofs)
+    neofs = 2
 
-eofmap = eofmap * tmask[np.newaxis, np.newaxis, :, :]
-eofmap2 = eofmap2 * tmask[np.newaxis, np.newaxis, :, :]
-eofmap = np.ma.masked_where(eofmap == 0, eofmap)
+    eofmap = np.zeros((nbins, neofs, nlat, nlon))
+    eofmap0 = np.zeros((nbins, neofs, nlat, nlon))
+    eofts = np.zeros((nbins, neofs, ntime))
+    eofvar = np.zeros((nbins, neofs))
 
-dirout = 'data/'
-dirout = '/home1/datawork/nbarrier/apecosm/apecosm_orca1/diags/data'
+    for s in range(nbins):
 
-dsout = xr.Dataset({'eofmap':(['bins', 'eof', 'y', 'x'], eofmap), 
-                    'eofmap2':(['bins', 'eof', 'y', 'x'], eofmap2), 
-                    'eofpc':(['bins', 'eof', 'time'], eofts),
-                    'eofvar':(['bins', 'eof'], eofvar)})
-dsout['time'] = (['time'], time)
-#dsout['sizes'] = (['sizes'], bins)
-dsout.attrs['creation_date'] = str(date.today())
-dsout.attrs['script'] = os.path.realpath(__file__)
-dsout.attrs['ilon'] = str(ilon_glob)
-dsout.attrs['ilat'] = str(ilat_glob)
-dsout.attrs['description'] = 'EOF for densities by class'
-dsout.to_netcdf('%s/eof_full_density_%d.nc' %(dirout, latmax))
+        print(dens.shape)
+        print(ilat.shape)
+        temp = dens[s, :, ilat, ilon].T  # ntime, ndims
+        print('temp ', temp.shape)
+        iok = np.nonzero(temp[0].mask == False)
+        temp[:, iok] = sig.detrend(temp[:, iok].T).T
+
+        print(weights[ilat, ilon].shape)
+        solver = Eof(temp, weights=weights[ilat, ilon])
+        # EOFs are multiplied by the square - root of
+        # their eigenvalues ( units are in Pa )
+        #maps = solver.eofs(eofscaling=2, neofs=neofs)
+        maps = solver.eofsAsCovariance(neofs=neofs)
+        maps0 = solver.eofs(eofscaling=0, neofs=neofs)
+
+        eofmap[s, :, ilat, ilon] = maps.T
+        eofmap0[s, :, ilat, ilon] = maps0.T
+        eofts[s, :, :] = solver.pcs(pcscaling=1, npcs=neofs).T
+        eofvar[s, :] = solver.varianceFraction(neigs=neofs)
+
+    eofmap = eofmap * tmask[np.newaxis, np.newaxis, :, :]
+    eofmap0 = eofmap0 * tmask[np.newaxis, np.newaxis, :, :]
+    eofmap = np.ma.masked_where(eofmap == 0, eofmap)
+
+    dirout = 'data/'
+    dirout = '/home1/datawork/nbarrier/apecosm/apecosm_orca1/diags/data'
+
+    dsout = xr.Dataset({'eofmap':(['bins', 'eof', 'y', 'x'], eofmap), 
+                        'eofmap0':(['bins', 'eof', 'y', 'x'], eofmap0), 
+                        'eofpc':(['bins', 'eof', 'time'], eofts),
+                        'eofvar':(['bins', 'eof'], eofvar)})
+    dsout['time'] = (['time'], time)
+    #dsout['sizes'] = (['sizes'], bins)
+    dsout.attrs['creation_date'] = str(date.today())
+    dsout.attrs['script'] = os.path.realpath(__file__)
+    dsout.attrs['ilon'] = str(ilon_glob)
+    dsout.attrs['ilat'] = str(ilat_glob)
+    dsout.attrs['description'] = 'EOF for densities by class'
+    dsout.to_netcdf('%s/eof_full_density_%d.nc' %(dirout, latmax))
