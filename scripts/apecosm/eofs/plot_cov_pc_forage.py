@@ -7,6 +7,20 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.axes_grid1 import ImageGrid
 import cartopy.mpl.gridliner as gridliner
 
+dnino, nino = read_index(filename='data/index/oni.data')
+ynino = dnino // 100
+iok = np.nonzero((ynino <= 2018) & (ynino >= 1958))
+nino = nino[iok]
+dnino = dnino[iok]
+
+data = xr.open_dataset("data/eof_oni_annual_density_20.nc")
+eof = data['eofmap'].to_masked_array()
+pc = data['eofpc'].values
+var = data['eofvar'].values * 100
+time = data['time'].values
+ntime = len(time)
+
+
 _DEGREE_SYMBOL = u'\u00B0'
 
 def _east_west_formatted(longitude, num_format='g'):
@@ -21,11 +35,12 @@ def _east_west_formatted(longitude, num_format='g'):
 def _north_south_formatted(latitude, num_format='g'):
     fmt_string = u'{latitude:{num_format}}{degree}{hemisphere}'
     return fmt_string.format(latitude=abs(latitude), num_format=num_format,
-                             hemisphere=gridliner._lat_heimisphere(latitude),
+                             hemisphere=gridliner._lat_hemisphere(latitude),
                              degree=_DEGREE_SYMBOL)
 lonmax = -150
 latmax = 30
 step = 10
+
 
 mesh = xr.open_dataset('../../data/mesh_mask_eORCA1_v2.2.nc')
 depth = mesh['gdept_1d'].values[0]
@@ -78,6 +93,10 @@ for nd in range(2):
             for e in range(2):
                 ax = axout[cpt]
                 temp = temp2[e, :, :]
+
+                test = np.corrcoef(pc[c, s, e, :], nino)[0, 1]
+                if test < 0: 
+                    temp *= -1
 
                 cs = ax.pcolormesh(lat, -depth, temp.T, cmap=plt.cm.RdBu_r)
                 cs.set_clim(-cmax, cmax)
