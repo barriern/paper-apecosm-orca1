@@ -78,9 +78,9 @@ for varname in ['OOPE']:
                     continue
                 cov[w, i, j] = np.cov(sig.detrend(data[w, i, j :]), enso, ddof=1)[0, 1]
 
-    fileout = '%s/%s_covariance_monthly_tpi_epis_%s.nc' %(dirin, prefix, varname)
+    fileout = '%s/%s_covariance_monthly_tpi_epis_%s.nc' %(dirout, prefix, varname)
     output = xr.Dataset()
-    output['covariance'] = (dimnames, cov)  # w, x, y
+    output['covariance'] = (dimnames[:-1], cov)  # w, x, y
     output.attrs['file'] = os.path.realpath(__file__)
     output.attrs['date'] = str(datetime.datetime.today())
     output.to_netcdf(fileout)
