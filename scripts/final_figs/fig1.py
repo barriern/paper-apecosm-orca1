@@ -40,7 +40,7 @@ bottom = 0.1 #0.5
 height = 0.45
 
 axes = (left, bottom, width, height)
-axgr = AxesGrid(fig, axes,  axes_class=axes_class, nrows_ncols=(3, 2), axes_pad=(0.7, 0.7), label_mode='', cbar_mode='each', cbar_size=0.1, cbar_pad=0.3, cbar_location="bottom")
+axgr = AxesGrid(fig, axes,  axes_class=axes_class, nrows_ncols=(3, 2), axes_pad=(0.7, 0.75), label_mode='', cbar_mode='each', cbar_size=0.1, cbar_pad=0.3, cbar_location="bottom")
 
 axout = list(enumerate(axgr))
 axout = [p[1] for p in axout]
@@ -86,10 +86,10 @@ ax.set_ylim(-40, 40)
 ax.set_xlim(-60, 130)
 ax.text(lontext, lattext, letters[iiii] + ")", ha='center', va='center', transform=proj, bbox=dicttext)
 
-ax.set_title('Hadley SST')
+ax.set_title('Hadley SST / ONI')
 cbax = axgr.cbar_axes[iiii]
 cb = cbax.colorbar(cs)
-cb.set_label('SST covariance (C)')
+cb.set_label('Covariance [C]')
 iiii = 1 
 ax = axgr[iiii]
 
@@ -111,9 +111,9 @@ ax.set_xlim(-60, 130)
 
 cbax = axgr.cbar_axes[iiii]
 cb = cbax.colorbar(cs)
-cb.set_label('SST covariance (C)')
+cb.set_label('Covariance [C]')
 
-ax.set_title('Model SST')
+ax.set_title('Model SST / ONI')
 
 iiii = 2
 ax = axgr[iiii]
@@ -136,10 +136,10 @@ gl.xlocator = mticker.FixedLocator([150, 180, -180, -150, -120, -90, -60])
 ax.set_ylim(-40, 40)
 ax.set_xlim(-60, 130)
 
-ax.set_title('Hadley SST')
+ax.set_title('Hadley SST / TPI')
 cbax = axgr.cbar_axes[iiii]
 cb = cbax.colorbar(cs)
-cb.set_label('SST covariance (C)')
+cb.set_label('Covariance [C]')
 
 iiii = 3
 ax = axgr[iiii]
@@ -162,9 +162,9 @@ ax.text(lontext, lattext, letters[iiii] + ")", ha='center', va='center', transfo
 
 cbax = axgr.cbar_axes[iiii]
 cb = cbax.colorbar(cs)
-cb.set_label('SST covariance (C)')
+cb.set_label('Covariance [C]')
 
-ax.set_title('Model SST')
+ax.set_title('Model SST / TPI')
 
 
 ########################################################################### ChlSat
@@ -193,9 +193,9 @@ gl.xformatter = LONGITUDE_FORMATTER
 gl.yformatter = LATITUDE_FORMATTER
 gl.xlocator = mticker.FixedLocator([150, 180, -180, -150, -120, -90, -60])
 
-ax.set_title('Obs.')
+ax.set_title('OCCI Chl / ONI')
 cb = axgr.cbar_axes[iiii].colorbar(cs)
-cb.set_label("Chl. cov (mg/m3)")
+cb.set_label("Covariance [mg/m3]")
 ax.text(lontext, lattext, letters[iiii] + ")", ha='center', va='center', transform=proj, bbox=dicttext)
 
 #######
@@ -221,12 +221,12 @@ cs.set_clim(-ccc, ccc)
 ax2.add_feature(cfeature.LAND, zorder=1000, color='lightgray')
 ax2.add_feature(cfeature.COASTLINE, zorder=1001)
 
-ax2.set_title('Model')
+ax2.set_title('Model Chl / ONI')
 
 xmin = 0.2
 #cax = plt.axes([xmin, 0.1, 1-2*xmin, 0.03])
 cb = axgr.cbar_axes[iiii].colorbar(cs)
-cb.set_label("Chl. cov (mg/m3)")
+cb.set_label("Covariance [mg/m3]")
 ax2.text(lontext, lattext, letters[iiii] + ")", ha='center', va='center', transform=proj, bbox=dicttext)
 
 gl = ax2.gridlines(**gridparams)
@@ -292,9 +292,12 @@ height = 0.1
 axes = (left, bottom, width, height)
 
 ax = plt.axes(axes)
-plt.fill_between(time, 0, nino, where=(nino>0), color='firebrick', interpolate=True)
-plt.fill_between(time, 0, nino, where=(nino<0), color='steelblue', interpolate=True)
-plt.plot(timemod, ensof, 'k', label='Sim.')
+l1 = plt.fill_between(time, 0, nino, color='darkgray', interpolate=True)
+#l2 = plt.fill_between(time, 0, nino, where=(nino<0), color='steelblue', interpolate=True)
+l3 = plt.plot(timemod, ensof, 'k', label='Sim.')
+
+plt.legend([l1, l3[0]], ['ONI', 'Model'], loc=0, fontsize=8, ncol=2)
+
 #plt.legend(loc=0)
 ax.set_xticks(time[xticks])
 ax.set_xticklabels(labels[xticks], rotation=45, ha='right')
