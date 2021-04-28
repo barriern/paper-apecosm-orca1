@@ -8,8 +8,14 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.axes_grid1 import AxesGrid
 from cartopy.mpl.geoaxes import GeoAxes
 import string
+import sys
+sys.path.append('../nino')
+from extract_nino import read_index
+import apecosm.ts as ts
+import scipy.signal as sig
 
 letters = list(string.ascii_lowercase)
+letters = letters[1:]
 
 proj = ccrs.PlateCarree(central_longitude=180)
 proj2 = ccrs.PlateCarree(central_longitude=0)
@@ -24,9 +30,17 @@ lonf = mesh['glamf'].values
 latf = mesh['gphif'].values
 tmask = mesh['tmask'].values
 
-fig = plt.figure(figsize=(12, 8), dpi=200)
+fig = plt.figure(figsize=(8, 16))
+plt.subplots_adjust(top=0.95)
 axes_class = (GeoAxes, dict(map_projection=proj))
-axgr = AxesGrid(fig, 111,  axes_class=axes_class, nrows_ncols=(3, 2), axes_pad=(0.7, 0.7), label_mode='', cbar_mode='each', cbar_size=0.1, cbar_pad=0.3, cbar_location="bottom")
+
+left = 0.06
+width = 1 - 2 * left
+bottom = 0.1 #0.5
+height = 0.45
+
+axes = (left, bottom, width, height)
+axgr = AxesGrid(fig, axes,  axes_class=axes_class, nrows_ncols=(3, 2), axes_pad=(0.7, 0.7), label_mode='', cbar_mode='each', cbar_size=0.1, cbar_pad=0.3, cbar_location="bottom")
 
 axout = list(enumerate(axgr))
 axout = [p[1] for p in axout]
@@ -182,6 +196,7 @@ gl.xlocator = mticker.FixedLocator([150, 180, -180, -150, -120, -90, -60])
 ax.set_title('Obs.')
 cb = axgr.cbar_axes[iiii].colorbar(cs)
 cb.set_label("Chl. cov (mg/m3)")
+ax.text(lontext, lattext, letters[iiii] + ")", ha='center', va='center', transform=proj, bbox=dicttext)
 
 #######
 
@@ -212,6 +227,7 @@ xmin = 0.2
 #cax = plt.axes([xmin, 0.1, 1-2*xmin, 0.03])
 cb = axgr.cbar_axes[iiii].colorbar(cs)
 cb.set_label("Chl. cov (mg/m3)")
+ax2.text(lontext, lattext, letters[iiii] + ")", ha='center', va='center', transform=proj, bbox=dicttext)
 
 gl = ax2.gridlines(**gridparams)
 gl.xlabels_top = False
@@ -223,24 +239,69 @@ gl.yformatter = LATITUDE_FORMATTER
 gl.xlocator = mticker.FixedLocator([150, 180, -180, -150, -120, -90, -60])
 
 
+############################################ plotting data
+
+#ax = plt.subplo
+
+dnino, nino = read_index('../data/index/oni.data')
+iok = np.nonzero(np.isnan(nino) == False)[0]
+dnino = dnino[iok]
+nino = nino[iok]
+time = np.arange(len(dnino))
+ynino = dnino // 100
+mnino = dnino - 100 * ynino
+
+labels = np.array(['%.4d-%.2d' %(y, m) for y,m in zip(ynino, mnino)])
+
+data = xr.open_dataset("../nino/data/simulated_enso_index.nc")
+years = data['time.year'].values
+months = data['time.month'].values
+timemod = np.arange(len(years)) + 8 * 12
+nmod = len(timemod)
+enso = data['enso'].values
+ensof = np.zeros(enso.shape)
+clim, enso = ts.get_monthly_clim(enso)
+enso = sig.detrend(enso)
+
+index = np.arange(3)
+for i in range(1, nmod - 1):
+    ensof[i] = enso[index].mean()
+    index += 1
+
+ensof[ensof == 0] = np.nan
+
+istart = np.nonzero(dnino == 195802)[0][0]
+iend = np.nonzero(dnino == 201811)[0][0] + 1
+
+test = np.corrcoef(ensof[1:-1], nino[istart:iend])
+
+istart = np.nonzero(dnino == 195801)[0][0]
+iend = np.nonzero(dnino == 201812)[0][0] + 1
+test = np.corrcoef(enso, nino[istart:iend])
+print(test[0, 1])
+
+xticks = np.arange(0, len(time), 3 * 12)
+print(xticks)
+print(dnino[8*12:])
+
+left = 0.2
+width = 1 - 2 * left
+bottom = 0.6
+height = 0.1
+
+axes = (left, bottom, width, height)
+
+ax = plt.axes(axes)
+plt.fill_between(time, 0, nino, where=(nino>0), color='firebrick', interpolate=True)
+plt.fill_between(time, 0, nino, where=(nino<0), color='steelblue', interpolate=True)
+plt.plot(timemod, ensof, 'k', label='Sim.')
+#plt.legend(loc=0)
+ax.set_xticks(time[xticks])
+ax.set_xticklabels(labels[xticks], rotation=45, ha='right')
+ax.grid(True)
+ax.set_xlim(time.min(), time.max())
+ax.set_ylim(-4, 4)
+ax.text(time[-1] - 50, -3, 'a' + ")", ha='center', va='center', bbox=dicttext)
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-plt.savefig('fig1')
+plt.savefig('fig1', bbox_inches='tight')
