@@ -5,27 +5,25 @@ import datetime
 from cftime import utime
 import apecosm.ts as ts
 import scipy.signal as sig
-    
+
+import sys
+sys.path.append('../../nino')
+from extract_nino import read_index
+ensoy, ensof = read_index(filename='../../data/index/oni.data')
+
+import numpy as np
+
+# extracts the time series of non-masked data.
+print(ensof.shape, ensoy.shape)
+iok = np.nonzero(np.isnan(ensof) == False)[0]
+
+ensoy = ensoy[iok]
+ensof = ensof[iok]
+ 
 dirin = '/home1/scratch/nbarrier'
 dirout = '/home1/datawork/nbarrier/apecosm/apecosm_orca1/diags/data'
 
 prefix = 'final-runs'
-
-# read the data of filtered TPI
-index = xr.open_dataset('../../data/filt_tpi.nc')
-ensof = index['tpi_filt'].to_masked_array()
-ensoy = index['time'].to_masked_array()
-
-# extracts the time series of non-masked data.
-print(ensof.shape, ensoy.shape)
-iok = np.nonzero(ensof.mask == False)[0]
-
-ensoy = ensoy[iok]
-ensof = ensof[iok]
-print(ensoy)
-print(ensof)
-
-ensof = (ensof - np.mean(ensof)) / np.std(ensof)
 
 cdftime = utime("seconds since 1900-01-01 00:00:00", "noleap")
 
@@ -69,7 +67,7 @@ for varname in ['OOPE']:
     nw, nx, ny = shape1
 
     # extract the covariance into 1D form
-    cov = np.zeros(shape1)  # w, y, x
+    cov = np.zeros(shape1, dtype=np.float)  # w, x, y
     print(cov.shape)
     print(data.shape)
 
@@ -79,11 +77,12 @@ for varname in ['OOPE']:
             for j in range(ny):
                 if np.isnan(data[w, i, j, 0]):
                     continue
-                cov[w, i, j] = np.cov(sig.detrend(data[w, i, j, :]), enso, ddof=1)[0, 1]
+                temp = sig.detrend(data[w, i, j, :])
+                cov[w, i, j] = np.cov(temp, enso, ddof=1)[0, 1]
 
     cov = np.ma.masked_where(cov == 0, cov)
 
-    fileout = '%s/%s_covariance_monthly_tpi_epis_%s.nc' %(dirout, prefix, varname)
+    fileout = '%s/%s_covariance_monthly_oni_epis_%s.nc' %(dirout, prefix, varname)
     output = xr.Dataset()
     output['covariance'] = (dimnames[:-1], cov)  # w, x, y
     output.attrs['file'] = os.path.realpath(__file__)
