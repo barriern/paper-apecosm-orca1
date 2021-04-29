@@ -13,9 +13,17 @@ sys.path.append('../nino')
 from extract_nino import read_index
 import apecosm.ts as ts
 import scipy.signal as sig
+from envtoolkit.ts import Lanczos
+
+nWgt      = 157
+fca       = 1./156
+fca = 1 / fca
+
+lanc = Lanczos('lp', pca=fca, nwts=nWgt)
+
 
 letters = list(string.ascii_lowercase)
-letters = letters[1:]
+letters = letters[2:]
 
 proj = ccrs.PlateCarree(central_longitude=180)
 proj2 = ccrs.PlateCarree(central_longitude=0)
@@ -211,7 +219,6 @@ latf = mesh['gphit'].values
 data = xr.open_dataset("../chl-sat/model/covariance_model_data.nc")
 cov = data['cov'].values
 cov = np.ma.masked_where(tmask == 0, cov)
-print(cov.min(), cov.max())
 
 iiii = 5
 ax2 = axgr[iiii]
@@ -275,29 +282,30 @@ istart = np.nonzero(dnino == 195802)[0][0]
 iend = np.nonzero(dnino == 201811)[0][0] + 1
 
 test = np.corrcoef(ensof[1:-1], nino[istart:iend])
+print(ensof.shape, nino.shape)
+test = np.corrcoef(ensof[1:-1], nino[1:-1])[0, 1]
+print('Correlation ONI', test)
 
 istart = np.nonzero(dnino == 195801)[0][0]
 iend = np.nonzero(dnino == 201812)[0][0] + 1
 test = np.corrcoef(enso, nino[istart:iend])
-print(test[0, 1])
 
-xticks = np.arange(0, len(time), 3 * 12)
-print(xticks)
-print(dnino[8*12:])
+xticks = np.arange(2*12, len(time), 5 * 12)
 
-left = 0.2
-width = 1 - 2 * left
+left = 0.05
+width = 0.4
 bottom = 0.6
 height = 0.1
 
 axes = (left, bottom, width, height)
 
+alpha = 0.5
+
 ax = plt.axes(axes)
 l1 = plt.fill_between(time, 0, nino, color='darkgray', interpolate=True)
-#l2 = plt.fill_between(time, 0, nino, where=(nino<0), color='steelblue', interpolate=True)
-l3 = plt.plot(time, ensof, 'k', label='Sim.')
-
-plt.legend([l1, l3[0]], ['ONI', 'Model'], loc=0, fontsize=8, ncol=2)
+l3 = plt.plot(time, ensof, 'k', label='Sim.', alpha=alpha)
+plt.legend([l1, l3[0]], ['Obs.', 'Model'], loc=0, fontsize=8, ncol=2)
+ax.set_title('ONI')
 
 #plt.legend(loc=0)
 ax.set_xticks(time[xticks])
@@ -306,6 +314,37 @@ ax.grid(True)
 ax.set_xlim(time.min(), time.max())
 ax.set_ylim(-4, 4)
 ax.text(time[-1] - 50, -3, 'a' + ")", ha='center', va='center', bbox=dicttext)
+
+data = xr.open_dataset('../data/filt_tpi.nc')
+nino2 = data['tpi_filt'].values
+
+data = xr.open_dataset('../nemo-pisces/nino/model_tpi_index.nc')
+modtpi = data['tpi'].values
+
+modtpi = lanc.wgt_runave(modtpi)
+#nino2 = lanc.wgt_runave(nino2)
+
+print('Correlation TPI', np.corrcoef(modtpi, nino2)[0, 1])
+
+left = 0.55
+width = 0.4
+bottom = 0.6
+height = 0.1
+axes = (left, bottom, width, height)
+
+ax = plt.axes(axes)
+l1 = plt.fill_between(time, 0, nino2, color='darkgray', interpolate=True)
+l3 = plt.plot(time, modtpi, color='k', label='Sim.', alpha=0.5)
+plt.legend([l1, l3[0]], ['Obs', 'Model'], loc=0, fontsize=8, ncol=2)
+ax.set_title('TPI')
+
+#plt.legend(loc=0)
+ax.set_xticks(time[xticks])
+ax.set_xticklabels(labels[xticks], rotation=45, ha='right')
+ax.grid(True)
+ax.set_xlim(time.min(), time.max())
+ax.set_ylim(-1, 1)
+ax.text(time[-1] - 50, -3, 'b' + ")", ha='center', va='center', bbox=dicttext)
 
 
 plt.savefig('fig1', bbox_inches='tight')
