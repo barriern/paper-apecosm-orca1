@@ -302,10 +302,11 @@ height = 0.1
 
 axes = (left, bottom, width, height)
 
-alpha = 0.5
+alpha = 0.7
 
 ax = plt.axes(axes)
-l1 = plt.fill_between(time, 0, nino, color='darkgray', interpolate=True)
+l1 = plt.fill_between(time, 0, nino, where=(nino>0), color='firebrick', interpolate=True)
+l2 = plt.fill_between(time, 0, nino, where=(nino<0), color='steelblue', interpolate=True)
 l3 = plt.plot(time, ensof, 'k', label='Sim.', alpha=alpha)
 plt.legend([l1, l3[0]], ['Obs.', 'Model'], loc=0, fontsize=8, ncol=2)
 ax.set_title('ONI')
@@ -336,8 +337,9 @@ height = 0.1
 axes = (left, bottom, width, height)
 
 ax = plt.axes(axes)
-l1 = plt.fill_between(time, 0, nino2, color='darkgray', interpolate=True)
-l3 = plt.plot(time, modtpi, color='k', label='Sim.', alpha=0.5)
+l1 = plt.fill_between(time, 0, nino2, where=(nino2 > 0), color='firebrick', interpolate=True)
+l2 = plt.fill_between(time, 0, nino2, where=(nino2 < 0), color='steelblue', interpolate=True)
+l3 = plt.plot(time, modtpi, color='k', label='Sim.', alpha=alpha)
 plt.legend([l1, l3[0]], ['Obs', 'Model'], loc=0, fontsize=8, ncol=2)
 ax.set_title('TPI')
 
@@ -372,6 +374,7 @@ ax.set_xticks(time[xticks])
 ax.set_xticklabels(labels[xticks], rotation=45, ha='right')
 ax.grid(True)
 ax.set_xlim(time.min(), time.max())
+ax.set_ylabel('[C]')
 #ax.set_ylim(-1, 1)
 #ax.text(time[-1] - 50, -0.75, 'b' + ")", ha='center', va='center', bbox=dicttext)
 
