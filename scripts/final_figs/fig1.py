@@ -44,11 +44,11 @@ axes_class = (GeoAxes, dict(map_projection=proj))
 
 left = 0.06
 width = 1 - 2 * left
-bottom = 0.1 #0.5
+bottom = 0.18 #0.5
 height = 0.45
 
 axes = (left, bottom, width, height)
-axgr = AxesGrid(fig, axes,  axes_class=axes_class, nrows_ncols=(3, 2), axes_pad=(0.7, 0.75), label_mode='', cbar_mode='each', cbar_size=0.1, cbar_pad=0.3, cbar_location="bottom")
+axgr = AxesGrid(fig, axes,  axes_class=axes_class, nrows_ncols=(2, 2), axes_pad=(0.7, 0.75), label_mode='', cbar_mode='each', cbar_size=0.1, cbar_pad=0.3, cbar_location="bottom")
 
 axout = list(enumerate(axgr))
 axout = [p[1] for p in axout]
@@ -177,6 +177,8 @@ ax.set_title('Model SST / TPI')
 
 ########################################################################### ChlSat
 
+'''
+
 # processing obs
 data = xr.open_dataset("../chl-sat/interp/covariance_satellite_data.nc")
 cov = data['cov'].to_masked_array()
@@ -245,10 +247,11 @@ gl.xformatter = LONGITUDE_FORMATTER
 gl.yformatter = LATITUDE_FORMATTER
 gl.xlocator = mticker.FixedLocator([150, 180, -180, -150, -120, -90, -60])
 
+'''
+
 
 ############################################ plotting data
 
-#ax = plt.subplo
 
 dnino, nino = read_index('../data/index/oni.data')
 iok = np.nonzero((dnino >= 195801) & (dnino <= 201812))[0]
@@ -344,7 +347,33 @@ ax.set_xticklabels(labels[xticks], rotation=45, ha='right')
 ax.grid(True)
 ax.set_xlim(time.min(), time.max())
 ax.set_ylim(-1, 1)
-ax.text(time[-1] - 50, -3, 'b' + ")", ha='center', va='center', bbox=dicttext)
+ax.text(time[-1] - 50, -0.75, 'b' + ")", ha='center', va='center', bbox=dicttext)
+
+####################################################### equatorial tempratures
+
+width = 0.8
+left = 0.1
+bottom = 0.1
+height = 0.12
+axes = (left, bottom, width, height)
+
+data = xr.open_dataset('../cov-hadley/obs_equatorial_mean.nc')
+obs = data['sst'].values
+
+data = xr.open_dataset('../nemo-pisces/nino/simulated_equatorial_mean.nc')
+mod = data['sst'].values
+
+ax = plt.axes(axes)
+l1 = plt.plot(time, obs, color='k')
+l3 = plt.plot(time, mod, color='firebrick', label='Sim.', alpha=0.5)
+plt.legend([l1[0], l3[0]], ['Obs', 'Model'], loc=0, fontsize=8, ncol=2)
+ax.set_title('Equatorial mean SST')
+ax.set_xticks(time[xticks])
+ax.set_xticklabels(labels[xticks], rotation=45, ha='right')
+ax.grid(True)
+ax.set_xlim(time.min(), time.max())
+#ax.set_ylim(-1, 1)
+#ax.text(time[-1] - 50, -0.75, 'b' + ")", ha='center', va='center', bbox=dicttext)
 
 
 plt.savefig('fig1', bbox_inches='tight')
