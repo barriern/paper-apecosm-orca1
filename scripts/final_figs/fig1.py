@@ -353,6 +353,8 @@ ax.text(time[-1] - 50, -0.75, 'b' + ")", ha='center', va='center', bbox=dicttext
 
 ####################################################### equatorial tempratures
 
+"""
+
 width = 0.8
 left = 0.1
 bottom = 0.1
@@ -378,5 +380,6 @@ ax.set_ylabel('[C]')
 #ax.set_ylim(-1, 1)
 #ax.text(time[-1] - 50, -0.75, 'b' + ")", ha='center', va='center', bbox=dicttext)
 
+"""
 
 plt.savefig('fig1', bbox_inches='tight')
