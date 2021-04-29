@@ -253,15 +253,16 @@ mnino = dnino - 100 * ynino
 
 labels = np.array(['%.4d-%.2d' %(y, m) for y,m in zip(ynino, mnino)])
 
-data = xr.open_dataset("../nino/data/simulated_enso_index.nc")
-years = data['time.year'].values
-months = data['time.month'].values
+data = xr.open_dataset("../nemo-pisces/nino/simulated_enso_index.nc")
+years = data['time'].values // 100
+months = data['time'].values - 100 * years
+enso = data['enso'].values
 #timemod = np.arange(len(years)) + 8 * 12
 nmod = len(time)
-enso = data['enso'].values
+#enso = data['enso'].values
+#clim, enso = ts.get_monthly_clim(enso)
+#enso = sig.detrend(enso)
 ensof = np.zeros(enso.shape)
-clim, enso = ts.get_monthly_clim(enso)
-enso = sig.detrend(enso)
 
 index = np.arange(3)
 for i in range(1, nmod - 1):
