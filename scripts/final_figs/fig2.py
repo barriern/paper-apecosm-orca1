@@ -18,7 +18,7 @@ from envtoolkit.ts import Lanczos
 dicttext = dict(boxstyle='round', facecolor='lightgray', alpha=1)
 
 letters = list(string.ascii_lowercase)
-letters = letters[2:]
+#letters = letters[2:]
 
 proj = ccrs.PlateCarree(central_longitude=180)
 proj2 = ccrs.PlateCarree(central_longitude=0)
@@ -39,7 +39,7 @@ axes_class = (GeoAxes, dict(map_projection=proj))
 
 left = 0.06
 width = 1 - 2 * left
-bottom = 0.18 #0.5
+bottom = 0.1
 height = 0.45
 
 axes = (left, bottom, width, height)
@@ -48,7 +48,7 @@ axgr = AxesGrid(fig, axes,  axes_class=axes_class, nrows_ncols=(1, 2), axes_pad=
 axout = list(enumerate(axgr))
 axout = [p[1] for p in axout]
 
-#################################################################### Plotting covariances SST
+#################################################################### Plotting covariances satellite
 
 ccc = -0.1
 lontext = 120
@@ -83,7 +83,7 @@ cb = axgr.cbar_axes[iiii].colorbar(cs)
 cb.set_label("Covariance [mg/m3]")
 ax.text(lontext, lattext, letters[iiii] + ")", ha='center', va='center', transform=proj, bbox=dicttext)
 
-#######
+###################################### plot cov. model
 
 mesh = xr.open_dataset('../data/mesh_mask_eORCA1_v2.2.nc')
 mesh = mesh.isel(t=0)
@@ -95,6 +95,11 @@ latf = mesh['gphit'].values
 
 data = xr.open_dataset("../chl-sat/model/covariance_model_data.nc")
 cov = data['cov'].values
+cov = np.ma.masked_where(tmask == 0, cov)
+
+data = xr.open_dataset("../chl-sat/model/cov_modchl_oni_tpi.nc")
+cov = data['covoni'].values
+cov = cov.T
 cov = np.ma.masked_where(tmask == 0, cov)
 
 iiii = 1
@@ -124,7 +129,47 @@ gl.xformatter = LONGITUDE_FORMATTER
 gl.yformatter = LATITUDE_FORMATTER
 gl.xlocator = mticker.FixedLocator([150, 180, -180, -150, -120, -90, -60])
 
-############################################ plotting data
+################################################ tpi
+left = 0.05
+width = 0.4
+bottom = 0.09
+height = 0.15
+ccc2 = 1e-2
+
+axes = (left, bottom, width, height)
+data = xr.open_dataset("../chl-sat/model/cov_modchl_oni_tpi.nc")
+cov = data['covtpi'].values
+cov = cov.T
+cov = np.ma.masked_where(tmask == 0, cov)
+
+iiii = 1
+ax2 = plt.axes(axes, projection=proj)
+
+cs = ax2.pcolormesh(lonf, latf, cov[1:, 1:], transform=proj2)
+cs.set_clim(-ccc2, ccc2)
+ax2.add_feature(cfeature.LAND, zorder=1000, color='lightgray')
+ax2.add_feature(cfeature.COASTLINE, zorder=1001)
+ax2.set_ylim(-40, 40)
+ax2.set_xlim(-60, 130)
+
+ax2.set_title('Model Chl / ONI')
+
+xmin = 0.2
+#cax = plt.axes([xmin, 0.1, 1-2*xmin, 0.03])
+cb = plt.colorbar(cs, orientation='horizontal', shrink=0.8)
+cb.set_label("Covariance [mg/m3]")
+ax2.text(lontext, lattext, letters[2] + ")", ha='center', va='center', transform=proj, bbox=dicttext)
+
+gl = ax2.gridlines(**gridparams)
+gl.xlabels_top = False
+gl.ylabels_right = False
+#gl.ylabels_left = False
+#gl.xlines = False
+gl.xformatter = LONGITUDE_FORMATTER
+gl.yformatter = LATITUDE_FORMATTER
+gl.xlocator = mticker.FixedLocator([150, 180, -180, -150, -120, -90, -60])
+
+############################################ plotting time-series
 
 data = xr.open_dataset('../chl-sat/model/simulated_equatorial_mean.nc')
 datemod = data['time_counter.year'] * 100 + data['time_counter.month'] 
@@ -164,9 +209,9 @@ print('Correlation = ', np.corrcoef(obs, mod)[0, 1])
 
 xticks = np.arange(4, len(time), 2*12)
 
-left = 0.05
-width = 0.4
-bottom = 0.52
+left = 0.6
+width = 0.35
+bottom = 0.12
 height = 0.1
 
 axes = (left, bottom, width, height)
@@ -178,15 +223,15 @@ l1 = plt.plot(time, obs, color='k')
 l2 = plt.plot(time, mod, 'firebrick', alpha=alpha)
 plt.legend([l1[0], l2[0]], ['Obs.', 'Model'], loc=0, fontsize=8, ncol=2)
 ax.set_title('Equatorial CHLA anomalies')
-ax.set_ylabel('mg/m3')
+ax.set_ylabel('[mg/m3]')
 
 #plt.legend(loc=0)
 ax.set_xticks(time[xticks])
 ax.set_xticklabels(labels[xticks], rotation=45, ha='right')
 ax.grid(True)
 ax.set_xlim(time.min(), time.max())
-#ax.set_ylim(-4, 4)
-#ax.text(time[-1] - 50, -3, 'a' + ")", ha='center', va='center', bbox=dicttext)
+ax.set_ylim(-0.2, 0.2)
+ax.text(time[-1] - 15, -0.15, 'd' + ")", ha='center', va='center', bbox=dicttext)
 
 plt.savefig('fig2', bbox_inches='tight')
 
