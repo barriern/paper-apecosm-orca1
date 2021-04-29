@@ -244,7 +244,7 @@ gl.xlocator = mticker.FixedLocator([150, 180, -180, -150, -120, -90, -60])
 #ax = plt.subplo
 
 dnino, nino = read_index('../data/index/oni.data')
-iok = np.nonzero(np.isnan(nino) == False)[0]
+iok = np.nonzero((dnino >= 195801) & (dnino <= 201812))[0]
 dnino = dnino[iok]
 nino = nino[iok]
 time = np.arange(len(dnino))
@@ -256,8 +256,8 @@ labels = np.array(['%.4d-%.2d' %(y, m) for y,m in zip(ynino, mnino)])
 data = xr.open_dataset("../nino/data/simulated_enso_index.nc")
 years = data['time.year'].values
 months = data['time.month'].values
-timemod = np.arange(len(years)) + 8 * 12
-nmod = len(timemod)
+#timemod = np.arange(len(years)) + 8 * 12
+nmod = len(time)
 enso = data['enso'].values
 ensof = np.zeros(enso.shape)
 clim, enso = ts.get_monthly_clim(enso)
@@ -294,7 +294,7 @@ axes = (left, bottom, width, height)
 ax = plt.axes(axes)
 l1 = plt.fill_between(time, 0, nino, color='darkgray', interpolate=True)
 #l2 = plt.fill_between(time, 0, nino, where=(nino<0), color='steelblue', interpolate=True)
-l3 = plt.plot(timemod, ensof, 'k', label='Sim.')
+l3 = plt.plot(time, ensof, 'k', label='Sim.')
 
 plt.legend([l1, l3[0]], ['ONI', 'Model'], loc=0, fontsize=8, ncol=2)
 
