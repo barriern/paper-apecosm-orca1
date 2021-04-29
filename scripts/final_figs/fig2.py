@@ -160,6 +160,8 @@ for t in time:
     obs[t] = obs[t] - climobs[m] 
     mod[t] = mod[t] - climmod[m] 
 
+print('Correlation = ', np.corrcoef(obs, mod)[0, 1])
+
 xticks = np.arange(4, len(time), 2*12)
 
 left = 0.05
@@ -175,7 +177,8 @@ ax = plt.axes(axes)
 l1 = plt.plot(time, obs, color='k')
 l2 = plt.plot(time, mod, 'firebrick', alpha=alpha)
 plt.legend([l1[0], l2[0]], ['Obs.', 'Model'], loc=0, fontsize=8, ncol=2)
-ax.set_title('Equatorial CHLA')
+ax.set_title('Equatorial CHLA anomalies')
+ax.set_ylabel('mg/m3')
 
 #plt.legend(loc=0)
 ax.set_xticks(time[xticks])
