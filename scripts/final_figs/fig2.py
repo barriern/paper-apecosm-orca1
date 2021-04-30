@@ -177,6 +177,14 @@ gl.xlocator = mticker.FixedLocator([150, 180, -180, -150, -120, -90, -60])
 
 ############################################ plotting time-series
 
+data = xr.open_dataset('../data/filt_tpi.nc')
+tpi = data['tpi_filt'].values
+
+dnino, nino = read_index('../data/index/oni.data')
+iok = np.nonzero((dnino >= 195801) & (dnino <= 201812))[0]
+dnino = dnino[iok]
+nino = nino[iok]
+
 data = xr.open_dataset('../chl-sat/model/simulated_equatorial_mean.nc')
 datemod = data['time_counter.year'] * 100 + data['time_counter.month'] 
 datemod = datemod.values
@@ -197,8 +205,8 @@ time = np.arange(len(obs))
 timemod = np.arange(len(mod))
 
 print(date)
-iclimobs = np.nonzero((date >= 199801) & (date <= 200712))[0]
-iclimmod = np.nonzero((datemod >= 199801) & (datemod <= 200712))[0]
+iclimobs = np.nonzero((date >= 199801) & (date <= 201812))[0]
+iclimmod = np.nonzero((datemod >= 195801) & (datemod <= 201812))[0]
 climmod, anom = ts.get_monthly_clim(mod[iclimmod])
 climobs, anom = ts.get_monthly_clim(obs[iclimobs])
 year  = date // 100
@@ -213,9 +221,12 @@ labels = np.array(labels)
 for t in time:
     m = month[t] - 1
     obs[t] = obs[t] - climobs[m] 
+
 for t in timemod:
     m = monthmod[t] - 1
     mod[t] = mod[t] - climmod[m] 
+
+print(np.mean(mod))
 
 print('Correlation = ', np.corrcoef(obs[iobs], mod[imod])[0, 1])
 
@@ -231,10 +242,11 @@ axes = (left, bottom, width, height)
 alpha = 0.7
 
 ax = plt.axes(axes)
-l1 = plt.plot(time + toffset, obs, color='k')
-l2 = plt.plot(timemod, mod, 'firebrick', alpha=alpha)
+l2 = plt.plot(timemod, mod, 'black', alpha=alpha)
+l1 = plt.plot(time + toffset, obs, color='orange', alpha=alpha)
 ax.set_xlim(toffset, timemod.max())
-plt.legend([l1[0], l2[0]], ['Obs.', 'Model'], loc=0, fontsize=8, ncol=2)
+leg = plt.legend([l1[0], l2[0]], ['Obs.', 'Model'], loc=0, fontsize=8, ncol=2)
+ax.add_artist(leg)
 ax.set_title('Equatorial CHLA anomalies')
 ax.set_ylabel('[mg/m3]')
 
@@ -246,6 +258,14 @@ ax.grid(True)
 ax.set_ylim(-0.2, 0.2)
 ax.text(timemod[-1] - 50, -0.15, 'a' + ")", ha='center', va='center', bbox=dicttext)
 
+axbis = ax.twinx()
+ax.set_zorder(1)
+ax.patch.set_visible(False)
+lll = axbis.fill_between(timemod, 0, nino, where=(nino > 0), color='firebrick', interpolate=True)
+lll = axbis.fill_between(timemod, 0, nino, where=(nino < 0), color='steelblue', interpolate=True)
+mmm = 2.5
+axbis.set_ylim(-mmm, mmm)
+axbis.get_yaxis().set_visible(False)  # removes xlabels
 
 left = 0.56
 
@@ -256,9 +276,10 @@ modf = lanc.wgt_runave(mod)
 alpha = 0.7
 
 ax = plt.axes(axes)
-l2 = plt.plot(timemod, modf, 'firebrick', alpha=alpha)
+l2 = plt.plot(timemod, modf, 'black', alpha=alpha)
 ax.set_xlim(toffset, timemod.max())
-plt.legend([l2[0]], ['Model'], loc=0, fontsize=8, ncol=2)
+leg = plt.legend([l2[0]], ['Model'], loc=0, fontsize=8, ncol=2)
+ax.add_artist(leg)
 ax.set_title('Equatorial CHLA anomalies')
 ax.set_ylabel('[mg/m3]')
 
@@ -269,6 +290,16 @@ ax.set_xlim(timemod.min(), timemod.max())
 yyy = 0.025
 ax.set_ylim(-yyy, yyy)
 ax.text(timemod[-1] - 50, -0.0175, 'b' + ")", ha='center', va='center', bbox=dicttext)
+
+axbis = ax.twinx()
+ax.set_zorder(2)
+ax.patch.set_visible(False)
+lll = axbis.fill_between(timemod, 0, tpi, where=(tpi > 0), color='firebrick', interpolate=True)
+lll = axbis.fill_between(timemod, 0, tpi, where=(tpi < 0), color='steelblue', interpolate=True)
+axbis.set_ylim(-1, 1)
+#axbis.set_ylabel('TPI')
+#legend = plt.legend([lll[0]], ['TPI'], loc=2, fontsize=8)
+axbis.get_yaxis().set_visible(False)  # removes xlabels
 
 plt.savefig('fig2', bbox_inches='tight')
 
