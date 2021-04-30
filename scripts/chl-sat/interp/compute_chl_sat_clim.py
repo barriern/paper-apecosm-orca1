@@ -12,18 +12,20 @@ nmonths = 12
 clim = np.zeros((nmonths, nlat, nlon), dtype=np.float)
 counter = np.zeros((nmonths, nlat, nlon), dtype=np.int)
 
-for y in range(1998, 2020):
+for y in range(1998, 2008):
     filelist = np.sort(glob('%s/*-%d*nc' %(dirin, y)))
+    print(filelist)
 
     data = xr.open_mfdataset(filelist, combine='by_coords')
     lon = data['lon'].values
     lat = data['lat'].values
     count = data['count_a'].to_masked_array()
     data = data['chlor_a'].to_masked_array()
+    print(data.shape)
     
-    data = np.ma.masked_where(count < (100 / 3), data)
+    data = np.ma.masked_where(count < (100 / 3), data)  # data are masked where count < 33%
 
-    iok = np.nonzero(1 - np.ma.getmaskarray(data))  # iok = index where data is ocean
+    iok = np.nonzero(np.ma.getmaskarray(data) == False)  # iok = index where data is ocean
     clim[iok] += data[iok]
     counter[iok] += 1
 
