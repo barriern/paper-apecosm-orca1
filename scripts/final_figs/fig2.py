@@ -15,10 +15,16 @@ import apecosm.ts as ts
 import scipy.signal as sig
 from envtoolkit.ts import Lanczos
 
+nWgt      = 157
+fca       = 1./156
+fca = 1 / fca
+
+lanc = Lanczos('lp', pca=fca, nwts=nWgt)
+
 dicttext = dict(boxstyle='round', facecolor='lightgray', alpha=1)
 
 letters = list(string.ascii_lowercase)
-#letters = letters[2:]
+letters = letters[2:]
 
 proj = ccrs.PlateCarree(central_longitude=180)
 proj2 = ccrs.PlateCarree(central_longitude=0)
@@ -130,7 +136,7 @@ gl.yformatter = LATITUDE_FORMATTER
 gl.xlocator = mticker.FixedLocator([150, 180, -180, -150, -120, -90, -60])
 
 ################################################ tpi
-left = 0.05
+left = 0.54
 width = 0.4
 bottom = 0.09
 height = 0.15
@@ -152,7 +158,7 @@ ax2.add_feature(cfeature.COASTLINE, zorder=1001)
 ax2.set_ylim(-40, 40)
 ax2.set_xlim(-60, 130)
 
-ax2.set_title('Model Chl / ONI')
+ax2.set_title('Model Chl / TPI')
 
 xmin = 0.2
 #cax = plt.axes([xmin, 0.1, 1-2*xmin, 0.03])
@@ -185,33 +191,39 @@ otime = np.arange(len(mod))
 imod = np.nonzero(datemod >= date[0])[0]
 iobs = np.nonzero(date <= datemod[-1])[0]
 
-mod = mod[imod]
-obs = obs[iobs]
-time = np.arange(len(mod))
-date = date[iobs]
+toffset = imod[0]
+
+time = np.arange(len(obs))
+timemod = np.arange(len(mod))
 
 print(date)
-iclim = np.nonzero((date >= 199801) & (date <= 200712))[0]
-climmod, anom = ts.get_monthly_clim(mod[iclim])
-climobs, anom = ts.get_monthly_clim(obs[iclim])
+iclimobs = np.nonzero((date >= 199801) & (date <= 200712))[0]
+iclimmod = np.nonzero((datemod >= 199801) & (datemod <= 200712))[0]
+climmod, anom = ts.get_monthly_clim(mod[iclimmod])
+climobs, anom = ts.get_monthly_clim(obs[iclimobs])
 year  = date // 100
 month = date - 100 * year
 
-labels = ['%.4d-%.2d' %(y, m) for y, m in zip(year, month)]
+yearmod  = datemod // 100
+monthmod = datemod - 100 * yearmod
+
+labels = ['%.4d-%.2d' %(y, m) for y, m in zip(yearmod, monthmod)]
 labels = np.array(labels)
 
 for t in time:
     m = month[t] - 1
     obs[t] = obs[t] - climobs[m] 
+for t in timemod:
+    m = monthmod[t] - 1
     mod[t] = mod[t] - climmod[m] 
 
-print('Correlation = ', np.corrcoef(obs, mod)[0, 1])
+print('Correlation = ', np.corrcoef(obs[iobs], mod[imod])[0, 1])
 
-xticks = np.arange(4, len(time), 2*12)
+xticks = np.arange(2*12, len(timemod), 5*12)
 
-left = 0.6
-width = 0.35
-bottom = 0.12
+left = 0.07
+width = 0.37
+bottom = 0.45
 height = 0.1
 
 axes = (left, bottom, width, height)
@@ -219,19 +231,44 @@ axes = (left, bottom, width, height)
 alpha = 0.7
 
 ax = plt.axes(axes)
-l1 = plt.plot(time, obs, color='k')
-l2 = plt.plot(time, mod, 'firebrick', alpha=alpha)
+l1 = plt.plot(time + toffset, obs, color='k')
+l2 = plt.plot(timemod, mod, 'firebrick', alpha=alpha)
+ax.set_xlim(toffset, timemod.max())
 plt.legend([l1[0], l2[0]], ['Obs.', 'Model'], loc=0, fontsize=8, ncol=2)
 ax.set_title('Equatorial CHLA anomalies')
 ax.set_ylabel('[mg/m3]')
 
 #plt.legend(loc=0)
-ax.set_xticks(time[xticks])
+ax.set_xticks(timemod[xticks])
 ax.set_xticklabels(labels[xticks], rotation=45, ha='right')
 ax.grid(True)
-ax.set_xlim(time.min(), time.max())
+#ax.set_xlim(time.min(), time.max())
 ax.set_ylim(-0.2, 0.2)
-ax.text(time[-1] - 15, -0.15, 'd' + ")", ha='center', va='center', bbox=dicttext)
+ax.text(timemod[-1] - 50, -0.15, 'a' + ")", ha='center', va='center', bbox=dicttext)
+
+
+left = 0.56
+
+axes = (left, bottom, width, height)
+
+modf = lanc.wgt_runave(mod)
+
+alpha = 0.7
+
+ax = plt.axes(axes)
+l2 = plt.plot(timemod, modf, 'firebrick', alpha=alpha)
+ax.set_xlim(toffset, timemod.max())
+plt.legend([l2[0]], ['Model'], loc=0, fontsize=8, ncol=2)
+ax.set_title('Equatorial CHLA anomalies')
+ax.set_ylabel('[mg/m3]')
+
+ax.set_xticks(timemod[xticks])
+ax.set_xticklabels(labels[xticks], rotation=45, ha='right')
+ax.grid(True)
+ax.set_xlim(timemod.min(), timemod.max())
+yyy = 0.025
+ax.set_ylim(-yyy, yyy)
+ax.text(timemod[-1] - 50, -0.0175, 'b' + ")", ha='center', va='center', bbox=dicttext)
 
 plt.savefig('fig2', bbox_inches='tight')
 
