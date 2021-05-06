@@ -16,7 +16,7 @@ import os.path
 
 ''' Reads the ONI index and returns a date (YYYYMM) and the ONI time series '''
 
-def read_index(filename='index/oni.data', keepnan=True, skipfooter=8, na=-99.90):
+def read_index(filename='index/oni.data', keepnan=True, skipfooter=8, na=-99.90, keepperiod=True):
 
     # reads the data
     data = pd.read_csv(filename, skiprows=1, skipfooter=skipfooter, engine='python', header=None, index_col=0, delim_whitespace=True, na_values=na)
@@ -34,6 +34,11 @@ def read_index(filename='index/oni.data', keepnan=True, skipfooter=8, na=-99.90)
 
     iok = np.nonzero(np.isnan(ts) == False)[0]
     if not keepnan:
+        date = date[iok]
+        ts = ts[iok]
+
+    if(keepperiod):
+        iok = np.nonzero((date >= 195801) & (date <= 201812))[0]
         date = date[iok]
         ts = ts[iok]
 
