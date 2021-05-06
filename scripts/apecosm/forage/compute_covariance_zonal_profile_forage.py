@@ -29,11 +29,6 @@ for i in range(ns):
             for l in range(nx):
                 for m in range(nd):
                     cov[i, j, k, l, m] = np.cov(data[i, j, k, l, m], nino, ddof=1)[0, 1]
-                    break
-                break
-            break
-        break
-    break
 
 fileout = '%s/zonal_monthly_covariance_yearly_enso.nc' %(dirin)
 output = xr.Dataset()
