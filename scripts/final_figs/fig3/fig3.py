@@ -9,6 +9,9 @@ from mpl_toolkits.axes_grid1 import AxesGrid
 from cartopy.mpl.geoaxes import GeoAxes
 import matplotlib.ticker as mticker
 from cycler import cycler
+from cartopy.mpl.geoaxes import GeoAxes
+from matplotlib.axes import Axes
+GeoAxes._pcolormesh_patched = Axes.pcolormesh
 
 colcyc =  cycler(color=["cyan", 'magenta', 'gold', 'plum', 'green', 'orange'])
 plt.rc('axes', prop_cycle=colcyc)
@@ -87,6 +90,9 @@ dirin = '/home/barrier/Work/scientific_communication/articles/ongoing/paper-apec
 dirin = '../../data'
 
 mesh = xr.open_dataset('%s/mesh_mask_eORCA1_v2.2.nc' %dirin)
+ilon = slice(58, 229, None)
+ilat = slice(114, 265, None)
+mesh = mesh.isel(x=ilon, y=ilat)
 mesh = mesh.isel(t=0, z=0)
 tmask = mesh['tmask'].to_masked_array()
 lon = mesh['glamt'].values
@@ -116,10 +122,10 @@ cpt = 1
 dirin = '../../correlation_maps'
 dirin = 'data/'
 
-data = xr.open_dataset("%s/final-runs_yearly_mean_OOPE.nc" %dirin)
-data = data.isel(community=0)
-cov = data['OOPE'].to_masked_array()  # lat, lon, w
+data = xr.open_dataset("%s/temp_ORCA1_JRAC02_CORMSK_CYC3_FINAL_OOPE.nc" %dirin)
+cov = data['OOPE'].to_masked_array()  # time, lat, lon, w
 cov = np.squeeze(cov)
+print(cov.shape)
 
 print(cov.shape)  # lat, lon, com, w
 
@@ -146,6 +152,8 @@ cov = cov[:, :, ilength]
 cov = np.log10(cov)
 length = length[ilength]
 
+print(cov.shape)  # 151, 171, 3
+print(lat.shape)
 
 latmask = (np.abs(lat) <= 40)
 lonmask = (lon >= 130) & (lon <= 300)
@@ -165,7 +173,7 @@ for p in range(3):
     ax.add_feature(cfeature.LAND, zorder=100, color='lightgray')
     ax.add_feature(cfeature.COASTLINE, zorder=101)
     cb = cbar_axes[get_cpt(cpt)].colorbar(cs)
-    cb.set_label('Log10 Biom. dens. ($J.m^{-2}$)')
+    cb.set_label_text('Log10 Biom. dens. ($J.m^{-2}$)')
     cs.set_clim(cmin, cmax)
     ax.set_title('Length = %.2e cm' %length[p])
     ax.text(lontext, lattext, letters[cpt - 1] + ")", ha='center', va='center', transform=proj, bbox=dicttext)
@@ -180,11 +188,13 @@ for p in range(3):
     cpt += 1
 
 ########################################################### processing covariance
-data = xr.open_dataset("%s/final-runs_covariance_yearly_enso_epis_OOPE.nc" %dirin)
-cov = data['covariance'].to_masked_array()  # lat, lon, w
+data = xr.open_dataset("%s/final-runs_covariance_monthly_oni_epis_OOPE.nc" %dirin)
+cov = data['covariance'].to_masked_array().T  # y, x, w
 cov = np.ma.masked_where(cov == 0, cov)
 cov = cov * wstep
 cov = cov.T  # w, lon, lat
+print(cov.shape)
+print('lala')
 
 cov = cov[ilength]
 
@@ -203,7 +213,7 @@ for p in range(3):
     ax.add_feature(cfeature.COASTLINE, zorder=101)
     cb = cbar_axes[get_cpt(cpt)].colorbar(cs)
     cs.set_clim(-perc, perc)
-    cb.set_label('Biom. Nino. cov. ($J.m^{-2}$)')
+    cb.set_label_text('Biom. Nino. cov. ($J.m^{-2}$)')
     ax.set_ylim(-40, 40)
     ax.set_xlim(-60, 130)
     ax.set_title('Length = %.2e cm' %length[p])
