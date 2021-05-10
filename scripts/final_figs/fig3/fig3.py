@@ -214,4 +214,4 @@ for p in range(3):
 
     cpt += 1
 
-plt.savefig('covariance_mean_epi.png', bbox_inches='tight')
+plt.savefig('fig3.png', bbox_inches='tight')
