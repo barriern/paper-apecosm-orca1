@@ -4,11 +4,15 @@ import matplotlib.pyplot as plt
 import numpy as np
 import envtoolkit.map as amap
 import cartopy.mpl.gridliner as gridliner
+import string
+
+dicttext = dict(boxstyle='round', facecolor='lightgray', alpha=1)
+
+letters = list(string.ascii_lowercase)
 
 plt.rcParams['image.cmap'] = 'RdBu_r'
 plt.rcParams['lines.linewidth'] = 2
 plt.rcParams['font.size'] = 12
-print(plt.rcParams.keys())
 
 _DEGREE_SYMBOL = u'\u00B0'
 
@@ -87,6 +91,9 @@ ccc = [15, 6, 1, 1.5, 15, 0.45]
 
 axorder = [0, 2, 4, 1, 3, 5]
 
+lontext = 140
+lattext = -0.25
+
 for s in range(3):
 
     ilon = np.nonzero((lonf >= 130) & (lonf <= 300) & (np.ma.getmaskarray(forage_cov[s, 0, :]) == False))[0]
@@ -100,6 +107,7 @@ for s in range(3):
     cl = ax.contour(lonf[ilon], -z1d[iz], datam, nlevels, linewidths=1, colors='k')
     ax.clabel(cl, cl.levels, fmt="%.f", manual=False)
     cs.set_clim(-ccc[cpt], ccc[cpt])
+    ax.text(lontext, lattext, letters[cpt] + ")", ha='center', va='center', bbox=dicttext)
 
     ax.set_xlim(130, 300)
     labels = ['150', '180', '-150', '-120', '-90', '-60']
@@ -145,6 +153,7 @@ for v in ['thetao', 'O2', 'PLK']:
     ax.clabel(cl, cl.levels, fmt="%.1f", manual=False)
     #ax.set_ylim(-z1d[iz].min(), 0)
     cs.set_clim(-ccc[cpt], ccc[cpt])
+    ax.text(lontext, lattext, letters[cpt] + ")", ha='center', va='center', bbox=dicttext)
 
     ax.set_xlim(130, 300)
     labels = ['150', '180', '-150', '-120', '-90', '-60']
@@ -163,5 +172,5 @@ for v in ['thetao', 'O2', 'PLK']:
 
     cpt += 1
 
-plt.savefig('fig3.png', bbox_inches='tight')
+plt.savefig('fig4.png', bbox_inches='tight')
 
