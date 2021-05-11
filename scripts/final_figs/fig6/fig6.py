@@ -126,4 +126,3 @@ for lll in range(20, 60, 10):
     
     plt.savefig('fig6_%d.png' %lll, bbox_inches='tight')
     plt.close(fig)
-    break
