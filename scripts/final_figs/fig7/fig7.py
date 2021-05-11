@@ -14,6 +14,11 @@ from cartopy.mpl.geoaxes import GeoAxes
 import matplotlib.ticker as mticker
 from cycler import cycler
 
+letters = list(string.ascii_lowercase)
+dicttext = dict(boxstyle='round', facecolor='lightgray', alpha=1)
+lontext = 3 * 12
+lattext = -2.25
+
 wpred = [14, 45, 80]
 
 tpidata = xr.open_dataset("../../nino/filt_tpi.nc")
@@ -53,8 +58,8 @@ for lll in range(20, 60, 10):
     sizes = ['3cm', '20cm', '90cm']
 
     dicttext = dict(boxstyle='round', facecolor='lightgray', alpha=1)
-    lontext = 120
-    lattext = 30
+    #lontext = 120
+    #lattext = 30
                 
     fig = plt.figure(figsize=(12, 8))
     axgr = ImageGrid(fig, 111,  nrows_ncols=(3, 2), label_mode='L', aspect=False, share_all=True, axes_pad=[0.5, 0.5])
@@ -63,8 +68,6 @@ for lll in range(20, 60, 10):
     axout = [p[1] for p in axout]
 
     cpt = 1
-
-    letters = list(string.ascii_lowercase)
 
     clim = [50, 5, 3]
 
@@ -96,6 +99,7 @@ for lll in range(20, 60, 10):
             ax.set_title('Epi., %s, PC %d (%.2f' %(sizes[s], e + 1, var[s, e]) + '\%)')
             ax.set_ylim(-3, 3)
             ax.grid(True, linestyle='--', linewidth=0.5)
+            ax.text(lontext, lattext, letters[cpt - 1] + ")", ha='center', va='center', bbox=dicttext)
 
             cpt += 1
 

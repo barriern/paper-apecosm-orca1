@@ -16,6 +16,11 @@ from cycler import cycler
 from matplotlib.axes import Axes
 GeoAxes._pcolormesh_patched = Axes.pcolormesh
 
+letters = list(string.ascii_lowercase)
+dicttext = dict(boxstyle='round', facecolor='lightgray', alpha=1)
+lontext = 120
+lattext = 30
+
 wpred = [14, 45, 80]
 ilon = slice(58, 229, None)
 ilat = slice(114, 265, None)
@@ -63,8 +68,6 @@ for lll in range(20, 60, 10):
 
     dictgrid = {'crs':ccrs.PlateCarree(central_longitude=0), 'draw_labels':True, 'linewidth':0.5, 'color':'gray', 'alpha':0.5, 'linestyle':'--'}
     dicttext = dict(boxstyle='round', facecolor='lightgray', alpha=1)
-    lontext = 120
-    lattext = 30
                 
     fig = plt.figure(figsize=(12, 8))
     axes_class = (GeoAxes, dict(map_projection=proj))
@@ -98,7 +101,7 @@ for lll in range(20, 60, 10):
             cs = ax.pcolormesh(lonf, latf, eof[s, e, 1:, 1:], transform=proj2, cmap=plt.cm.RdBu_r)
             ax.add_feature(cfeature.LAND, color='lightgray')
             ax.add_feature(cfeature.COASTLINE)
-            ax.set_ylim(-40, 40)
+            ax.set_ylim(-50, 50)
             ax.set_xlim(-60, 130)
             cs.set_clim(-clim[s], clim[s])
             title = r'%s, %s, EOF %d (%.2f' %('Epi.', sizes[s], e + 1, var[s, e]) + '\%)'
@@ -117,8 +120,10 @@ for lll in range(20, 60, 10):
             gl.xformatter = LONGITUDE_FORMATTER
             gl.yformatter = LATITUDE_FORMATTER
             gl.xlocator = mticker.FixedLocator([150, 180, -150, -120, -90, -60])
+            ax.text(lontext, lattext, letters[cpt - 1] + ")", ha='center', va='center', bbox=dicttext)
 
             cpt += 1
     
     plt.savefig('fig6_%d.png' %lll, bbox_inches='tight')
     plt.close(fig)
+    break
