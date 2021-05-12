@@ -17,3 +17,4 @@ doc
 **/*.docx
 **/*.nc
 **/__pycache__
+**/data
