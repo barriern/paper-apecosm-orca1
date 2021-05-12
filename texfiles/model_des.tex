@@ -1,34 +1,23 @@
 \section{Model description}
 
-\subsection{Physical and biogeochemical forcings}
+\subsection{Physical and biogeochemical forcing}
 
-The physical and biogeochemical used in the present study is a forced, hindcast simulation of the coupled physical/biogeochemical 
-ocean model NEMO-PISCES \citep{aumontPISCESv2OceanBiogeochemical2015}. The model was run on a tripolar orca grid \citep{madecGlobalOceanMesh1996} with a
-1 degree resolution at the equator. The vertical resolution ranges from 1.m at the surface to 100m at 1 kilometer depth.\\
+The physical and biogeochemical fields used to force the ecosystem model are extracted from an oceanic hindcast  simulation performed with the NEMO (Nucleus for European Modelling of the Ocean; Madec, 2008) dynamical ocean model that includes the biogeochemical component PISCES (Pelagic Interaction Scheme for Carbon and Ecosystem Studies; Aumont et al., 2015). PISCES is a model of intermediate complexity designed for global ocean applications (Aumont and Bopp, 2006), which uses 24 prognostic variables and simulates biogeochemical cycles of oxygen, carbon and the main nutrients controlling phytoplankton growth (nitrate, ammonium, phosphate, silicic acid, and iron). It simulates the lower trophic levels of marine ecosystems distinguishing four plankton functional types based on size: two phytoplankton groups (small = nanophytoplankton and large = diatoms) and two zooplankton groups (small = microzooplankton and
+large = mesozooplankton).The model uses the ORCA1 grid configuration, with a 1\degree{} nominal horizontal resolution with a refined 1/3\degree{} meridional resolution in the equatorial band. The vertical resolution ranges from 1 m at the surface to 100m at 1 kilometer depth. \\ 
 
-The physical biogeochemical model was forced by using the JRA atmospheric reanalysis \citep{kobayashiJRA55ReanalysisGeneral2015} from 1958 to 2018.
-The fields that are used by Apecosm are temperature, ocean transports, 
-oxygen, plankton concentration (diatoms, mesozooplankton and microzooplankton, big particulate organic matter), 
-\ppar (PAR). and ocean cell thickness, which is variable over time and space.\\
+
+This model is forced over the 1958 to 2018 period with the atmospheric fields from JRA atmospheric reanalysis (Kobayashi et al., 2015), that are representative of observed variability  over the historical period. Temperature, ocean transports, oxygen, plankton concentration (diatoms, mesozooplankton and microzooplankton, big particulate organic matter), photosynthetically active radiation (PAR) and the layer thickness from this simulation are then used to force the Apecosm ecosystem model.\\
 
 %The physical model uses a non-linear free surface, as described in \cite{levierbrunoFreeSurfaceVariable2007}.
 %Therefore, ocean cells have a variable thickness. This 
 
 \subsection{Marine ecosystem model}
 
-The marine ecosystem model used in the present study is the \emph{Apex Predators Ecosystem Model} (\ap, \citealt{mauryModelingEnvironmentalEffects2007,mauryOverviewAPECOSMSpatialized2010}), which simulates 
-the transfer of energy in marine ecosystems in a 5 dimensional space (space, time and size).
-The biological processes include size-based opportunistic trophic interactions, competition for food, allocation of energy between growth and reproduction, somatic and maturity maintenance, predatory and starvation mortality (see \citealt{mauryModelingEnvironmentalEffects2007} for a detailed description of the model).
-The physiological bases of the model are derived from the dynamic energy budget theory (DEB, \citealt{kooijmanDynamicEnergyMass2000}).
-All the physiological rates are temperature-dependent.  In addition to biological processes, energy density 
-is also subjected to both advection and diffusion, following \cite{faugerasAdvectiondiffusionreactionSizestructuredFish2005}.\\
+The marine ecosystem model used in the present study is the Apex Predators Ecosystem Model (Apecosm, (Maury, 2010; Maury et al., 2007)), which simulates the transfer of energy in marine ecosystems in a 5 dimensional space (space, time and size). The biological processes include size-based opportunistic trophic interactions, competition for food, allocation of energy between growth and reproduction, somatic and maturity maintenance, predatory and starvation mortality (see (Maury et al., 2007) for a detailed description of the model). The physiological bases of the model are derived from the dynamic energy budget theory (DEB, (Kooijman, 2000)). All the physiological rates are temperature-dependent. In addition to biological processes, energy density is also subjected to both advection and diffusion, following (Faugeras and Maury, 2005).\\ 
 
-In the present work, three generic communities are simulated: one epipelagic community, one migrant community and one mesopelagic community (table \ref{t:com-habitat}). 
-The epilagic community distribution is influenced by temperature and oxygen, while light only influences the functional response. The 
-migrants are only influenced by light: during daytime, they remain at depth, while moving at the 
-surface at night. Mesopolagic, on the other hand, remain at depth during both night and day.\\
+In the present work, three generic communities are simulated: one epipelagic community, one migrant community and one mesopelagic community (Table 1). The epilagic community distribution is influenced by temperature and oxygen, while light only influences the functional response. The migrants are only influenced by light: during daytime, they remain at depth, while moving at the surface at night. Mesopolagics, on the other hand, remain at depth during both night and day.\\
 
-Epilagic feed on other epilagic fish only during night daytime. Migrant feed on other migrant and epipelagic, only during night time. While mesopelagic feed on migrant and mesopelagic during daytime, and only on other mesopelagic during nighttime.\\
+Epilagic feed on other epilagic fish only during night daytime. Migrants feed on other migrants and epipelagics, only during night-time. While mesopelagics feed on migrant and mesopelagic during daytime, and only on other mesopelagic during night-time.\\
 
 \begin{table}
 \begin{tabular}{cccc}
@@ -45,12 +34,55 @@ Epilagic feed on other epilagic fish only during night daytime. Migrant feed on 
 \label{t:com-habitat}
 \end{table}
 
-In order to insure that the size-spectrum is fully unfolded, the model has been run three times. First, the model has been initialized from rest and run from 1958 to 2018. Then, the end of this first spin-up phase has been used to run another cycle, which was in turn used to run the simulation presented in the given study.\\
+The focus will be first laid on vertically integrated fish biomass, in order to have a spatial vue of the response. Then, the response of the fish biomass as a function of longitude and depth will be investigated.
+
+For the sake of simplicity, the focus will be laid on three size classes: 3cm, representing small fishes, 20cm, representing intermediate sizes, and 90 cm, representing large individuals. These sizes are also representative of the sizes of tuna target species within the region.
+In order to ensure that the size-spectrum is fully unfolded, the model has been run three times. First, the model has been initialized from rest and run from 1958 to 2018. Then, the end of this first spin-up phase has been used to run another cycle, which was in turn used to run the simulation presented in the given study.\\
 
 
+\subsection{Ancillary files}
+
+\subsubsection{Climate indices}
+Internannual ENSO variability is be inferred from the Oceanic Nino Index (\url{https://www.cpc.ncep.noaa.gov/data/indices/oni.ascii.txt}, hereafter ONI), which is a 3-month running mean of the sea-surface temperature anomalies averaged over the Niño 3.4 region (5N-5S, 170W-120W).\\ 
+
+Decadal variability is inferred from the Tripole Index for the Interdecadal Pacific Oscillation (\url{https://psl.noaa.gov/data/timeseries/IPOTPI/}, hereafter TPI) index, which is based on the difference between the sea-surface temperature anomalies averaged over the central equatorial Pacific and the average of the sea-surface temperature anomalies in the Northwest and Southwest Pacific. The filtered NOAA ERSST V5 version of the index was used (Lanczos filtering with a cutoff period of  13 years).\\ 
+
+\subsubsection{Sea-surface temperature} 
+
+Hadley Sea-Surface Temperature (HadISST1, Rayner et al., 2003) have been used to validate the sea-surface temperature simulated by the model. HadISST1 temperatures are reconstructed using a two stage reduced-space optimal interpolation procedure, followed by superposition of quality-improved gridded observations onto the reconstructions to restore local detail. 
 
 
+\subsubsection{Chlorophyll}
 
+In order to validate the biogeochemical response of the NEMO-Pisces model, satellite based observations of ocean colour (Sathyendranath et al., 2019) have been used. The OceanColour-CCI V5 dataset provides monthly chlorophyll-a with a horizontal resolution of 1/24\degree{}. First, data were Pacific-centred and regridded to a one-degree resolution by computing the weighted mean over 24x24 boxes, the weights being provided by the cosine of latitude. Coarse resolution grid cells that contained more than 1/3 of missing data were considered as missing. \\ 
+
+\subsection{Statistical tools} 
+
+\subsubsection{Covariance analysis}
+
+In order to assess the impacts of climate variability (ONI, TPI) on temperature, chlorophyll or fish biomass, covariance analysis has been extensively used. First, the monthly climatology of the analysed fields is computed and subtracted from the monthly data. Then, these monthly anomalies are detrended. Finally, the covariance between the resulting time series and the climate indexes are computed for each grid point considered.
+
+\subsubsection{Empirical Orthogonal Functions (EOF) decomposition}
+
+In order to facilitate the analysis of the variability of simulated fish biomass, which varies over time, space and size-class, an Empirical Orthogonal Functions (EOF) decomposition has been performed. The aim is to decompose a given field, F(t, y, x), into a series of maps the so-called EOFs, which are associated with time-series, called principal components (PCs):
+
+\begin{displaymath}
+F(t, y, x) = \sum_{k=0}^{N_t} PC_k(t) \times EOF_k(y, x) 
+\end{displaymath}
+
+with $N_t$ the total number of time-steps. The decomposition is obtained by the extraction of the eigenvalues of the covariance matrix of the considered dataset. \\
+
+The methodology for EOF decomposition is as follows. As for covariance analysis (see above), detrended fish biomass density anomalies have been computed for each size-class. Then, all points outside of the region of interest have been masked. Finally, the dataset has been weighted as follows:
+
+\begin{displaymath}
+W_{tot}=\sum_{k=0}^{N_{cell}}S_k(y, x) 
+\end{displaymath}
+
+\begin{displaymath}
+W(y, x) = \sqrt{\frac{S(y, x)}{Wtot}} 
+\end{displaymath}
+
+with $S_k(y, x)$ the surface of the cell.
 
 
 
