@@ -9,7 +9,7 @@ from mpl_toolkits.axes_grid1 import AxesGrid
 from cartopy.mpl.geoaxes import GeoAxes
 import string
 import sys
-sys.path.append('../nino')
+sys.path.append('../../nino')
 from extract_nino import read_index
 import apecosm.ts as ts
 import scipy.signal as sig
@@ -31,7 +31,7 @@ proj2 = ccrs.PlateCarree(central_longitude=0)
 
 gridparams = {'crs': ccrs.PlateCarree(central_longitude=0), 'draw_labels':True, 'linewidth':0.5, 'color':'gray', 'alpha':0.5, 'linestyle':'--'}
 
-mesh = xr.open_dataset('../data/mesh_mask_eORCA1_v2.2.nc')
+mesh = xr.open_dataset('../../data/mesh_mask_eORCA1_v2.2.nc')
 mesh = mesh.isel(t=0, z=0)
 lon = mesh['glamt'].values
 lat = mesh['gphit'].values
@@ -40,6 +40,7 @@ latf = mesh['gphif'].values
 tmask = mesh['tmask'].values
 
 fig = plt.figure(figsize=(8, 16))
+
 plt.subplots_adjust(top=0.95)
 axes_class = (GeoAxes, dict(map_projection=proj))
 
@@ -56,12 +57,12 @@ axout = [p[1] for p in axout]
 
 #################################################################### Plotting covariances satellite
 
-ccc = -0.1
+ccc = 0.1
 lontext = 120
 lattext = 30
 
 # processing obs
-data = xr.open_dataset("../chl-sat/interp/covariance_satellite_data.nc")
+data = xr.open_dataset("../../chl-sat/interp/covariance_satellite_data.nc")
 cov = data['cov'].to_masked_array()
 cov = np.ma.masked_where(cov == 0, cov)
 lon = data['lon'].values
@@ -73,6 +74,7 @@ ax.set_ylim(-40, 40)
 ax.set_xlim(-60, 130)
 
 cs = ax.pcolormesh(lon, lat, cov, transform=ccrs.PlateCarree())
+
 cs.set_clim(-ccc, ccc)
 ax.add_feature(cfeature.LAND, zorder=1000, color='lightgray')
 ax.add_feature(cfeature.COASTLINE, zorder=1001)
@@ -86,12 +88,12 @@ gl.xlocator = mticker.FixedLocator([150, 180, -180, -150, -120, -90, -60])
 
 ax.set_title('OCCI Chl / ONI')
 cb = axgr.cbar_axes[iiii].colorbar(cs)
-cb.set_label("Covariance [mg/m3]")
+cb.set_label_text("Covariance [mg/m3]")
 ax.text(lontext, lattext, letters[iiii] + ")", ha='center', va='center', transform=proj, bbox=dicttext)
 
 ###################################### plot cov. model
 
-mesh = xr.open_dataset('../data/mesh_mask_eORCA1_v2.2.nc')
+mesh = xr.open_dataset('../../data/mesh_mask_eORCA1_v2.2.nc')
 mesh = mesh.isel(t=0)
 lon = mesh['glamt'].values
 lat = mesh['gphit'].values
@@ -99,11 +101,11 @@ tmask = mesh['tmask'].values[0]
 lonf = mesh['glamf'].values
 latf = mesh['gphit'].values
 
-data = xr.open_dataset("../chl-sat/model/covariance_model_data.nc")
+data = xr.open_dataset("../../chl-sat/model/covariance_model_data.nc")
 cov = data['cov'].values
 cov = np.ma.masked_where(tmask == 0, cov)
 
-data = xr.open_dataset("../chl-sat/model/cov_modchl_oni_tpi.nc")
+data = xr.open_dataset("../../chl-sat/model/cov_modchl_oni_tpi.nc")
 cov = data['covoni'].values
 cov = cov.T
 cov = np.ma.masked_where(tmask == 0, cov)
@@ -123,7 +125,7 @@ ax2.set_title('Model Chl / ONI')
 xmin = 0.2
 #cax = plt.axes([xmin, 0.1, 1-2*xmin, 0.03])
 cb = axgr.cbar_axes[iiii].colorbar(cs)
-cb.set_label("Covariance [mg/m3]")
+cb.set_label_text("Covariance [mg/m3]")
 ax2.text(lontext, lattext, letters[iiii] + ")", ha='center', va='center', transform=proj, bbox=dicttext)
 
 gl = ax2.gridlines(**gridparams)
@@ -143,7 +145,7 @@ height = 0.15
 ccc2 = 1e-2
 
 axes = (left, bottom, width, height)
-data = xr.open_dataset("../chl-sat/model/cov_modchl_oni_tpi.nc")
+data = xr.open_dataset("../../chl-sat/model/cov_modchl_oni_tpi.nc")
 cov = data['covtpi'].values
 cov = cov.T
 cov = np.ma.masked_where(tmask == 0, cov)
@@ -177,20 +179,20 @@ gl.xlocator = mticker.FixedLocator([150, 180, -180, -150, -120, -90, -60])
 
 ############################################ plotting time-series
 
-data = xr.open_dataset('../data/filt_tpi.nc')
+data = xr.open_dataset('../../data/filt_tpi.nc')
 tpi = data['tpi_filt'].values
 
-dnino, nino = read_index('../data/index/oni.data')
+dnino, nino = read_index('../../data/index/oni.data')
 iok = np.nonzero((dnino >= 195801) & (dnino <= 201812))[0]
 dnino = dnino[iok]
 nino = nino[iok]
 
-data = xr.open_dataset('../chl-sat/model/simulated_equatorial_mean.nc')
+data = xr.open_dataset('../../chl-sat/model/simulated_equatorial_mean.nc')
 datemod = data['time_counter.year'] * 100 + data['time_counter.month'] 
 datemod = datemod.values
 mod = data['chl'].values
 
-data = xr.open_dataset('../chl-sat/interp/obs_equatorial_mean.nc')
+data = xr.open_dataset('../../chl-sat/interp/obs_equatorial_mean.nc')
 obs = data['chl'].values
 date = data['time.year'] * 100 + data['time.month']
 date = date.values
@@ -258,14 +260,14 @@ ax.grid(True)
 ax.set_ylim(-0.2, 0.2)
 ax.text(timemod[-1] - 50, -0.15, 'a' + ")", ha='center', va='center', bbox=dicttext)
 
-axbis = ax.twinx()
-ax.set_zorder(1)
-ax.patch.set_visible(False)
-lll = axbis.fill_between(timemod, 0, nino, where=(nino > 0), color='firebrick', interpolate=True)
-lll = axbis.fill_between(timemod, 0, nino, where=(nino < 0), color='steelblue', interpolate=True)
-mmm = 2.5
-axbis.set_ylim(-mmm, mmm)
-axbis.get_yaxis().set_visible(False)  # removes xlabels
+#axbis = ax.twinx()
+#ax.set_zorder(1)
+#ax.patch.set_visible(False)
+#lll = axbis.fill_between(timemod, 0, nino, where=(nino > 0), color='firebrick', interpolate=True)
+#lll = axbis.fill_between(timemod, 0, nino, where=(nino < 0), color='steelblue', interpolate=True)
+#mmm = 2.5
+#axbis.set_ylim(-mmm, mmm)
+#axbis.get_yaxis().set_visible(False)  # removes xlabels
 
 left = 0.56
 
@@ -287,19 +289,19 @@ ax.set_xticks(timemod[xticks])
 ax.set_xticklabels(labels[xticks], rotation=45, ha='right')
 ax.grid(True)
 ax.set_xlim(timemod.min(), timemod.max())
-yyy = 0.025
+yyy = 0.028
 ax.set_ylim(-yyy, yyy)
 ax.text(timemod[-1] - 50, -0.0175, 'b' + ")", ha='center', va='center', bbox=dicttext)
 
-axbis = ax.twinx()
-ax.set_zorder(2)
-ax.patch.set_visible(False)
-lll = axbis.fill_between(timemod, 0, tpi, where=(tpi > 0), color='firebrick', interpolate=True)
-lll = axbis.fill_between(timemod, 0, tpi, where=(tpi < 0), color='steelblue', interpolate=True)
-axbis.set_ylim(-1, 1)
-#axbis.set_ylabel('TPI')
-#legend = plt.legend([lll[0]], ['TPI'], loc=2, fontsize=8)
-axbis.get_yaxis().set_visible(False)  # removes xlabels
+#axbis = ax.twinx()
+#ax.set_zorder(2)
+#ax.patch.set_visible(False)
+#lll = axbis.fill_between(timemod, 0, tpi, where=(tpi > 0), color='firebrick', interpolate=True)
+#lll = axbis.fill_between(timemod, 0, tpi, where=(tpi < 0), color='steelblue', interpolate=True)
+#axbis.set_ylim(-1, 1)
+##axbis.set_ylabel('TPI')
+##legend = plt.legend([lll[0]], ['TPI'], loc=2, fontsize=8)
+#axbis.get_yaxis().set_visible(False)  # removes xlabels
 
 plt.savefig('fig2', bbox_inches='tight')
 
