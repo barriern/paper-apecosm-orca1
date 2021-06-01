@@ -9,7 +9,7 @@ from mpl_toolkits.axes_grid1 import AxesGrid
 from cartopy.mpl.geoaxes import GeoAxes
 import string
 import sys
-sys.path.append('../nino')
+sys.path.append('../../nino')
 from extract_nino import read_index
 import apecosm.ts as ts
 import scipy.signal as sig
@@ -30,7 +30,7 @@ proj2 = ccrs.PlateCarree(central_longitude=0)
 
 gridparams = {'crs': ccrs.PlateCarree(central_longitude=0), 'draw_labels':True, 'linewidth':0.5, 'color':'gray', 'alpha':0.5, 'linestyle':'--'}
 
-mesh = xr.open_dataset('../data/mesh_mask_eORCA1_v2.2.nc')
+mesh = xr.open_dataset('../../data/mesh_mask_eORCA1_v2.2.nc')
 mesh = mesh.isel(t=0, z=0)
 lon = mesh['glamt'].values
 lat = mesh['gphit'].values
@@ -55,7 +55,7 @@ axout = [p[1] for p in axout]
 
 #################################################################### Plotting covariances SST
 
-hadley = xr.open_dataset('../cov-hadley/data/cov_hadsst_oni_tpi.nc')
+hadley = xr.open_dataset('../../cov-hadley/data/cov_hadsst_oni_tpi.nc')
 lonhad = hadley['lon'].values
 lathad = hadley['lat'].values
 hadoni = hadley['covoni'].to_masked_array().T
@@ -63,7 +63,7 @@ hadoni = np.ma.masked_where(hadoni == 0, hadoni)
 hadtpi = hadley['covtpi'].to_masked_array().T
 hadtpi = np.ma.masked_where(hadtpi == 0, hadtpi)
 
-model = xr.open_dataset('../cov-hadley/data/cov_modsst_oni_tpi.nc')
+model = xr.open_dataset('../../cov-hadley/data/cov_modsst_oni_tpi.nc')
 modoni = model['covoni'].to_masked_array().T
 modoni = np.ma.masked_where(modoni == 0, modoni)
 modtpi = model['covtpi'].to_masked_array().T
@@ -97,7 +97,10 @@ ax.text(lontext, lattext, letters[iiii] + ")", ha='center', va='center', transfo
 ax.set_title('Hadley SST / ONI')
 cbax = axgr.cbar_axes[iiii]
 cb = cbax.colorbar(cs)
-cb.set_label('Covariance [C]')
+try:
+    cb.set_label('Covariance [C]')
+except:
+    cb.set_label_text('Covariance [C]')
 iiii = 1 
 ax = axgr[iiii]
 
@@ -119,7 +122,11 @@ ax.set_xlim(-60, 130)
 
 cbax = axgr.cbar_axes[iiii]
 cb = cbax.colorbar(cs)
-cb.set_label('Covariance [C]')
+try:
+    cb.set_label('Covariance [C]')
+except:
+    cb.set_label_text('Covariance [C]')
+
 
 ax.set_title('Model SST / ONI')
 
@@ -147,7 +154,7 @@ ax.set_xlim(-60, 130)
 ax.set_title('Hadley SST / TPI')
 cbax = axgr.cbar_axes[iiii]
 cb = cbax.colorbar(cs)
-cb.set_label('Covariance [C]')
+cb.set_label_text('Covariance [C]')
 
 iiii = 3
 ax = axgr[iiii]
@@ -170,7 +177,7 @@ ax.text(lontext, lattext, letters[iiii] + ")", ha='center', va='center', transfo
 
 cbax = axgr.cbar_axes[iiii]
 cb = cbax.colorbar(cs)
-cb.set_label('Covariance [C]')
+cb.set_label_text('Covariance [C]')
 
 ax.set_title('Model SST / TPI')
 
@@ -253,7 +260,7 @@ gl.xlocator = mticker.FixedLocator([150, 180, -180, -150, -120, -90, -60])
 ############################################ plotting data
 
 
-dnino, nino = read_index('../data/index/oni.data')
+dnino, nino = read_index('../../data/index/oni.data')
 iok = np.nonzero((dnino >= 195801) & (dnino <= 201812))[0]
 dnino = dnino[iok]
 nino = nino[iok]
@@ -263,7 +270,7 @@ mnino = dnino - 100 * ynino
 
 labels = np.array(['%.4d-%.2d' %(y, m) for y,m in zip(ynino, mnino)])
 
-data = xr.open_dataset("../nemo-pisces/nino/simulated_enso_index.nc")
+data = xr.open_dataset("../../nemo-pisces/nino/simulated_enso_index.nc")
 years = data['time'].values // 100
 months = data['time'].values - 100 * years
 enso = data['enso'].values
@@ -286,6 +293,7 @@ iend = np.nonzero(dnino == 201811)[0][0] + 1
 
 test = np.corrcoef(ensof[1:-1], nino[istart:iend])
 print(ensof.shape, nino.shape)
+print(test)
 test = np.corrcoef(ensof[1:-1], nino[1:-1])[0, 1]
 print('Correlation ONI', test)
 
@@ -319,10 +327,10 @@ ax.set_xlim(time.min(), time.max())
 ax.set_ylim(-4, 4)
 ax.text(time[-1] - 50, -3, 'a' + ")", ha='center', va='center', bbox=dicttext)
 
-data = xr.open_dataset('../data/filt_tpi.nc')
+data = xr.open_dataset('../../data/filt_tpi.nc')
 nino2 = data['tpi_filt'].values
 
-data = xr.open_dataset('../nemo-pisces/nino/model_tpi_index.nc')
+data = xr.open_dataset('../../nemo-pisces/nino/model_tpi_index.nc')
 modtpi = data['tpi'].values
 
 modtpi = lanc.wgt_runave(modtpi)
