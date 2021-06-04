@@ -111,7 +111,7 @@ nlength = len(length)
 ########################################################### init figures
 fig = plt.figure(figsize=(12, 8))
 axes_class = (GeoAxes, dict(map_projection=proj))
-axgr = AxesGrid(fig, 111,  axes_class=axes_class, nrows_ncols=(3, 2), axes_pad=(1, 0.4), label_mode='', cbar_mode='each', cbar_pad=0.05)
+axgr = AxesGrid(fig, 111,  axes_class=axes_class, nrows_ncols=(3, 2), axes_pad=(1.1, 0.4), label_mode='', cbar_mode='each', cbar_pad=0.05)
 cbar_axes = axgr.cbar_axes
 axout = list(enumerate(axgr))
 axout = [p[1] for p in axout]
