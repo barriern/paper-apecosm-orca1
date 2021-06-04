@@ -33,6 +33,9 @@ duration = np.tile(duration, (61 , 1))
 duration = np.ravel(duration)  # 732
 duration = duration * 24 * 60 * 60 # h, m, s 
 
+varlist = ['madv_trend', 'zadv_trend']
+varlist = ['mdiff_trend', 'zdiff_trend']
+
 for varname in varlist:
     
     print('Processing variable ', varname)
@@ -41,15 +44,16 @@ for varname in varlist:
     data = data.isel(community=0)
     lon = data['x'].values
     oope = data[varname].to_masked_array()  # time, lon, w
-
-    oope = np.cumcum(oope * duration, axis=0)
-
+    
     oope = oope.T  # w, lon, time
     nw, nlon, ntime = oope.shape
-
     iok = np.nonzero(oope[0, :, 0].mask == False)[0]   # extract the lon where no NaNs
+    oope[:, iok, :] = sig.detrend(oope[:, iok, :])   # detrend anomalies  
 
-    oope[:, iok, :] = sig.detrend(oope[:, iok, :])  
+    oope = oope * duration
+    print(oope.shape)
+    oope = np.cumsum(oope, axis=-1)
+
     lags = sig.correlation_lags(ntime, nino.size)
     ilags = np.nonzero(np.abs(lags) <= 5*12)[0]
     lags = lags[ilags]
