@@ -10,8 +10,7 @@ dirmesh = '/home/datawork-marbec-pmod/forcings/APECOSM/ORCA1_HINDCAST'
 prefix = 'final-runs'
 
 #for varname in ['mort_day']:
-for varname in ['mort_day', 'gamma1', 'repfonct_day']:
-#for varname in ['diff', 'mdiff_trend', 'zdiff_trend', 'starvation', 'u_active', 'u_passive', 'v_active', 'v_passive', 'madv_trend', 'zadv_trend']:
+for varname in ['gamma1', 'mort_day', 'mdiff_trend', 'madv_trend', 'zdiff_trend', 'zadv_trend', 'repfonct_day', 'OOPE']:
 
     filein = '%s/%s_%s_meridional_mean.nc' %(dirout, prefix, varname)
     try:
