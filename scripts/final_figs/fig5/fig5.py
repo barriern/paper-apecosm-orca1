@@ -72,6 +72,8 @@ lags, lon, mort_day = get_data('mort_day')  # w, lon, time
 lags, lon, gamma1 = get_data('gamma1')  # w, lon, time
 lags, lon, zadv_trend = get_data('zadv_trend')  # w, lon, time
 lags, lon, madv_trend = get_data('madv_trend')  # w, lon, time
+zadv_trend = zadv_trend * wstep[:, np.newaxis, np.newaxis]
+madv_trend = madv_trend * wstep[:, np.newaxis, np.newaxis]
 
 varlist = [oope, repfonct, mort_day, gamma1, zadv_trend, madv_trend]
 varnames = ['oope', 'repfonct', 'mortday', 'gamma1', 'zadv', 'madv']
