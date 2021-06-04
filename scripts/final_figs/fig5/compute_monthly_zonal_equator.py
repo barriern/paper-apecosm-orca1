@@ -16,7 +16,7 @@ mesh = xr.open_dataset('%s/corrected_mesh_mask_eORCA1_v2.2.nc' %dirmesh)
 lon = mesh['glamt'].values[0]
 lat = mesh['gphit'].values[0]
 
-ilat, ilon = np.nonzero(np.abs(lat) < latmax)
+ilat, ilon = np.nonzero(np.abs(lat) <= latmax)
 jmin = ilat.min()
 jmax = ilat.max() + 1
 
@@ -26,13 +26,13 @@ lat = mesh['gphit'].values[0]
 tmask = mesh['tmask'].values[0, 0]
 e1t = mesh['e1t'].values[0, 0]
 e2t = mesh['e2t'].values[0, 0]
-surf = e1t * e2t * tmask
-surf = surf[np.newaxis, :, :, np.newaxis, np.newaxis]  
+surf = e1t * e2t * tmask  # lat, lon
+surf = surf[np.newaxis, :, :, np.newaxis, np.newaxis]    # time, lat, lon, comm, w=3
 
 lon0 = np.mean(lon, axis=0)
 
 #for varname in ['OOPE', 'diff', 'mdiff_trend', 'zdiff_trend', 'starvation', 'u_active', 'u_passive', 'v_active', 'v_passive', 'madv_trend', 'zadv_trend']:
-for varname in ['gamma1', 'mort_day']:
+for varname in ['gamma1', 'mort_day', 'mdiff_trend', 'madv_trend', 'zdiff_trend', 'zadv_trend', 'repfonct_day', 'OOPE']:
 
     print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@", varname)
    
