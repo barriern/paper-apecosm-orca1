@@ -76,6 +76,7 @@ zadv_trend = zadv_trend * wstep[:, np.newaxis, np.newaxis]
 madv_trend = madv_trend * wstep[:, np.newaxis, np.newaxis]
 
 varlist = [oope, repfonct, mort_day, gamma1, zadv_trend, madv_trend]
+varlist = [oope, repfonct, mort_day, gamma1]
 varnames = ['oope', 'repfonct', 'mortday', 'gamma1', 'zadv', 'madv']
 
 nvar = len(varlist)
@@ -111,10 +112,10 @@ for c in range(nvar):  # loop over the variables
 
         ax = axout[cpt]
 
-        perc = np.percentile(np.ravel(np.abs(covtemp[iok])), 99.)
+        perc = np.percentile(np.ravel(np.abs(covtemp[iok])), 99.5)
         levels = np.linspace(-perc, perc, 11)
         cs = ax.pcolormesh(lon, lags, covtemp.T, shading='auto')
-        #cl = ax.contour(lon, lags, covtemp.T, levels=levels, colors='k', linewidths=0.5)
+        cl = ax.contour(lon, lags, covtemp.T, levels=levels, colors='k', linewidths=0.5)
         cb = axgr.cbar_axes[cpt].colorbar(cs)
         ##axgr.cbar_axes[cpt].xaxis.set_ticks_position('top')
         cs.set_clim(-perc, perc)
