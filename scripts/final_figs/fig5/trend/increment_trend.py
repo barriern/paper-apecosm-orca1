@@ -5,11 +5,11 @@ import os.path
 
 # extract month_duration (in seconds) in the format (12, 1, 1, 1)
 month_duration = np.array([31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31])
-month_duration = month_duration[:, np.newaxis, np.newaxis, np.newaxis]
+month_duration = month_duration[:, np.newaxis, np.newaxis, np.newaxis]  # time, lat, lon, w
 month_duration *= 24 * 60 * 60
 
 # open mesh file to extract x,y dimensions
-mesh = xr.open_dataset('../../data/mesh_mask_eORCA1_v2.2.nc')
+mesh = xr.open_dataset('../../../data/mesh_mask_eORCA1_v2.2.nc')
 ny = mesh.dims['y']
 nx = mesh.dims['x']
 

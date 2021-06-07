@@ -3,13 +3,8 @@ from glob import glob
 import numpy as np
 import os.path
 
-# extract month_duration (in seconds) in the format (12, 1, 1, 1)
-month_duration = np.array([31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31])
-month_duration = month_duration[:, np.newaxis, np.newaxis, np.newaxis]
-month_duration *= 24 * 60 * 60
-
 # open mesh file to extract x,y dimensions
-mesh = xr.open_dataset('../../data/mesh_mask_eORCA1_v2.2.nc')
+mesh = xr.open_dataset('../../../data/mesh_mask_eORCA1_v2.2.nc')
 ny = mesh.dims['y']
 nx = mesh.dims['x']
 
@@ -17,7 +12,7 @@ dirin = '/home/datawork-marbec-pmod/outputs/APECOSM/ORCA1/final-runs/output'
 dirout = '/home1/datawork/nbarrier/apecosm/apecosm_orca1/diags/data/integrated'
 
 # list of variables to process
-varnames = ['madv_trend']
+varnames = ['madv_trend', 'zadv_trend', 'zdiff_trend', 'zadv_trend']
 
 for v in varnames:
     print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ ", v)
@@ -35,7 +30,7 @@ for v in varnames:
         data = xr.open_dataset(f)
         time = data['time']
         # extract first community
-        data = data.isel(community=0)
+        data = data.isel(community=0)   # time, lat, lon, comm, w
         data = data[v].to_masked_array()
 
         output += data
