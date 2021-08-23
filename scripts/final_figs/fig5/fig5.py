@@ -72,12 +72,18 @@ lags, lon, mort_day = get_data('mort_day')  # w, lon, time
 lags, lon, gamma1 = get_data('gamma1')  # w, lon, time
 lags, lon, zadv_trend = get_data('zadv_trend')  # w, lon, time
 lags, lon, madv_trend = get_data('madv_trend')  # w, lon, time
+adv = madv_trend + zadv_trend
 zadv_trend = zadv_trend * wstep[:, np.newaxis, np.newaxis]
 madv_trend = madv_trend * wstep[:, np.newaxis, np.newaxis]
+lags, lon, adv_trend = get_data('adv_trend')  # w, lon, time
 
-varlist = [oope, repfonct, mort_day, gamma1, zadv_trend, madv_trend]
 varlist = [oope, repfonct, mort_day, gamma1]
-varnames = ['oope', 'repfonct', 'mortday', 'gamma1', 'zadv', 'madv']
+#varlist = [oope, repfonct, mort_day, gamma1, adv]
+varnames = ['oope', 'repfonct', 'mortday', 'gamma1']
+
+#varlist = [oope, repfonct, mort_day, gamma1, adv]
+varnames = ['zadv_trend', 'madv_trend', 'zadv_trend + madv_trend', 'adv_trend']
+varlist = [zadv_trend, madv_trend, zadv_trend + madv_trend, adv_trend]
 
 nvar = len(varlist)
     
@@ -115,7 +121,8 @@ for c in range(nvar):  # loop over the variables
         perc = np.percentile(np.ravel(np.abs(covtemp[iok])), 99.5)
         levels = np.linspace(-perc, perc, 11)
         cs = ax.pcolormesh(lon, lags, covtemp.T, shading='auto')
-        cl = ax.contour(lon, lags, covtemp.T, levels=levels, colors='k', linewidths=0.5)
+        if 'adv' not in varname:
+            cl = ax.contour(lon, lags, covtemp.T, levels=levels, colors='k', linewidths=0.5)
         cb = axgr.cbar_axes[cpt].colorbar(cs)
         ##axgr.cbar_axes[cpt].xaxis.set_ticks_position('top')
         cs.set_clim(-perc, perc)
@@ -133,7 +140,7 @@ for c in range(nvar):  # loop over the variables
         labels = [_east_west_formatted(float(l)) for l in labels]
 
         ax.text(xsize, ysize, sizes[i], bbox=dicttext, ha='center', va='center')
-        ax.text(xvar, ysize, varname, bbox=dicttext, ha='center', va='center')
+        ax.text(xvar, ysize, varname.replace('_', '-'), bbox=dicttext, ha='center', va='center')
         ax.text(xsize, ylet, letters[cpt] + ')', bbox=dicttext, ha='center', va='center')
 
         ax.set_xticklabels(labels)
