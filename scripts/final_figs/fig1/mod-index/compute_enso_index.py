@@ -1,3 +1,9 @@
+# # Computation of simulated ONI index
+#
+# The aim of this script is to compute the simulated TPI index
+#
+# ## Import libraries
+
 import numpy as np
 from datetime import date
 import os.path
@@ -11,9 +17,10 @@ import xarray as xr
 from glob import glob
 import apecosm.ts as ts
 
+# ## Reading the mesh mask
+
 dirout = './'
 
-# Load the mesh mask
 mesh = xr.open_dataset("../../data/mesh_mask_eORCA1_v2.2.nc")
 tmask = np.squeeze(mesh['tmask'].values[0, 0])
 e1t = mesh['e1t'].values
@@ -28,16 +35,20 @@ lat = np.squeeze(lat)
 lonf = mesh['glamf'].values[0]
 latf = mesh['gphif'].values[0]
 
+# Now, the ONI domain (Nino 3.4) domain is extracted, as indicated in https://climatedataguide.ucar.edu/climate-data/nino-sst-indices-nino-12-3-34-4-oni-and-tni
+
 latmin = -5
 latmax = 5
 lonmax = -120
 lonmin = -170
 
-test = (lat<=latmax) & (lat>=latmin)
+test = (lat <= latmax) & (lat >= latmin)
 test = test & (lon<=lonmax) & (lon>=lonmin)
 test = test & (tmask == 1)
 
 ilat, ilon = np.nonzero(test == True)
+
+# Now, we make a plot to see if the right domain is extracted:
 
 proj = ccrs.PlateCarree(central_longitude=180)
 proj2 = ccrs.PlateCarree(central_longitude=0)
@@ -54,6 +65,12 @@ plt.colorbar(cs)
 plt.savefig('boxes.png')
 
 
+# ## Processing SST files
+#
+# Now, the NEMO SST files are processed. First, the climatology between January 1971 and December 2000 is extracted.
+
+# ### Computation of climatology
+
 data = xr.open_mfdataset('data/nemo/*nc')
 years = data['time_counter.year'].values
 months = data['time_counter.month'].values
@@ -69,6 +86,10 @@ ntime, nlat, nlon = sst.shape
 
 clim, anom = ts.get_monthly_clim(sst[iclim, :, :])
 
+# ### Computation of anomalies
+
+# Then, the anomalies are computed for every year.
+
 nyears = ntime // 12
 index = np.arange(12)
 
@@ -76,6 +97,10 @@ anom = np.zeros(sst.shape)
 for y in range(nyears):
     anom[index] = sst[index] - clim
     index += 12
+
+# ### Computation of ONI index
+#
+# Now the weighted mean of the SST anomalies is computed, with the weights provided by the cell surface.
 
 surf = surf[np.newaxis, :, :] 
 
