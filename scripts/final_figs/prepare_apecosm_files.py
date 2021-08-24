@@ -8,7 +8,7 @@ dirout = '/home1/scratch/nbarrier/'
 
 latmax = 50
 
-mesh = xr.open_dataset("../../data/mesh_mask_eORCA1_v2.2.nc")
+mesh = xr.open_dataset("../data/mesh_mask_eORCA1_v2.2.nc")
 lon = mesh['glamt'].values[0]
 lat = mesh['gphit'].values[0]
 
@@ -33,7 +33,8 @@ for f in filelist:
 
     data = xr.open_dataset(f)
     print(data['OOPE'].shape)
-    data = data.isel(community=0, x=ilon, y=ilat)['OOPE']
+    #data = data.isel(community=3, x=ilon, y=ilat)['OOPE']
+    data = data.isel(x=ilon, y=ilat)['OOPE']
     data.attrs['file'] = os.path.realpath(__file__)
     data.attrs['ilon'] = str(ilon)
     data.attrs['ilat'] = str(ilat)

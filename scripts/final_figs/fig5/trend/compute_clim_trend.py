@@ -11,8 +11,10 @@ nx = mesh.dims['x']
 dirin = '/home/datawork-marbec-pmod/outputs/APECOSM/ORCA1/final-runs/output'
 dirout = '/home1/datawork/nbarrier/apecosm/apecosm_orca1/diags/data/integrated'
 
+trendname = 'adv'
+
 # list of variables to process
-varnames = ['adv_trend']
+varnames = ['z%s_trend' %trendname]
 
 for v in varnames:
     print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ ", v)
@@ -26,12 +28,13 @@ for v in varnames:
 
     # loop over all the files
     for f in filelist:
+        f = f.replace('z%s' %trendname, '[zm]%s' %(trendname))
         print(f)
-        data = xr.open_dataset(f)
+        data = xr.open_mfdataset(f, combine='by_coords')
         time = data['time']
         # extract first community
         data = data.isel(community=0)   # time, lat, lon, comm, w
-        data = data['z%s' %v].to_masked_array() + data['m%s' %v].to_masked_array()
+        data = data['z%s_trend' %trendname].to_masked_array() + data['m%s_trend' %trendname].to_masked_array()
 
         output += data
 
@@ -39,9 +42,9 @@ for v in varnames:
        
     # Save the data in a given directory
     fout =  os.path.basename(f)
-    fout = '%s/clim_%s.nc' %(dirout, v)
+    fout = '%s/clim_%s.nc' %(dirout, trendname)
 
     dsout = xr.Dataset()
-    dsout[v] = (['time', 'y', 'x', 'w'], output)
+    dsout[trendname] = (['time', 'y', 'x', 'w'], output)
     dsout.attrs['file'] = os.path.realpath(__file__)
     dsout.to_netcdf(fout, unlimited_dims='time')

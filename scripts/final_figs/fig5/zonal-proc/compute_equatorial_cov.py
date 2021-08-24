@@ -28,6 +28,8 @@ iok = np.nonzero((daten >= 195801) & (daten <= 201812))
 daten, nino = daten[iok], nino[iok]
 nnino = len(nino)
 
+varlist = ['adv_trend']
+
 for varname in varlist:
     
     print('Processing variable ', varname)
