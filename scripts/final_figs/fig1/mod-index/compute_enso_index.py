@@ -17,11 +17,25 @@ import xarray as xr
 from glob import glob
 import apecosm.ts as ts
 
+# ## Defining paths
+#
+# First, we define the input directory and the file to process:
+
+dirin = '/home/datawork-marbec-pmod/forcings/APECOSM/ORCA1_HINDCAST/JRA_CO2'
+os.listdir(dirin)
+filelist = glob('%s/surface*nc' %dirin)
+filelist.sort()
+filelist
+
+Then, we define the output directory:
+
+dirout = os.getenv('DATAWORK')
+dirout = os.path.join(dirout, 'apecosm', 'apecosm_orca1', 'diags', 'final_diags')
+dirout
+
 # ## Reading the mesh mask
 
-dirout = './'
-
-mesh = xr.open_dataset("../../data/mesh_mask_eORCA1_v2.2.nc")
+mesh = xr.open_dataset("../../../data/mesh_mask_eORCA1_v2.2.nc")
 tmask = np.squeeze(mesh['tmask'].values[0, 0])
 e1t = mesh['e1t'].values
 e2t = mesh['e2t'].values
@@ -62,7 +76,7 @@ cs = ax.pcolormesh(lonf, latf, output[1:, 1:], transform=proj2)
 ax.add_feature(cfeature.LAND)
 ax.add_feature(cfeature.COASTLINE)
 plt.colorbar(cs)
-plt.savefig('boxes.png')
+plt.show()
 
 
 # ## Processing SST files
@@ -71,7 +85,7 @@ plt.savefig('boxes.png')
 
 # ### Computation of climatology
 
-data = xr.open_mfdataset('data/nemo/*nc')
+data = xr.open_mfdataset(filelist).isel(olevel=0)
 years = data['time_counter.year'].values
 months = data['time_counter.month'].values
 date = years * 100 + months

@@ -18,10 +18,8 @@ from glob import glob
 import apecosm.ts as ts
 
 # ## Defining paths
-
-# +
-dirout = os.getenv('DATAWORK')
-dirout
+#
+# First, we define the input directory and the file to process:
 
 dirin = '/home/datawork-marbec-pmod/forcings/APECOSM/ORCA1_HINDCAST/JRA_CO2'
 os.listdir(dirin)
@@ -29,8 +27,12 @@ filelist = glob('%s/surface*nc' %dirin)
 filelist.sort()
 filelist
 
+# Then, we define the output directory:
 
-# -
+dirout = os.getenv('DATAWORK')
+dirout = os.path.join(dirout, 'apecosm', 'apecosm_orca1', 'diags', 'final_diags')
+dirout
+
 
 # ## Extraction of the domain
 #
@@ -63,6 +65,15 @@ lonf = mesh['glamf'].values[0]
 latf = mesh['gphif'].values[0]
 
 # ## Definition of the mask used for the computation
+
+# The variable that is used to define the domain mask is based on `tmask`:
+# - $0$: land
+# - $1$: water but out of domain
+# - $100$: first domain
+# - $200$: second domain
+# - $300$: third domain
+#
+# First, a deep copy of the original tmask variable is made.
 
 output = tmask.copy()
 
@@ -112,6 +123,8 @@ plt.show()
 # Now that the domain are defined, the SST data are processed.
 #
 # ### Computation of climatology
+#
+# Climatology is computed between 1971 and 2000. 
 
 datestart = 197101
 dateend = 200012
@@ -141,6 +154,8 @@ for y in range(nyears):
     index += 12
 
 # ### Computation of TPI index
+
+# First, the surface ($e1t \times e2t$) variable is modified to include a spurious time dimension.
 
 surf = surf[np.newaxis, :]
 surf.shape
