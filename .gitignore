@@ -19,3 +19,4 @@ doc
 **/*.nc
 **/__pycache__
 **/data
+**/*.ipynb
