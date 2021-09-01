@@ -6,9 +6,9 @@
 #       extension: .py
 #       format_name: light
 #       format_version: '1.5'
-#       jupytext_version: 1.10.3
+#       jupytext_version: 1.11.4
 #   kernelspec:
-#     display_name: Python 3 (ipykernel)
+#     display_name: Python 3
 #     language: python
 #     name: python3
 # ---
@@ -83,6 +83,9 @@ anom
 anom = anom.where(abs(lat) <= 20)
 anom
 
+anom['length'] = lengths.values
+anom
+
 # ## Plotting the anomalies
 
 mapin = ccrs.PlateCarree()
@@ -98,7 +101,6 @@ for w in [14, 45, 80]:
             print(t, '/', ntime)
             fig = plt.figure()
             toplot = temp.isel(time=t)
-            fig = plt.figure()
             ax = plt.axes(projection=mapout)
             cs = ax.pcolormesh(lon, lat, toplot.to_masked_array()[1:, 1:], cmap=plt.cm.RdBu_r, transform=mapin)
             cs.set_clim(-cmax, cmax)
