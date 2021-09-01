@@ -98,11 +98,13 @@ grid = ImageGrid(fig, 111,  # similar to subplot(111)
 cbar_axes = grid.cbar_axes
 stride = 12
 
+quant = 0.99
+
 cpt = 0
 for v in ['thetao', 'PLK', 'uo']:
     ax = grid[cpt]
     temp = (data[v] * surface).sum(dim='y') / surfsum
-    cmax = float(abs(temp).quantile(0.995))
+    cmax = float(abs(temp).quantile(quant))
     cs = ax.pcolormesh(x, y, temp, shading='auto')
     cl = ax.contour(x, y, temp, levels=np.linspace(-cmax, cmax, 11), colors='k', linewidths=0.5)
     cl0 = ax.contour(x, y, temp, levels=0, colors='k', linewidths=1)
@@ -120,7 +122,7 @@ for l in range(nlength):
     ax = grid[cpt]
     temp = (oope.isel(length=l) * surface).sum(dim='y') / surfsum
     temp *= wstep[l]
-    cmax = float(abs(temp).quantile(0.995))
+    cmax = float(abs(temp).quantile(quant))
     cs = ax.pcolormesh(x, y, temp, shading='auto')
     cl = ax.contour(x, y, temp, levels=np.linspace(-cmax, cmax, 11), colors='k', linewidths=0.5)
     cl0 = ax.contour(x, y, temp, levels=0, colors='k', linewidths=1)

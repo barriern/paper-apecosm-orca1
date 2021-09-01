@@ -18,7 +18,7 @@ import xarray as xr
 import matplotlib.pyplot as plt
 
 zmax = 200
-varname = 'GOC'
+varname = 'O2'
 latmax = 1
 # -
 
