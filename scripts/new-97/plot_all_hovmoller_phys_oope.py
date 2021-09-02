@@ -95,7 +95,7 @@ datestr = ['%.4d-%.2d' %(d.year, d.month) for d in dates]
 datestr
 
 # +
-fig = plt.figure(figsize=(14, 10))
+fig = plt.figure(facecolor='white', figsize=(14, 10))
 grid = ImageGrid(fig, 111,  # similar to subplot(111)
                  nrows_ncols=(2, 3),  # creates 2x2 grid of axes
                  axes_pad=[1.2, 0.6],  # pad between axes in inch.
