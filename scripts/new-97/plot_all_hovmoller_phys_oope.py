@@ -18,10 +18,15 @@ import xarray as xr
 import matplotlib.pyplot as plt
 from mpl_toolkits.axes_grid1 import ImageGrid
 import numpy as np
+import string
 
 plt.rcParams['text.usetex'] = False
 
 latmax = 1
+
+letters = list(string.ascii_lowercase)
+
+dicttext = dict(boxstyle='round', facecolor='lightgray', alpha=1)
 # -
 
 # ## Loading mesh file
@@ -93,12 +98,29 @@ datestr
 fig = plt.figure(figsize=(14, 10))
 grid = ImageGrid(fig, 111,  # similar to subplot(111)
                  nrows_ncols=(2, 3),  # creates 2x2 grid of axes
-                 axes_pad=[0.8, 0.3],  # pad between axes in inch.
+                 axes_pad=[1.2, 0.6],  # pad between axes in inch.
                  cbar_mode='each', aspect=False, cbar_pad=0.1)
 cbar_axes = grid.cbar_axes
-stride = 12
+stride = 4
 
 quant = 0.99
+
+lontext = 292
+lattext = y[-3]
+fs = 20
+plt.rcParams['font.size'] = 15
+
+units = {}
+units['thetao'] = 'C'
+units['PLK'] = 'mmol/m3'
+units['uo'] = 'm/s'
+units['oope'] = 'J/m2'
+
+
+names = {}
+names['thetao'] = 'Temperature'
+names['PLK'] = 'Plankton conc.'
+names['uo'] = 'Zonal vel.'
 
 cpt = 0
 for v in ['thetao', 'PLK', 'uo']:
@@ -114,7 +136,9 @@ for v in ['thetao', 'PLK', 'uo']:
     ax.set_yticklabels(datestr[::stride], rotation=45, va='top')
     ax.grid(True)
     ax.set_xlabel('Longitude')
-    cb.set_label(v)
+    ax.set_title(names[v])
+    cb.set_label(units[v])
+    ax.text(lontext, lattext, letters[cpt] + ")", ha='right', va='center', bbox=dicttext, fontsize=fs)
     cpt += 1
 
 nlength = len(length)
@@ -128,14 +152,16 @@ for l in range(nlength):
     cl0 = ax.contour(x, y, temp, levels=0, colors='k', linewidths=1)
     cs.set_clim(-cmax, cmax)
     cb = plt.colorbar(cs, cbar_axes[cpt])
-    cb.set_label('OOPE, L=%.f cm' %length[l])
+    ax.set_title('Biomass dens., L=%.f cm' %length[l])
+    cb.set_label(units['oope'])
     ax.set_yticks(y[::stride])
     ax.set_yticklabels(datestr[::stride], rotation=45, va='top')
     ax.grid(True)
     ax.set_xlabel('Longitude')
+    ax.text(lontext, lattext, letters[cpt] + ")", ha='right', va='center', bbox=dicttext, fontsize=fs)
     cpt += 1
 
-plt.savefig('plot_all_hovmoller_phys_oope.pdf', bbox_inches='tight')
+plt.savefig('plot_all_hovmoller_phys_oope.png', bbox_inches='tight')
 # -
 
 
