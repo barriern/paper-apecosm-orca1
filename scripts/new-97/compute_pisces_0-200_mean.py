@@ -20,11 +20,11 @@ from dask.diagnostics import ProgressBar
 
 plt.rcParams['text.usetex'] = False
 
-zmax = 200
-grid = 'ptrc_T'
-e3var = 'e3t_0'
-maskvar = 'tmask'
-varname = 'GOC'
+zmax = 50
+grid = 'speed_U'
+e3var = 'e3u_0'
+maskvar = 'umask'
+varname = 'uo'
 # -
 
 # ## Extracting the mesh mask

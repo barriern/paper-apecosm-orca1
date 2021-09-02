@@ -20,8 +20,9 @@ from matplotlib.backends.backend_pdf import PdfPages
 import cartopy.crs as ccrs
 import cartopy.feature as cfeature
 from cartopy.mpl.gridliner import LONGITUDE_FORMATTER, LATITUDE_FORMATTER
+plt.rcParams['text.usetex'] = False
 
-grid = varname = 'OOPE'
+grid = varname = 'gamma1'
 ilat = slice(None, -4);
 # -
 
