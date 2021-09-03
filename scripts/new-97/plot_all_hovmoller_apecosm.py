@@ -92,19 +92,19 @@ datestr = ['%.4d-%.2d' %(d.year, d.month) for d in dates]
 datestr
 
 # +
-varnames = ['repfonct_day', 'gamma1', 'int-adv']
+varnames = ['repfonct_day', 'gamma1', 'mort_day', 'int-adv']
 nvars = len(varnames)
 
 sizes = [0, 1]
 nsizes = len(sizes)
 
-fig = plt.figure(facecolor='white', figsize=(12, 14))
+fig = plt.figure(facecolor='white', figsize=(12, 16))
 grid = ImageGrid(fig, 111,  # similar to subplot(111)
                  nrows_ncols=(nvars, nsizes),  # creates 2x2 grid of axes
                  axes_pad=[1.1, 0.4],  # pad between axes in inch.
                  cbar_mode='each', aspect=False, cbar_pad=0.1)
 cbar_axes = grid.cbar_axes
-stride = 12
+stride = 3
 
 from matplotlib.ticker import FuncFormatter
 fmt = lambda x, pos: '%.e' %(x)
