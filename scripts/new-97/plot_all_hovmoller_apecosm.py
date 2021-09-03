@@ -51,8 +51,14 @@ surface
 
 isizes = [14, 45, 80]
 
-data = xr.open_mfdataset('data/pacific_[a-zA-Z]*_anom.nc').isel(w=isizes)
+data = xr.open_mfdataset('data/pacific_[a-zA-Z]*_anom.nc').isel(w=isizes).sel(time=slice('1997-01', '1998-12'))
 data
+
+data = data.where(lon0 >= 150, drop=True)
+mesh = mesh.where(lon0 >= 150, drop=True)
+surface = surface.where(lon0 >= 150, drop=True)
+
+lon0 = lon0.where(lon0 >= 150, drop=True)
 
 data['adv'] = data['madv_trend'] + data['zadv_trend']
 data
@@ -86,10 +92,10 @@ datestr = ['%.4d-%.2d' %(d.year, d.month) for d in dates]
 datestr
 
 # +
-varnames = ['repfonct_day', 'gamma1', 'mort_day', 'int-adv']
+varnames = ['repfonct_day', 'gamma1', 'int-adv']
 nvars = len(varnames)
 
-sizes = [0, 1, 2]
+sizes = [0, 1]
 nsizes = len(sizes)
 
 fig = plt.figure(facecolor='white', figsize=(12, 14))
@@ -106,9 +112,9 @@ fmt = lambda x, pos: '%.e' %(x)
 quant = 0.98
 
 lontext = 292
-lattext = y[-5]
-lattext2 = y[5]
-fs = 10
+lattext = y[-3]
+lattext2 = y[2]
+fs = 20
 plt.rcParams['font.size'] = 15
 
 units = {}
@@ -133,13 +139,15 @@ for v in varnames:
         temp = temp1.isel(w=s)
         tempoope = tempoope1.isel(w=s)
         cmaxoope = float(abs(tempoope).quantile(0.99))
-        print(cmaxoope)
         cmax = float(abs(temp).quantile(quant))
+        if(v == 'int-adv'):
+            print('processing int adv')
+            cmax = cmaxoope
+            temp = temp + tempoope.isel(time=0)
         cs = ax.pcolormesh(x, y, temp, shading='auto')
         cl = ax.contour(x, y, tempoope, levels=np.linspace(-cmaxoope, cmaxoope, 11), colors='k', linewidths=0.5)
         cl0 = ax.contour(x, y, tempoope, levels=0, colors='k', linewidths=1)
         cs.set_clim(-cmax, cmax)
-        #cb = plt.colorbar(cs, cbar_axes[cpt], format=FuncFormatter(fmt))
         cb = plt.colorbar(cs, cbar_axes[cpt])
         ax.set_yticks(y[::stride])
         ax.set_yticklabels(datestr[::stride], rotation=45, va='top')
@@ -153,5 +161,4 @@ for v in varnames:
         cpt += 1
 plt.savefig('plot_all_hovmoller_apecosm.png', bbox_inches='tight')
 # -
-
 
