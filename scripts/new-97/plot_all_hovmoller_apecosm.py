@@ -6,9 +6,9 @@
 #       extension: .py
 #       format_name: light
 #       format_version: '1.5'
-#       jupytext_version: 1.11.4
+#       jupytext_version: 1.10.3
 #   kernelspec:
-#     display_name: Python 3
+#     display_name: Python 3 (ipykernel)
 #     language: python
 #     name: python3
 # ---
@@ -92,7 +92,7 @@ nvars = len(varnames)
 sizes = [0, 1, 2]
 nsizes = len(sizes)
 
-fig = plt.figure(facecolor='white', figsize=(14, 10))
+fig = plt.figure(facecolor='white', figsize=(12, 14))
 grid = ImageGrid(fig, 111,  # similar to subplot(111)
                  nrows_ncols=(nvars, nsizes),  # creates 2x2 grid of axes
                  axes_pad=[1.1, 0.4],  # pad between axes in inch.
@@ -126,14 +126,18 @@ name['repfonct_day'] = 'Func. response'
 cpt = 0
 for v in varnames:
     print('Plotting variable ', v)
+    tempoope1 = (data['OOPE'] * surface).sum(dim='y') / surfsum
     temp1 = (data[v] * surface).sum(dim='y') / surfsum
     for s in sizes:
         ax = grid[cpt]
         temp = temp1.isel(w=s)
+        tempoope = tempoope1.isel(w=s)
+        cmaxoope = float(abs(tempoope).quantile(0.99))
+        print(cmaxoope)
         cmax = float(abs(temp).quantile(quant))
         cs = ax.pcolormesh(x, y, temp, shading='auto')
-        #cl = ax.contour(x, y, temp, levels=np.linspace(-cmax, cmax, 11), colors='k', linewidths=0.5)
-        #cl0 = ax.contour(x, y, temp, levels=0, colors='k', linewidths=1)
+        cl = ax.contour(x, y, tempoope, levels=np.linspace(-cmaxoope, cmaxoope, 11), colors='k', linewidths=0.5)
+        cl0 = ax.contour(x, y, tempoope, levels=0, colors='k', linewidths=1)
         cs.set_clim(-cmax, cmax)
         #cb = plt.colorbar(cs, cbar_axes[cpt], format=FuncFormatter(fmt))
         cb = plt.colorbar(cs, cbar_axes[cpt])
