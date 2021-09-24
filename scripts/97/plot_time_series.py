@@ -22,7 +22,7 @@ import xarray as xr
 import matplotlib.pyplot as plt
 import numpy as np
 
-varname = 'OOPE'
+varname = 'adv_trend'
 # -
 
 # ## Loading constant fields
@@ -51,14 +51,13 @@ data
 if(varname == 'adv_trend'):
     print('Computing the sum of zonal and meriodonal advective trends + time-integration')
     var_central = data['madv_trend_central'].values + data['zadv_trend_central'].values
-    var_central = np.cumsum(var_west, axis=0) * 24 * 60 * 60 * 30
+    var_central = np.cumsum(var_central, axis=0) * 24 * 60 * 60 * 30
+    
     var_west = data['madv_trend_west'].values + data['zadv_trend_west'].values
     var_west = np.cumsum(var_west, axis=0) * 24 * 60 * 60 * 30
-    var_west.shape
 else:
     var_central = data['%s_central' %varname].values
     var_west = data['%s_west' %varname].values
-    var_west.shape
 
 const = const.rename({'wpred': 'l'})
 const['l'] = const['length'].values * 100
@@ -128,6 +127,8 @@ ylim = ax.get_ylim()
 yyy = np.abs(ylim).max()
 ax.set_ylim(-yyy, yyy)
 ax.set_xlim(0, time.max())
+
+plt.savefig('time-series_%s.pdf' %varname, bbox_inches='tight')
 # -
 
 

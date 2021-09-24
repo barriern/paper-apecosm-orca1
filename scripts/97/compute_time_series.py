@@ -23,7 +23,7 @@
 import xarray as xr
 
 latmax = 5
-varname = 'gamma1'
+varname = 'madv_trend'
 
 dirin = '/home1/datawork/nbarrier/apecosm/apecosm_orca1/processed_pacific'
 
@@ -49,13 +49,23 @@ mask_central = ((abs(lat) <= latmax) & (lon >= 200) & (lon <= 250)).astype(int)
 mask_west = ((abs(lat) <= latmax) & (lon >= 150) & (lon <= 180)).astype(int)
 (mask_west + tmask).plot()
 
-# ## Loading the data and computing the mean
+# ## Loading the data and computing the mean anomalies
+
+dataclim = xr.open_dataset('%s/pacific_clim_%s.nc' %(dirin, varname))
+dataclim
+
+varclim = dataclim[varname]
+varclim
 
 data = xr.open_dataset('%s/pacific_nino97_%s.nc' %(dirin, varname))
 data
 
 var = data[varname]
 var
+
+# Now, we compute the anomalies:
+
+var = var.groupby('time.month') - varclim
 
 ts_central = (var * surf * mask_central).sum(dim=['x', 'y']) / (surf * mask_central).sum(dim=['y', 'x'])
 ts_central.name = '%s_central' %varname
@@ -74,3 +84,5 @@ fileout = '%s/%s_timeseries.nc' %(dirin, varname)
 fileout
 
 dataout.to_netcdf(fileout)
+
+
