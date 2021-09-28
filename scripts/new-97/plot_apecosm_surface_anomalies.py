@@ -22,7 +22,7 @@ import cartopy.feature as cfeature
 from cartopy.mpl.gridliner import LONGITUDE_FORMATTER, LATITUDE_FORMATTER
 plt.rcParams['text.usetex'] = False
 
-grid = varname = 'gamma1'
+grid = varname = 'adv_trend'
 ilat = slice(None, -4);
 # -
 
@@ -47,15 +47,20 @@ lon
 
 # ## Loading the climatology
 
-clim = xr.open_dataset('data/pacific_clim_%s.nc' %(grid)).isel(y=ilat)
+clim = xr.open_mfdataset('data/pacific_clim_*%s.nc' %(grid)).isel(y=ilat)
 clim
 
-varclim = clim[varname]
+if varname == 'adv_trend':
+    print('summing trend')
+    varclim = clim['madv_trend'] + clim['zadv_trend']
+    varclim.name = varname
+else:
+    varclim = clim[varname]
 varclim
 
 # ## Loading the field
 
-data = xr.open_dataset('data/pacific_nino97_%s.nc' %(grid)).isel(y=ilat)
+data = xr.open_mfdataset('data/pacific_nino97_*%s.nc' %(grid)).isel(y=ilat)
 data
 
 nweights = data.dims['w']
@@ -64,7 +69,12 @@ nweights
 ntime = data.dims['time']
 ntime
 
-var = data[varname]
+if varname == 'adv_trend':
+    print('Summing trend')
+    var = data['madv_trend'] + data['zadv_trend']
+    var.name = varname
+else:
+    var = data[varname]
 var
 
 # ## Computing the anomalies
@@ -85,6 +95,9 @@ anom = anom.where(abs(lat) <= 20)
 anom
 
 anom['length'] = lengths.values
+anom
+
+anom = anom.chunk({'time' : -1, 'x' : -1, 'y' : -1})
 anom
 
 # ## Plotting the anomalies

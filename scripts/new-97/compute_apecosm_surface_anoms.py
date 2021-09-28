@@ -20,7 +20,7 @@ from dask.diagnostics import ProgressBar
 
 plt.rcParams['text.usetex'] = False
 
-varname = 'OOPE'
+varname = 'gamma1'
 
 datestart = '1997-01'
 dateend = '1999-12'
@@ -49,5 +49,3 @@ anom = var.groupby('time.month') - varclim
 anom
 
 anom.to_netcdf('data/pacific_%s_anom.nc' %(varname))
-
-
