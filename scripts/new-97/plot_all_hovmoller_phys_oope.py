@@ -6,9 +6,9 @@
 #       extension: .py
 #       format_name: light
 #       format_version: '1.5'
-#       jupytext_version: 1.11.4
+#       jupytext_version: 1.10.3
 #   kernelspec:
-#     display_name: Python 3
+#     display_name: Python 3 (ipykernel)
 #     language: python
 #     name: python3
 # ---
@@ -47,9 +47,14 @@ lon0
 surface = mesh['e1t'] * mesh['e2t'] * mesh['tmask']
 surface
 
+boolean = (lon0 >= 150)
+surface = surface.where(boolean, drop=True)
+lon0 = lon0.where(boolean, drop=True)
+
 # ## Loading the NEMO/Pisces anomalies
 
-data = xr.open_mfdataset('data/pacific_0-50_*_anom.nc', compat='override')
+data = xr.open_mfdataset('data/pacific_0-50_*_anom.nc', compat='override').where(boolean, drop=True)
+data = data.sel(time_counter=slice('1997-01', '1998-12'))
 data
 
 data['PLK'] = data['GOC'] + data['PHY2'] + data['ZOO'] + data['ZOO2']
@@ -59,7 +64,8 @@ data
 
 isizes = [14, 45, 80]
 
-dataape = xr.open_dataset('data/pacific_OOPE_anom.nc')
+dataape = xr.open_dataset('data/pacific_OOPE_anom.nc').where(boolean, drop=True)
+dataape = dataape.sel(time=slice('1997-01', '1998-12'))
 dataape
 
 oope = dataape['OOPE']
@@ -101,7 +107,7 @@ grid = ImageGrid(fig, 111,  # similar to subplot(111)
                  axes_pad=[1.2, 0.6],  # pad between axes in inch.
                  cbar_mode='each', aspect=False, cbar_pad=0.1)
 cbar_axes = grid.cbar_axes
-stride = 4
+stride = 3
 
 quant = 0.99
 

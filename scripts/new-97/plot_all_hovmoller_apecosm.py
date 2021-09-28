@@ -6,9 +6,9 @@
 #       extension: .py
 #       format_name: light
 #       format_version: '1.5'
-#       jupytext_version: 1.11.4
+#       jupytext_version: 1.10.3
 #   kernelspec:
-#     display_name: Python 3
+#     display_name: Python 3 (ipykernel)
 #     language: python
 #     name: python3
 # ---
@@ -51,8 +51,14 @@ surface
 
 isizes = [14, 45, 80]
 
-data = xr.open_mfdataset('data/pacific_[a-zA-Z]*_anom.nc').isel(w=isizes)
+data = xr.open_mfdataset('data/pacific_[a-zA-Z]*_anom.nc').isel(w=isizes).sel(time=slice('1997-01', '1998-12'))
 data
+
+data = data.where(lon0 >= 150, drop=True)
+mesh = mesh.where(lon0 >= 150, drop=True)
+surface = surface.where(lon0 >= 150, drop=True)
+
+lon0 = lon0.where(lon0 >= 150, drop=True)
 
 data['adv'] = data['madv_trend'] + data['zadv_trend']
 data
@@ -89,16 +95,16 @@ datestr
 varnames = ['repfonct_day', 'gamma1', 'mort_day', 'int-adv']
 nvars = len(varnames)
 
-sizes = [0, 1, 2]
+sizes = [0, 1]
 nsizes = len(sizes)
 
-fig = plt.figure(facecolor='white', figsize=(14, 10))
+fig = plt.figure(facecolor='white', figsize=(12, 16))
 grid = ImageGrid(fig, 111,  # similar to subplot(111)
                  nrows_ncols=(nvars, nsizes),  # creates 2x2 grid of axes
                  axes_pad=[1.1, 0.4],  # pad between axes in inch.
                  cbar_mode='each', aspect=False, cbar_pad=0.1)
 cbar_axes = grid.cbar_axes
-stride = 12
+stride = 3
 
 from matplotlib.ticker import FuncFormatter
 fmt = lambda x, pos: '%.e' %(x)
@@ -106,9 +112,9 @@ fmt = lambda x, pos: '%.e' %(x)
 quant = 0.98
 
 lontext = 292
-lattext = y[-5]
-lattext2 = y[5]
-fs = 10
+lattext = y[-3]
+lattext2 = y[2]
+fs = 20
 plt.rcParams['font.size'] = 15
 
 units = {}
@@ -126,16 +132,22 @@ name['repfonct_day'] = 'Func. response'
 cpt = 0
 for v in varnames:
     print('Plotting variable ', v)
+    tempoope1 = (data['OOPE'] * surface).sum(dim='y') / surfsum
     temp1 = (data[v] * surface).sum(dim='y') / surfsum
     for s in sizes:
         ax = grid[cpt]
         temp = temp1.isel(w=s)
+        tempoope = tempoope1.isel(w=s)
+        cmaxoope = float(abs(tempoope).quantile(0.99))
         cmax = float(abs(temp).quantile(quant))
+        if(v == 'int-adv'):
+            print('processing int adv')
+            cmax = cmaxoope
+            temp = temp + tempoope.isel(time=0)
         cs = ax.pcolormesh(x, y, temp, shading='auto')
-        #cl = ax.contour(x, y, temp, levels=np.linspace(-cmax, cmax, 11), colors='k', linewidths=0.5)
-        #cl0 = ax.contour(x, y, temp, levels=0, colors='k', linewidths=1)
+        cl = ax.contour(x, y, tempoope, levels=np.linspace(-cmaxoope, cmaxoope, 11), colors='k', linewidths=0.5)
+        cl0 = ax.contour(x, y, tempoope, levels=0, colors='k', linewidths=1)
         cs.set_clim(-cmax, cmax)
-        #cb = plt.colorbar(cs, cbar_axes[cpt], format=FuncFormatter(fmt))
         cb = plt.colorbar(cs, cbar_axes[cpt])
         ax.set_yticks(y[::stride])
         ax.set_yticklabels(datestr[::stride], rotation=45, va='top')
@@ -149,5 +161,4 @@ for v in varnames:
         cpt += 1
 plt.savefig('plot_all_hovmoller_apecosm.png', bbox_inches='tight')
 # -
-
 

@@ -98,7 +98,7 @@ anom['length'] = lengths.values
 anom
 
 anom = anom.chunk({'time' : -1, 'x' : -1, 'y' : -1})
-anom
+anom = anom.chunk({'time' : -1, 'x' : 30, 'y' : 30})
 
 # ## Plotting the anomalies
 
