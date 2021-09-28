@@ -133,7 +133,7 @@ dicttext = dict(boxstyle='round', facecolor='lightgray', alpha=1)
 # +
 plt.rcParams['font.size'] = 15
 
-fig = plt.figure(figsize=(8, 16))
+fig = plt.figure(figsize=(12, 16))
 plt.subplots_adjust(top=0.95)
 axes_class = (GeoAxes, dict(map_projection=proj))
 
@@ -168,7 +168,7 @@ for l in range(3):
     
     cbax = axgr.cbar_axes[cpt]
     cb = cbax.colorbar(cs)
-    cb.set_label('Biomass dens. (Log(J/m2))')
+    cb.set_label('Mean iomass dens. (Log(J/m2))')
     
     cpt += 1
     
@@ -206,12 +206,9 @@ for l in range(3):
     
     cbax = axgr.cbar_axes[cpt]
     cb = cbax.colorbar(cs)
-    cb.set_label('Biomass anoms (J/m2)')
+    cb.set_label('97-OND biomass anoms (J/m2)')
     
     cpt += 1
     
-plt.savefig('map_mean_anom_OND_97.pdf')
+plt.savefig('map_mean_anom_OND_97.png', bbox_inches='tight', facecolor='white')
 plt.show()
-# -
-
-
