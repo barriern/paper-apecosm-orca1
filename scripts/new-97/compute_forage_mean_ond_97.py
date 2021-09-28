@@ -71,7 +71,7 @@ delayed_clim = tsclim.to_netcdf('mean_forage.nc', compute=False)
 tsanoms = ((varanoms * volume).sum(dim=['y']) / (volume.sum(dim=['y']))).mean(dim='time')
 tsanoms
 
-delayed_anoms = tsclim.to_netcdf('mean_forage_anomalies_ond_97.nc', compute=False)
+delayed_anoms = tsanoms.to_netcdf('mean_forage_anomalies_ond_97.nc', compute=False)
 
 with ProgressBar():
     delayed_clim.compute()

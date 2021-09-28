@@ -21,7 +21,11 @@ from glob import glob
 
 chunk = {'y' : 126 //4, 'x': 126 // 2}
 
-filelist
+varname = 'thetao'
+filename = 'grid_T'
+
+varname = 'uo'
+filename = 'speed_U'
 
 varname = 'PLK'
 filename = 'ptrc_T'
@@ -90,7 +94,7 @@ delayed_clim = tsclim.to_netcdf('mean_%s.nc' %varname, compute=False)
 tsanoms = ((varanoms * volume).sum(dim=['y']) / (volume.sum(dim=['y']))).mean(dim='time_counter')
 tsanoms
 
-delayed_anoms = tsclim.to_netcdf('mean_%s_anomalies_ond_97.nc' %varname, compute=False)
+delayed_anoms = tsanoms.to_netcdf('mean_%s_anomalies_ond_97.nc' %varname, compute=False)
 
 with ProgressBar():
     delayed_clim.compute()
