@@ -25,7 +25,7 @@ lonwest = 110
 loneast = -60
 zmax = 250
 
-grid = 'repfonct_day'
+grid = 'mdiff_trend'
 # -
 
 dirmd = '/home/datawork-marbec-pmod/forcings/APECOSM/ORCA1_HINDCAST/'

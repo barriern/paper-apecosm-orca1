@@ -19,7 +19,7 @@ import xarray as xr
 import os
 from dask.diagnostics import ProgressBar
 
-grid = 'repfonct_day'
+grid = 'mdiff_trend'
 datestart = '1971-01-01'
 dateend = '2000-12-31'
 # -

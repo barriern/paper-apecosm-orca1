@@ -17,10 +17,23 @@
 import xarray as xr
 import matplotlib.pyplot as plt
 from dask.diagnostics import ProgressBar
+from glob import glob
 
 chunk = {'y' : 126 //4, 'x': 126 // 2}
+
+filelist
+
+varname = 'PLK'
+filename = 'ptrc_T'
+
+filelist = glob('data/*%s*nc' %filename)
 # -
 
+
+filelist
+xr.open_dataset(filelist[0])
+
+glob('*nc')
 
 # ## Loading mesh mask
 
@@ -36,29 +49,35 @@ lat
 volume = volume.where(abs(lat) <= 5)
 volume.isel(z=0).plot()
 
-volume = volume.rename({'z': 'depth'})
+volume = volume.rename({'z': 'olevel'})
+volume
 
-clim = xr.open_dataset('data/pacific_clim_FORAGE.nc').isel(dn=0)
+clim = xr.open_dataset('data/pacific_clim_%s.nc' %filename)
 clim
 
-varclim = clim['FORAGE']
-varclim
-
-varclim = varclim.chunk(chunk)
+if(varname == 'PLK'):
+    varclim = clim['PHY2'] + clim['GOC'] + clim['ZOO'] + clim['ZOO2']
+    varclim.name = 'PLK'
+else:
+    varclim = clim[varname]
 varclim
 
 # Computation of anomalies:
 
-anoms = xr.open_dataset('data/pacific_nino97_FORAGE.nc').sel(time=slice('1997-10-01', '1997-12-31')).isel(dn=0)
+toread = 'data/pacific_nino97_%s.nc' %filename
+toread
+anoms = xr.open_dataset(toread).sel(time_counter=slice('1997-10-01', '1997-12-31'))
 anoms                                                             
 
-varanoms = anoms['FORAGE']
+if(varname == 'PLK'):
+    varanoms = anoms['PHY2'] + anoms['GOC'] + anoms['ZOO'] + anoms['ZOO2']
+    varanoms.name = 'PLK'
+else:
+    varanoms = anoms[varname]
 varanoms
 
-varanoms = varanoms.chunk(chunk)
-varanoms
 
-varanoms = varanoms.groupby('time.month') - varclim
+varanoms = varanoms.groupby('time_counter.month') - varclim
 varanoms
 
 # ## Compute the mean climatology
@@ -66,15 +85,17 @@ varanoms
 tsclim = ((varclim * volume).sum(dim=['y']) / (volume.sum(dim=['y']))).mean(dim='month')
 tsclim
 
-delayed_clim = tsclim.to_netcdf('mean_forage.nc', compute=False)
+delayed_clim = tsclim.to_netcdf('mean_%s.nc' %varname, compute=False)
 
-tsanoms = ((varanoms * volume).sum(dim=['y']) / (volume.sum(dim=['y']))).mean(dim='time')
+tsanoms = ((varanoms * volume).sum(dim=['y']) / (volume.sum(dim=['y']))).mean(dim='time_counter')
 tsanoms
 
-delayed_anoms = tsclim.to_netcdf('mean_forage_anomalies_ond_97.nc', compute=False)
+delayed_anoms = tsclim.to_netcdf('mean_%s_anomalies_ond_97.nc' %varname, compute=False)
 
 with ProgressBar():
     delayed_clim.compute()
 
 with ProgressBar():
     delayed_anoms.compute()
+
+
