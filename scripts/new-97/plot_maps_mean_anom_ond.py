@@ -168,7 +168,7 @@ for l in range(3):
     
     cbax = axgr.cbar_axes[cpt]
     cb = cbax.colorbar(cs)
-    cb.set_label('Mean iomass dens. (Log(J/m2))')
+    cb.set_label('Mean biomass dens. (Log(J/m2))')
     
     cpt += 1
     
