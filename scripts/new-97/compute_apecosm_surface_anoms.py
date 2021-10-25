@@ -6,7 +6,7 @@
 #       extension: .py
 #       format_name: light
 #       format_version: '1.5'
-#       jupytext_version: 1.11.4
+#       jupytext_version: 1.11.3
 #   kernelspec:
 #     display_name: Python 3
 #     language: python
@@ -20,7 +20,7 @@ from dask.diagnostics import ProgressBar
 
 plt.rcParams['text.usetex'] = False
 
-varname = 'gamma1'
+varname = 'mort_day'
 
 datestart = '1997-01'
 dateend = '1999-12'
@@ -49,3 +49,6 @@ anom = var.groupby('time.month') - varclim
 anom
 
 anom.to_netcdf('data/pacific_%s_anom.nc' %(varname))
+'data/pacific_%s_anom.nc' %(varname)
+
+

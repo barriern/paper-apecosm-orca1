@@ -6,7 +6,7 @@
 #       extension: .py
 #       format_name: light
 #       format_version: '1.5'
-#       jupytext_version: 1.11.4
+#       jupytext_version: 1.11.3
 #   kernelspec:
 #     display_name: Python 3
 #     language: python
@@ -21,10 +21,10 @@ from dask.diagnostics import ProgressBar
 plt.rcParams['text.usetex'] = False
 
 zmax = 50
-grid = 'speed_U'
-e3var = 'e3u_0'
-maskvar = 'umask'
-varname = 'uo'
+grid = 'ptrc_T'
+e3var = 'e3t_0'
+maskvar = 'tmask'
+varname = 'ZOO2'
 # -
 
 # ## Extracting the mesh mask

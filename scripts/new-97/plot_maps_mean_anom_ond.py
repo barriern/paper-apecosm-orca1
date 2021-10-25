@@ -6,9 +6,9 @@
 #       extension: .py
 #       format_name: light
 #       format_version: '1.5'
-#       jupytext_version: 1.11.4
+#       jupytext_version: 1.10.3
 #   kernelspec:
-#     display_name: Python 3
+#     display_name: Python 3 (ipykernel)
 #     language: python
 #     name: python3
 # ---
@@ -168,7 +168,7 @@ for l in range(3):
     
     cbax = axgr.cbar_axes[cpt]
     cb = cbax.colorbar(cs)
-    cb.set_label('Mean iomass dens. (Log(J/m2))')
+    cb.set_label('Mean biomass dens. (Log(J/m2))')
     
     cpt += 1
     
