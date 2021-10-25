@@ -6,9 +6,9 @@
 #       extension: .py
 #       format_name: light
 #       format_version: '1.5'
-#       jupytext_version: 1.10.3
+#       jupytext_version: 1.11.3
 #   kernelspec:
-#     display_name: Python 3 (ipykernel)
+#     display_name: Python 3
 #     language: python
 #     name: python3
 # ---
@@ -19,10 +19,13 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.axes_grid1 import ImageGrid
 import numpy as np
 import string
+from cartopy.mpl.ticker import LongitudeFormatter
+
+formatter0 = LongitudeFormatter(dateline_direction_label=True)
 
 plt.rcParams['text.usetex'] = False
 
-latmax = 1
+latmax = 5
 
 letters = list(string.ascii_lowercase)
 
@@ -54,7 +57,7 @@ lon0 = lon0.where(boolean, drop=True)
 # ## Loading the NEMO/Pisces anomalies
 
 data = xr.open_mfdataset('data/pacific_0-50_*_anom.nc', compat='override').where(boolean, drop=True)
-data = data.sel(time_counter=slice('1997-01', '1998-12'))
+data = data.sel(time_counter=slice('1997-01-01', '1998-12-31'))
 data
 
 data['PLK'] = data['GOC'] + data['PHY2'] + data['ZOO'] + data['ZOO2']
@@ -65,7 +68,7 @@ data
 isizes = [14, 45, 80]
 
 dataape = xr.open_dataset('data/pacific_OOPE_anom.nc').where(boolean, drop=True)
-dataape = dataape.sel(time=slice('1997-01', '1998-12'))
+dataape = dataape.sel(time=slice('1997-01-01', '1998-12-31'))
 dataape
 
 oope = dataape['OOPE']
@@ -115,6 +118,7 @@ lontext = 292
 lattext = y[-3]
 fs = 20
 plt.rcParams['font.size'] = 15
+plt.rcParams['image.cmap'] = 'RdBu_r'
 
 units = {}
 units['thetao'] = 'C'
@@ -145,7 +149,9 @@ for v in ['thetao', 'PLK', 'uo']:
     ax.set_title(names[v])
     cb.set_label(units[v])
     ax.text(lontext, lattext, letters[cpt] + ")", ha='right', va='center', bbox=dicttext, fontsize=fs)
+    ax.xaxis.set_major_formatter(formatter0)
     cpt += 1
+
 
 nlength = len(length)
 for l in range(nlength):
@@ -165,6 +171,13 @@ for l in range(nlength):
     ax.grid(True)
     ax.set_xlabel('Longitude')
     ax.text(lontext, lattext, letters[cpt] + ")", ha='right', va='center', bbox=dicttext, fontsize=fs)
+    ax.xaxis.set_major_formatter(formatter0)
+    labels = ['150', '180', '-150', '-120', '-90', '-60']
+    xticks = np.array([float(l) for l in labels])
+    xticks[xticks < 0] += 360
+    ax.set_xticks(xticks)
+    plt.setp(ax.get_xticklabels(), ha='right', rotation=45)
+
     cpt += 1
 
 plt.savefig('plot_all_hovmoller_phys_oope.png', bbox_inches='tight')

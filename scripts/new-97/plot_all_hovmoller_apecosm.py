@@ -6,9 +6,9 @@
 #       extension: .py
 #       format_name: light
 #       format_version: '1.5'
-#       jupytext_version: 1.10.3
+#       jupytext_version: 1.11.3
 #   kernelspec:
-#     display_name: Python 3 (ipykernel)
+#     display_name: Python 3
 #     language: python
 #     name: python3
 # ---
@@ -22,7 +22,7 @@ import string
 
 plt.rcParams['text.usetex'] = False
 
-latmax = 1
+latmax = 5
 
 letters = list(string.ascii_lowercase)
 
@@ -95,10 +95,10 @@ datestr
 varnames = ['repfonct_day', 'gamma1', 'mort_day', 'int-adv']
 nvars = len(varnames)
 
-sizes = [0, 1]
+sizes = [0, 1, 2]
 nsizes = len(sizes)
 
-fig = plt.figure(facecolor='white', figsize=(12, 16))
+fig = plt.figure(facecolor='white', figsize=(14, 16))
 grid = ImageGrid(fig, 111,  # similar to subplot(111)
                  nrows_ncols=(nvars, nsizes),  # creates 2x2 grid of axes
                  axes_pad=[1.1, 0.4],  # pad between axes in inch.
@@ -116,6 +116,7 @@ lattext = y[-3]
 lattext2 = y[2]
 fs = 20
 plt.rcParams['font.size'] = 15
+plt.rcParams['image.cmap'] = 'RdBu_r'
 
 units = {}
 units['int-adv'] = 'J/m2'
@@ -160,5 +161,3 @@ for v in varnames:
         ax.text(lontext, lattext2, '%.f cm' %length[s], ha='right', va='center', bbox=dicttext, fontsize=fs)
         cpt += 1
 plt.savefig('plot_all_hovmoller_apecosm.png', bbox_inches='tight')
-# -
-

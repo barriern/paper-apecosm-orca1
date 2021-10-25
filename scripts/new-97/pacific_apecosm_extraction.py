@@ -25,7 +25,7 @@ lonwest = 110
 loneast = -60
 zmax = 250
 
-grid = 'mdiff_trend'
+grid = 'OOPE'
 # -
 
 dirmd = '/home/datawork-marbec-pmod/forcings/APECOSM/ORCA1_HINDCAST/'
