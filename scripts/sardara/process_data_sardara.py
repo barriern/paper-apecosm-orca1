@@ -34,7 +34,7 @@ pacific_lonmax = -90
 
 # ## Reading processed areas
 
-areas = pd.read_csv('data/processed_sardara_areas_latmax_%d_lonmin_%d_lonmax_%d.csv' %(pacific_latmax, pacific_lonmin, pacific_lonmax))
+areas = pd.read_csv('data/processed_sardara_areas_latmax_%d_lonmin_%d_lonmax_%d.csv' %(pacific_latmax, pacific_lonmin, pacific_lonmax), index_col=0)
 areas
 
 areacodes = areas.loc[:, 'code'].values
