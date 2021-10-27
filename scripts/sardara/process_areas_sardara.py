@@ -116,6 +116,7 @@ ax = plt.axes(projection=ccrs.PlateCarree(central_longitude=180))
 plt.scatter(loncen[iok], latcen[iok], transform=ccrs.PlateCarree(), marker='.', color='r')
 ax.coastlines()
 ax.set_global()
+plt.savefig('areas.png')
 
 data = data.iloc[iok, :]
 data
