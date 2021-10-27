@@ -6,9 +6,9 @@
 #       extension: .py
 #       format_name: light
 #       format_version: '1.5'
-#       jupytext_version: 1.11.5
+#       jupytext_version: 1.10.3
 #   kernelspec:
-#     display_name: Python 3
+#     display_name: Python 3 (ipykernel)
 #     language: python
 #     name: python3
 # ---
@@ -34,25 +34,25 @@ pacific_lonmax = -90
 
 # ## Reading the CSV
 
-data = pd.read_csv('data/geographic_id_wkt.csv', sep=',')
-data
+datatemp = pd.read_csv('data/geographic_id_wkt.csv', sep=',')
+datatemp
 
 # ## Working on the polygons
 #
-# ### Removing wrong polygon
+# ### Removing of wrong polygons
 
-polygons_list = data.loc[:, 'st_astext'].values
-polygons_list
+polygons_list_temp = datatemp.loc[:, 'st_astext'].values
+polygons_list_temp
 
 # We extract the polygons which are really string, not int (i.e we discard the `NaN` value of `UNK`)
 
-test = np.array([isinstance(a, str) for a in polygons_list])
+test = np.array([isinstance(a, str) for a in polygons_list_temp])
 test
 
 iok = np.nonzero(test == True)[0]
 iok
 
-data = data.iloc[iok, :]
+data = datatemp.iloc[iok, :]
 data
 
 # ### Extract polygon coordinates
@@ -72,7 +72,7 @@ lonmax = []
 latmin = []
 latmax = []
 for temp in polygons_list[:]:
-    match = regex.match(temp)
+    match = regex.match(str(temp))
     if(match is None):
         print(temp, ' not processed')
     else:
@@ -90,30 +90,30 @@ lonmax = np.array(lonmax)
 latmax = np.array(latmax)
 # -
 
-# We extract the codes for Pacific data
+# We now extract the barycenter of the polygons
 
-lonmin[lonmin > 180] -= 360
-lonmax[lonmax > 180] -= 360
-lonmin[lonmin < -180] += 360
-lonmax[lonmax < -180] += 360
+loncen = 0.5 * (lonmin + lonmax)
+loncen
+latcen = 0.5 * (latmin + latmax)
 
-testlat = ((np.abs(latmax) < pacific_latmax)) & ((np.abs(latmin) < pacific_latmax))
-testlon1 = (lonmax <= pacific_lonmax) & (lonmin >= 0)
-testlon2 = (lonmin >= pacific_lonmin) & (lonmin <= 180)
-test = testlat & (testlon1 | testlon2)
+# We convert them into Atlantic coordinates (-180/180)
+
+loncen[loncen > 180] -= 360
+loncen[loncen < -180] += 360
+loncen.min(), loncen.max()
+
+# Now we extract the Pacific data:
+
+testlat = np.abs(latcen) < pacific_latmax
+testlon1 = (loncen <= pacific_lonmax)
+testlon2 = (loncen >= pacific_lonmin)
+test = testlat & ((testlon2 | testlon1))
 iok = np.nonzero(test == True)[0]
-len(iok)
 
-lonmin = lonmin[iok]
-lonmax = lonmax[iok]
-latmin = latmin[iok]
-latmax = latmax[iok]
+# Now, we plot the resulting coordinates for the area
 
-ax = plt.axes(projection=ccrs.PlateCarree())
-for i in range(20):
-    x = [lonmin[i], lonmax[i], lonmax[i], lonmin[i], lonmin[i]]
-    y = [latmin[i], latmin[i], latmax[i], latmax[i], latmin[i]]
-    plt.plot(x, y, transform=ccrs.PlateCarree())
+ax = plt.axes(projection=ccrs.PlateCarree(central_longitude=180))
+plt.scatter(loncen[iok], latcen[iok], transform=ccrs.PlateCarree(), marker='.', color='r')
 ax.coastlines()
 ax.set_global()
 
@@ -122,23 +122,26 @@ data
 
 # ## Creating output area dataset
 
-# Now, we write in the dataset the coordinates of the box.
+# Now, we write in the dataset the coordinates of the box. But first, we add the data coordinates that we computed.
 
-data = data.assign(lonmin=lonmin)
+data = data.assign(lonmin=lonmin[iok])
 data
 
-data = data.assign(lonmax=lonmax)
+data = data.assign(lonmax=lonmax[iok])
 data
 
-data = data.assign(latmax=latmax)
+data = data.assign(latmax=latmax[iok])
 data
 
-data = data.assign(latmin=latmin)
+data = data.assign(latmin=latmin[iok])
+data
+
+data = data.assign(latcen=latcen[iok], loncen=loncen[iok])
 data
 
 # Finally, we write the new dataframe
 
-output_ds = data.loc[:, ['code', 'lonmin', 'lonmax', 'latmin', 'latmax']]
+output_ds = data.loc[:, ['code', 'lonmin', 'lonmax', 'latmin', 'latmax', 'loncen', 'latcen']]
 output_ds
 
 output_ds.to_csv('data/processed_sardara_areas_latmax_%d_lonmin_%d_lonmax_%d.csv' %(pacific_latmax, pacific_lonmin, pacific_lonmax))
