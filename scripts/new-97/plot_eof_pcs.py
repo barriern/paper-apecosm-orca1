@@ -27,10 +27,16 @@ sys.path.append('../nino')
 from extract_nino import read_index
 import numpy as np
 
-latmax = 10
+latmax = 20
 lonmin = 150
-lonmax = -100
+lonmax = -120
 # -
+
+pci = xr.open_dataset('../data/filt_tpi.nc')
+pci = pci['tpi_filt'].to_masked_array()
+pci = pci / pci.std()
+ipci = np.nonzero(~np.ma.getmaskarray(pci))
+ipci
 
 dnino, nino = read_index(filename='../data/index/oni.data')
 
@@ -39,12 +45,9 @@ const = const.rename({'wpred' : 'l'})
 const['l'] = const['length'].values * 100
 const
 
-wstep = const['weight_step']
-wstep
-
 dirin = '/home1/datawork/nbarrier/apecosm/apecosm_orca1/processed_pacific'
 
-eof = xr.open_dataset('%s/full_eof_pacific_OOPE_latmax_10_lonmin_150_lonmax_-100.nc' %dirin)
+eof = xr.open_dataset('%s/full_eof_pacific_OOPE_latmax_%d_lonmin_%d_lonmax_%d.nc' %(dirin, latmax, lonmin, lonmax))
 eof = eof.rename({'w': 'l'})
 eof['l'] = const['l']
 
@@ -54,56 +57,50 @@ var
 pc = eof['eofpcs']
 pc
 
-cov = xr.open_dataset('%s/covariance_OOPE_anomalies_pcs_latmax_10_lonmin_150_lonmax_-100_all_sizes.nc' %dirin).isel(y=ilat)
-cov = cov['__xarray_dataarray_variable__']
-cov = cov.rename({'w': 'l'})
-cov['l'] = const['l']
-cov.name = 'cov'
-cov
-
 letters = list(string.ascii_lowercase)
 dicttext = dict(boxstyle='round', facecolor='lightgray', alpha=1)
 lontext = 120
 lattext = 30
 
+pc.shape
+
+nino.shape
+
+time = np.arange(nino.shape[0])
+
 # +
-dictgrid = {'crs':ccrs.PlateCarree(central_longitude=0), 'draw_labels':True, 'linewidth':0.5, 'color':'gray', 'alpha':0.5, 'linestyle':'--'}
 dicttext = dict(boxstyle='round', facecolor='lightgray', alpha=1)
 
-proj = ccrs.PlateCarree(central_longitude=180)
-proj2 = ccrs.PlateCarree()
-
 fig = plt.figure(figsize=(12, 8))
-axes_class = (GeoAxes, dict(map_projection=proj))
-axgr = AxesGrid(fig, 111,  axes_class=axes_class, nrows_ncols=(3, 2), axes_pad=(1.23, 0.4), label_mode='', cbar_mode='each', cbar_pad=0.05)
+axgr = AxesGrid(fig, 111,  aspect=False, nrows_ncols=(3, 2), axes_pad=(1.23, 0.4), cbar_pad=0.05)
 cbar_axes = axgr.cbar_axes
 
 cpt = 0
 for l in [3, 20, 90]:
     for e in range(2):
         
-        temp = cov.sel(l=l, method='nearest').isel(eof=e) * wstep.sel(l=l, method='nearest')
-        temp = temp.to_masked_array()
+        pctemp = pc.sel(l=l, method='nearest').isel(eof=e)
         vartemp = var.sel(l=l, method='nearest').isel(eof=e)
-        pctemp = pc.sel(l=l, method='nearest').isel(eof=e).to_masked_array()
 
-        perc = np.percentile(np.abs(np.ravel(temp[temp.mask == False])), 99)
-        
         corr = np.corrcoef(pctemp, nino)[0, 1]
         if(corr < 0):
-            temp *= -1
+            pctemp *= -1
+            corr *= -1
+        print('L=%.fcm, EOF %d, corr_oni = %f' %(l, e + 1, corr))
+        print('L=%.fcm, EOF %d, corr_pci = %f' %(l, e + 1, np.corrcoef(pci[ipci], pctemp[ipci])[0, 1]))
+        pciroll = pctemp.rolling(time=7*12, center=True).mean()
             
         ax = axgr[cpt]
-        cs = ax.pcolormesh(lonf, latf, temp[1:, 1:], transform=proj2, cmap=plt.cm.RdBu_r)
-        plt.colorbar(cs, cbar_axes[cpt])
-        ax.add_feature(cfeature.COASTLINE, zorder=1001)
-        ax.add_feature(cfeature.LAND, zorder=1000)
-        cs.set_clim(-perc, perc)
+        ax.fill_between(time, 0, nino, where=(nino > 0), facecolor='firebrick', interpolate=True)
+        ax.fill_between(time, 0, nino, where=(nino < 0), facecolor='steelblue', interpolate=True)
+        cs = ax.plot(time, pctemp, color='k')
+        ax.plot(time, pciroll, color='cyan', linewidth=2)
+        ax.plot(pci, color='Gold', linewidth=2)
         title = 'L=%.fcm, EOF %d (%.f' %(l, e + 1, vartemp) + '%' + ')'
         ax.set_title(title)
-        ax.set_xlim(-60, 130)
-        ax.set_ylim(-50, 50)
-        
+        ax.set_xlim(0, time.max())
         cpt += 1
-        
-lonf.shape
+plt.savefig('pcs_latmax_%d_lonmin_%d_lonmax_%d.png' %(latmax, lonmin, lonmax))
+# -
+
+

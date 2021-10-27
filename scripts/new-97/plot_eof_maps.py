@@ -22,6 +22,8 @@ lonmin = 150
 lonmax = -100
 # -
 
+dirin = '/home1/datawork/nbarrier/apecosm/apecosm_orca1/processed_pacific'
+
 letters = list(string.ascii_lowercase)
 dicttext = dict(boxstyle='round', facecolor='lightgray', alpha=1)
 lontext = 120
@@ -54,7 +56,7 @@ lonf = mesh['glamf'].values
 latf = mesh['gphif'].values
 lonf
 
-data = xr.open_dataset('data/full_eof_pacific_OOPE_latmax_%d_lonmin_%d_lonmax_%d.nc' %(latmax, lonmin, lonmax)).isel(y=ilat)
+data = xr.open_dataset('%s/full_eof_pacific_OOPE_latmax_%d_lonmin_%d_lonmax_%d.nc' %(dirin, latmax, lonmin, lonmax)).isel(y=ilat)
 data
 
 eofmaps = data['eofcovmaps']
@@ -134,8 +136,7 @@ for l in sizes:
         cpt += 1
     s += 1
 
-#plt.savefig('fig6_%d.png' %lll, bbox_inches='tight')
-#plt.close(fig)
+plt.savefig('eof_latmax_%d_lonmin_%d_lonmax_%d.png' %(latmax, lonmin, lonmax))
 # -
 
 temp
