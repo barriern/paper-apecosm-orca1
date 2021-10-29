@@ -23,9 +23,9 @@ from glob import glob
 
 dirin = os.getenv('DATAWORK')
 
-latmax = 10
+latmax = 30
 lonmin = 150
-lonmax = -100
+lonmax = -120
 
 dirin = os.path.join(dirin, 'apecosm/apecosm_orca1/processed_pacific/')
 # -
