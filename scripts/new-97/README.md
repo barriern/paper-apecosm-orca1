@@ -42,6 +42,17 @@
 
 - Plot the figure using `plot_all_hovmoller_phys_oope.py`
 
+### Figure 6
+
+**Hovmoller diagrams for Apecosm variables**
+
+- Compute the surface Apecosm (for all the variables) anomalies using `compute_apecosm_surface_anoms.py`
+- Extract Apecosm variables on the Pacific using `pacific_apecosm_exraction.py`
+- Extract the 97 period using `extract_pacific_apecosm_97.py`
+- Compute the climatology using `pacific_apecosm_climatology.py`
+- Compute the surface anomalies using `compute_apecosm_surface_anoms.py`
+- Plot the figure using `plot_all_hovmoller_apecosm.py`
+
 ## Files
 
 ### Grid
