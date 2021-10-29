@@ -27,9 +27,9 @@ from glob import glob
 import numpy as np
 from dask.diagnostics import ProgressBar
 
-latmax = 10
+latmax = 30
 lonmin = 150
-lonmax = -100
+lonmax = -120
 # -
 
 # ## Computes weights
@@ -70,7 +70,7 @@ data = xr.open_dataset(os.path.join(dirin, 'detrended_pacific_OOPE_anomalies.nc'
 data = data['OOPE']
 data
 
-ny, nx, nw, ntime = data.shape
+ntime, nw, nx, ny = data.shape
 ny, nx, nw, ntime
 
 # Init output values:
@@ -84,9 +84,8 @@ eofmaps.shape
 for l in range(0, nw):
     print('Processing w = ', l)
     temp = data.isel(w=l)
-    temp
 
-    solver = Eof(temp.T, weights=weights.T)
+    solver = Eof(temp, weights=weights.T)
 
     # Now, computation of EOF maps as covariance maps
 
@@ -121,3 +120,5 @@ fileout
 
 with ProgressBar():
     dsout.to_netcdf(fileout)
+
+
