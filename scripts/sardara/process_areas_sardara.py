@@ -6,9 +6,9 @@
 #       extension: .py
 #       format_name: light
 #       format_version: '1.5'
-#       jupytext_version: 1.10.3
+#       jupytext_version: 1.11.5
 #   kernelspec:
-#     display_name: Python 3 (ipykernel)
+#     display_name: Python 3
 #     language: python
 #     name: python3
 # ---
@@ -27,9 +27,9 @@ import cartopy.crs as ccrs
 import cartopy.feature as cfeature
 import matplotlib.pyplot as plt
 
-pacific_latmax = 5
-pacific_lonmin = 160
-pacific_lonmax = -90
+pacific_latmax = 40
+pacific_lonmin = 140
+pacific_lonmax = -60
 # -
 
 # ## Reading the CSV
