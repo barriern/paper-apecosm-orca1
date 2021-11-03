@@ -31,7 +31,7 @@ pacific_latmax = 40
 pacific_lonmin = 140
 pacific_lonmax = -60
 
-species = 'SKJ'
+species = 'YFT'
 
 cmap = plt.cm.jet
 # -
@@ -100,6 +100,8 @@ res.sort()
 res
 
 # +
+Rt = 6371.009
+
 for r in res:
     
     print('Processing res = ', r)
@@ -197,12 +199,13 @@ for r in res[::-1]:
 
 ax.coastlines()
 ax.set_global()
+ax.set_title(species)
 
 ax = plt.axes([0.95, 0.2, 0.02, 0.6])
 norm = mpl.colors.Normalize(vmin=np.log10(mmm), vmax=np.log10(MMM))
 cb = mpl.colorbar.ColorbarBase(ax, cmap=cmap, norm=norm, orientation='vertical')
 cb.set_label('%s catch (MT)' %species)
-plt.savefig('%s_catch_resolution_%f.png' %(species, r), bbox_inches='tight')
+plt.savefig('%s_catch.png' %(species), bbox_inches='tight')
 # -
 
 
