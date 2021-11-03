@@ -6,9 +6,9 @@
 #       extension: .py
 #       format_name: light
 #       format_version: '1.5'
-#       jupytext_version: 1.11.5
+#       jupytext_version: 1.10.3
 #   kernelspec:
-#     display_name: Python 3
+#     display_name: Python 3 (ipykernel)
 #     language: python
 #     name: python3
 # ---
@@ -93,12 +93,64 @@ for r in np.unique(dxareas):
 output.keys()
 # -
 
-# Now we process loop over all the resolutions:
+# ## Normalisation by the surface
 
-for r in output.keys():
+res = list(output.keys())
+res.sort()
+res
+
+# +
+for r in res:
     
-    if(r != 5.0):
-        continue
+    print('Processing res = ', r)
+    
+    dy = Rt * np.deg2rad(r)
+    tempbis = output[r]
+    tempbis
+
+    iii = [l[0] for l in tempbis.index]
+    
+    norm = [] 
+    
+    for i in iii[:]:
+        temparea = areas[areas['code'] == i]
+        latcen = np.deg2rad(temparea['latcen'].values[0])
+        dx = Rt * np.cos(np.deg2rad(latcen)) * np.deg2rad(r)
+        norm.append(output[r].loc[i, 'mean'].values[0] / (dx * dy))
+        
+    output[r] = output[r].assign(norm_mean=norm)
+    
+output[r]
+# -
+
+# Now we search for minimum and maximum values to plot on the colorbar:
+
+# +
+mmm = []
+MMM = []
+for r in res:
+    print(r)
+    mval = output[r].loc[:, 'norm_mean'].min()
+    MVAL = output[r].loc[:, 'norm_mean'].max()
+    mmm.append(mval)
+    MMM.append(MVAL)
+
+mmm = np.min(mmm)
+MMM = np.max(MMM)
+MMM - mmm
+# -
+
+# Now we process loop over all the resolutions in reverse order:
+
+# +
+fig = plt.figure()
+ax = plt.axes(projection=ccrs.PlateCarree(central_longitude = 180))
+
+Rt = 6371.009 # km
+
+for r in res[::-1]:
+    
+    print(r)
     
     tempbis = output[r]
     tempbis
@@ -113,10 +165,8 @@ for r in output.keys():
 
     projin = ccrs.PlateCarree()
     projout = ccrs.PlateCarree(central_longitude=180)
-    toplot = 'mean'
+    toplot = 'norm_mean'
 
-    fig = plt.figure()
-    ax = plt.axes(projection=ccrs.PlateCarree(central_longitude = 180))
     cpt = 0
     nindex = len(indexes)
     for i in indexes[:]:
@@ -126,29 +176,33 @@ for r in output.keys():
 
         cpt += 1
 
-        tp = tempbis.loc[(i, species), toplot] / vmax[toplot]
-        col = cmap(tp)
-
         temparea = areas[areas['code'] == i]
 
         xxx = np.array([temparea['lonmin'].values[0], temparea['lonmax'].values[0], temparea['lonmax'].values[0], temparea['lonmin'].values[0]])
         yyy = np.array([temparea['latmin'].values[0], temparea['latmin'].values[0], temparea['latmax'].values[0], temparea['latmax'].values[0]])
-
+        
+        tp = tempbis.loc[(i, species), toplot]
+        #tp = (tp - mmm) / (MMM - mmm)
+        tp = (np.log10(tp) - np.log10(mmm)) / (np.log10(MMM) - np.log10(mmm))
+        
+        col = cmap(tp)
+        
         points = projout.transform_points(projin, xxx, yyy)
         xout = points[:, 0]
         yout = points[:, 1]
         xy = np.array([xout, yout]).T
 
-        poly = mpl.patches.Polygon(xy, closed=True, facecolor=col, edgecolor='k')
+        poly = mpl.patches.Polygon(xy, closed=True, facecolor=col)
         ax.add_artist(poly)
 
-    ax.coastlines()
-    ax.set_global()
+ax.coastlines()
+ax.set_global()
 
-    ax = plt.axes([0.95, 0.2, 0.02, 0.6])
-    norm = mpl.colors.Normalize(vmin=0, vmax=vmax[toplot])
-    cb = mpl.colorbar.ColorbarBase(ax, cmap=cmap, norm=norm, orientation='vertical')
-    cb.set_label('%s catch (MT)' %species)
-    plt.savefig('%s_catch_resolution_%f.png' %(species, r), bbox_inches='tight')
+ax = plt.axes([0.95, 0.2, 0.02, 0.6])
+norm = mpl.colors.Normalize(vmin=np.log10(mmm), vmax=np.log10(MMM))
+cb = mpl.colorbar.ColorbarBase(ax, cmap=cmap, norm=norm, orientation='vertical')
+cb.set_label('%s catch (MT)' %species)
+plt.savefig('%s_catch_resolution_%f.png' %(species, r), bbox_inches='tight')
+# -
 
 
