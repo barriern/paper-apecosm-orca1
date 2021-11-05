@@ -28,7 +28,7 @@ import cartopy.feature as cfeature
 import matplotlib.pyplot as plt
 
 pacific_latmax = 40
-pacific_lonmin = 140
+pacific_lonmin = 120
 pacific_lonmax = -60
 # -
 
