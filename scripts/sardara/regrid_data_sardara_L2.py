@@ -13,6 +13,12 @@
 #     name: python3
 # ---
 
+# # Regridding Sardara data
+#
+# The aim of the present script is to regrid data onto a regular 5x5 grid.
+#
+# We select the gear and species that we want to have, and the data are binned onto the new grid.
+
 # +
 import pandas as pd
 import numpy as np
@@ -29,6 +35,7 @@ pacific_latmax = 40
 pacific_lonmin = 120
 pacific_lonmax = -60
 
+resolution = 5
 gear = 'PS'
 species = 'YFT'
 # -
@@ -68,15 +75,13 @@ areas
 
 lonmin = areas.loc[:, 'lonmin'].min()
 lonmax = areas.loc[:, 'lonmax'].max()
-lonout = np.arange(lonmin, lonmax + 5, 5)
+lonout = np.arange(lonmin, lonmax + resolution, resolution)
 lonout
 
 latmin = areas.loc[:, 'latmin'].min()
 latmax = areas.loc[:, 'latmax'].max()
-latout = np.arange(latmin, latmax + 5, 5)
+latout = np.arange(latmin, latmax + resolution, resolution)
 latout
-
-lon2d, lat2d = np.meshgrid(lonout, latout)
 
 # ## Data processing
 
@@ -85,7 +90,7 @@ lon2d, lat2d = np.meshgrid(lonout, latout)
 data = pd.read_csv('data/processed_sardara_data_L2_latmax_%d_lonmin_%d_lonmax_%d.csv' %(pacific_latmax, pacific_lonmin, pacific_lonmax))
 data
 
-# We extract the time as an array
+# We convert the time from a string to a year and month variable:
 
 dates = [d.split('-') for d in data.loc[:, 'time_start']]
 
@@ -110,13 +115,12 @@ data
 
 # ## Regridding the data
 #
-
-lat2d.shape
-lon2d.shape
-ntime = len(years)
+# First, we create a new time-array
 
 m2d, y2d = np.meshgrid(np.arange(1, 13), years)
 time = np.ravel(100 * y2d + m2d)
+
+# Now we initialize the output array:
 
 nlat = latout.shape[0]
 nlon = lonout.shape[0]
@@ -124,9 +128,11 @@ ntime = len(time)
 output = np.zeros((ntime, nlat - 1, nlon - 1))
 output.shape
 
+# Now, we loop over the entire file and we aggregate the data into the 5x5 grid.
+
 for i in range(data.shape[0]):
     
-    if(i % 1000 == 0):
+    if(i % 10000 == 0):
         print('%d / %d' %(i, data.shape[0]))
     
     temp = data.iloc[i, :]  # extract one row of data
@@ -148,7 +154,7 @@ for i in range(data.shape[0]):
             loncmin = lonout[x]
             loncmax = lonout[x + 1]
             
-            # 
+            # if the area is out of the new cell, nothing is done
             if(lonamax <= loncmin):
                 continue
             
@@ -176,7 +182,7 @@ dsout['catch'] = (['time', 'lat', 'lon'], output)
 dsout['catch'].attrs['species'] = species
 dsout['catch'].attrs['gear'] = gear
 
-fileout = 'data/regridded_catch_gear_%s_species_%s.nc' %(gear, species)
+fileout = 'data/regridded_catch_gear_%s_species_%s_%dx%d.nc' %(gear, species, resolution, resolution)
 fileout
 
 dsout.to_netcdf(fileout)
