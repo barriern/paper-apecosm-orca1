@@ -91,6 +91,7 @@ clim = np.mean(clim, axis=0)
 clim.shape
 
 clim = np.ma.masked_where(count == 0, clim)
+count = np.ma.masked_where(count == 0, count)
 
 # ## Normalisation by the surface
 
@@ -116,12 +117,16 @@ ax = plt.axes(projection=projout)
 ax.coastlines()
 ax.add_feature(cfeature.LAND)
 cs = ax.pcolormesh(lon, lat, np.log10(clim, where=clim.mask == False), shading='auto', transform=projin)
+#cs = ax.pcolormesh(lon, lat, count, shading='auto', transform=projin)
 cb = plt.colorbar(cs, orientation='horizontal', pad=0.02)
 ax.set_title('Mean catch, species=%s, gear=%s' %(species, gear))
 cb.set_label('MT/km2')
 iok = np.nonzero(count >= thres)
-plt.plot(lon[iok[1]], lat[iok[0]], marker='.', linestyle='none', transform=projin)
-plt.savefig('mean_catch_gear_%s_species_%s_%dx%d.png' %(gear, species, res, res))
+#plt.plot(lon[iok[1]], lat[iok[0]], marker='.', linestyle='none', transform=projin)
+cs.set_clim(-8, -2)
+plt.savefig('mean_catch_gear_%s_species_%s_%dx%d.png' %(gear, species, res, res), bbox_inches='tight')
 # -
+
+
 
 

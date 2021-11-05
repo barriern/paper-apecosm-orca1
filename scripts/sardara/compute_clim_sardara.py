@@ -28,8 +28,8 @@ pacific_latmax = 40
 pacific_lonmin = 140
 pacific_lonmax = -60
 
-datestart = 1970
-dateend = 2000
+datestart = 2006
+dateend = 2015
 years = list(range(datestart, dateend + 1))
 ntime = len(years) * 12
 ntime

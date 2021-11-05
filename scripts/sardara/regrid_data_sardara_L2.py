@@ -35,9 +35,9 @@ pacific_latmax = 40
 pacific_lonmin = 120
 pacific_lonmax = -60
 
-resolution = 5
+resolution = 1
 gear = 'PS'
-species = 'YFT'
+species = 'SKJ'
 # -
 
 # ## Extracting the code of the gear
@@ -104,7 +104,7 @@ data = data.assign(years=years, months=months)
 data
 
 years = np.unique(years)
-years
+np.diff(years)
 
 # We extract the data that corresponds to the species:
 
