@@ -23,7 +23,7 @@ import numpy as np
 gear = 'PS'
 species = 'YFT'
 res = 1
-
+    
 filename = 'clim_anoms_catch_gear_%s_species_%s_%dx%d.nc' %(gear, species, res, res)
 filename
 # -
@@ -79,22 +79,24 @@ mask = np.ma.getmaskarray(temp)
 cs = plt.imshow(mask)
 plt.colorbar(cs)
 
+# +
+projin = ccrs.PlateCarree()
+projout = ccrs.PlateCarree(central_longitude=180)
+
 lon1d = np.ravel(lont[~mask])
 lat1d = np.ravel(latt[~mask])
 temp1d = np.ravel(temp[~mask])
 output = projout.transform_points(projin, lon1d, lat1d)
 lonout = output[..., 0]
 latout = output[..., 1]
+# -
 
 temp1d.shape, lonout.shape, latout.shape
 
 # ## Plotting climatology
 
 # +
-projin = ccrs.PlateCarree()
-projout = ccrs.PlateCarree(central_longitude=180)
 plt.figure(figsize=(12, 12), facecolor='white')
-
 
 ax = plt.axes(projection=projout)
 step = 0.5
@@ -102,7 +104,8 @@ cl = ax.tricontour(lonout, latout, np.log10(temp1d), colors='k', linewidths=0.5,
 plt.clabel(cl)
 
 cs = ax.pcolormesh(sarlon, sarlat, np.log10(sarclim.values), transform=projin, shading='auto')
-plt.colorbar(cs, shrink=0.4)
+cb = plt.colorbar(cs, shrink=0.4)
+cb.set_label('%s catch (log10)' %species)
 cs.set_clim(-6, -1.5)
 ax.add_feature(cfeature.LAND, zorder=2)
 ax.coastlines(zorder=3)
