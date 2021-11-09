@@ -6,9 +6,9 @@
 #       extension: .py
 #       format_name: light
 #       format_version: '1.5'
-#       jupytext_version: 1.11.5
+#       jupytext_version: 1.10.3
 #   kernelspec:
-#     display_name: Python 3
+#     display_name: Python 3 (ipykernel)
 #     language: python
 #     name: python3
 # ---
@@ -21,7 +21,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 gear = 'PS'
-species = 'YFT'
+species = 'SKJ'
 res = 1
     
 filename = 'clim_anoms_catch_gear_%s_species_%s_%dx%d.nc' %(gear, species, res, res)
@@ -70,28 +70,36 @@ mesh
 lont = mesh['glamt'].values
 latt = mesh['gphit'].values
 
-# Now we process Apecosm outputs to use tricontour.
+# Now we process Apecosm outputs to use tricontour. First, we integrate over the size classes 25cm/70cm.
 
 temp = apeclim.sel(w=slice(25, 70), drop=True).sum(dim='w')
 temp = temp.where(temp != 0).to_masked_array()
+
+# Now we extract the data mask array.
 
 mask = np.ma.getmaskarray(temp)
 cs = plt.imshow(mask)
 plt.colorbar(cs)
 
-# +
+# Then, we create a function that prepares the arrays for the tricontour method.
+
 projin = ccrs.PlateCarree()
 projout = ccrs.PlateCarree(central_longitude=180)
 
-lon1d = np.ravel(lont[~mask])
-lat1d = np.ravel(latt[~mask])
-temp1d = np.ravel(temp[~mask])
-output = projout.transform_points(projin, lon1d, lat1d)
-lonout = output[..., 0]
-latout = output[..., 1]
-# -
 
-temp1d.shape, lonout.shape, latout.shape
+def prepare_tri(temp):
+
+    lon1d = np.ravel(lont[~mask])
+    lat1d = np.ravel(latt[~mask])
+    temp1d = np.ravel(temp[~mask])
+    output = projout.transform_points(projin, lon1d, lat1d)
+    lonout = output[..., 0]
+    latout = output[..., 1]
+    
+    return lonout, latout, temp1d
+
+
+lonout, latout, temp1d = prepare_tri(temp)
 
 # ## Plotting climatology
 
@@ -109,7 +117,38 @@ cb.set_label('%s catch (log10)' %species)
 cs.set_clim(-6, -1.5)
 ax.add_feature(cfeature.LAND, zorder=2)
 ax.coastlines(zorder=3)
-plt.savefig('apecosm_sardara_clim_gear_%s_species_%s_%dx%d.png' %(gear, species, res, res))
+plt.savefig('apecosm_sardara_clim_gear_%s_species_%s_%dx%d.png' %(gear, species, res, res), bbox_inches='tight')
+# -
+# ## Plotting anomalies
+
+
+data = xr.open_dataset('../new-97/data/pacific_OOPE_anom.nc').sel(time=slice('1997-10-01', '1997-12-31'))
+data = data.assign(w=length)
+data
+
+apeanom = data['OOPE'] * const['weight_step']
+
+apeanom = apeanom.sel(w=slice(25, 70), drop=True).sum('w').mean(dim='time')
+apeanom = apeanom.where(apeanom != 0)
+
+lonout, latout, temp1d = prepare_tri(apeanom.to_masked_array())
+
+# +
+plt.figure(figsize=(12, 12), facecolor='white')
+
+ax = plt.axes(projection=projout)
+step = 50
+cl = ax.tricontour(lonout, latout, temp1d, colors='k', linewidths=0.5, levels=np.arange(-300, 300 + step, step))
+cl0 = ax.tricontour(lonout, latout, temp1d, colors='k', linewidths=1.2, levels=0)
+
+cs = ax.pcolormesh(sarlon, sarlat, saranoms, transform=projin, shading='auto')
+cb = plt.colorbar(cs, shrink=0.4)
+#cb.set_label('%s catch (log10)' %species)
+ccc = 0.01
+cs.set_clim(-ccc, ccc)
+ax.add_feature(cfeature.LAND, zorder=2)
+ax.coastlines(zorder=3)
+plt.savefig('apecosm_sardara_anoms_gear_%s_species_%s_%dx%d.png' %(gear, species, res, res), bbox_inches='tight')
 # -
 
 
