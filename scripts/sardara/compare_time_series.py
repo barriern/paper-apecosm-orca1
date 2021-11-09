@@ -105,13 +105,12 @@ plt.rcParams['font.size'] = 15
 #axgr = ImageGrid(fig, 111,  nrows_ncols=(2, 1), 
 #                 label_mode='L', aspect=False, share_all=False, axes_pad=[1, 0.5])
 
-
-
 ax = plt.subplot(211)
 plt.plot(sareast)
 ax2 = ax.twinx()
 plt.plot(apeeast, color='firebrick')
-ax2.set_ylabel('OOPE', color='firebrick')
+ax2.set_ylabel('OOPE (J)', color='firebrick')
+ax.set_ylabel('%s catch' %species)
 plt.title('East')
 ax2.spines['right'].set_color('FireBrick')
 plt.setp(ax2.get_yticklabels(), color='firebrick')
@@ -136,6 +135,8 @@ t = ax.set_xticks(time[::stride])
 l = ax.set_xticklabels(labels[iok][::stride], rotation=45, ha='right')
 ax.set_xlim(time.min(), time.max())
 ax.grid(True)
+ax2.set_ylabel('OOPE (J)', color='firebrick')
+ax.set_ylabel('%s catch' %species)
 plt.savefig('time_series_west_east_species_%s.png' %(species), bbox_inches='tight')
 # -
 
