@@ -24,6 +24,9 @@ import cartopy.crs as ccrs
 from cartopy.mpl.gridliner import LONGITUDE_FORMATTER, LATITUDE_FORMATTER
 import matplotlib.ticker as mticker
 
+yearend = 1997
+yearinit = yearend - 1
+
 skj = xr.open_dataset('data/regridded_catch_gear_PS_species_SKJ_1x1.nc')
 skj
 # -
@@ -47,15 +50,16 @@ def extract_ond(year):
     iok = np.nonzero((dates >= datestart) & (dates <= dateend))[0]
     
     catch_96 = tot.isel(time=iok)
+    print(catch_96)
     output = catch_96.sum(dim='time')
     return output
 
 
-catch_96 = extract_ond(1996)
-catch_96
+catch_end = extract_ond(yearend)
+catch_end
 
-catch_97 = extract_ond(1997)
-catch_97
+catch_init = extract_ond(yearinit)
+catch_init
 
 # +
 plt.rcParams['font.size'] = 15
@@ -69,12 +73,12 @@ axes_class = (GeoAxes, dict(map_projection=projout))
 axgr = ImageGrid(fig, 111,  axes_class=axes_class, nrows_ncols=(3, 1), axes_pad=(0.0, 0.6), label_mode='',
                 cbar_mode='each', cbar_size=0.1, cbar_pad=0.3, cbar_location="right", share_all=True)
 
-lon = catch_96['lon'].values
-lat = catch_96['lat'].values
+lon = catch_init['lon'].values
+lat = catch_init['lat'].values
 
-diff = catch_97 - catch_96
-tp_catch_97 = catch_97.where(catch_97 != 0)
-tp_catch_96 = catch_96.where(catch_96 != 0)
+diff = catch_end - catch_init
+tp_catch_end = catch_end.where(catch_end != 0)
+tp_catch_init = catch_init.where(catch_init != 0)
 diff = diff.where(diff != 0)
 
 cmax = 1000
@@ -87,14 +91,14 @@ gridparams = {'crs':ccrs.PlateCarree(central_longitude=0), 'draw_labels':True, '
               'color':'k', 'linestyle':'--'}
 
 ax = axgr[0]
-cs = ax.pcolormesh(lon, lat, tp_catch_96.values, transform=projin, shading='auto', cmap=plt.cm.jet)
+cs = ax.pcolormesh(lon, lat, tp_catch_init.values, transform=projin, shading='auto', cmap=plt.cm.jet)
 cb = plt.colorbar(cs, axgr.cbar_axes[0])
 cb.set_label('Catch (MT)')
 ax.add_feature(cfeature.LAND, zorder=2)
 ax.add_feature(cfeature.COASTLINE, zorder=3)
 ax.set_extent([lon.min(), lon.max(), lat.min(), lat.max()], crs=projin)
 cs.set_clim(cmin, cmax)
-ax.set_title('OND 96')
+ax.set_title('OND %d' %yearinit)
 gl = ax.gridlines(**gridparams)
 gl.top_labels = False
 gl.right_labels = False
@@ -103,13 +107,13 @@ gl.yformatter = LATITUDE_FORMATTER
 gl.xlocator = mticker.FixedLocator([150, 180, -180, -150, -120, -90, -60])
 
 ax = axgr[1]
-cs = ax.pcolormesh(lon, lat, tp_catch_97.values, transform=projin, shading='auto', cmap=plt.cm.jet)
+cs = ax.pcolormesh(lon, lat, tp_catch_end.values, transform=projin, shading='auto', cmap=plt.cm.jet)
 cb = plt.colorbar(cs, axgr.cbar_axes[1])
 cb.set_label('Catch (MT)')
 ax.add_feature(cfeature.LAND)
 ax.add_feature(cfeature.COASTLINE)
 cs.set_clim(cmin, cmax)
-ax.set_title('OND 97')
+ax.set_title('OND %d' %yearend)
 gl = ax.gridlines(**gridparams)
 gl.top_labels = False
 gl.right_labels = False
@@ -124,7 +128,7 @@ cb.set_label('Catch (MT)')
 ax.add_feature(cfeature.LAND)
 ax.add_feature(cfeature.COASTLINE)
 cs.set_clim(-ccc, ccc)
-ax.set_title('OND 97 - OND 96')
+ax.set_title('OND %d - OND %d' %(yearend, yearinit))
 ax.add_feature(cfeature.LAND)
 ax.add_feature(cfeature.COASTLINE)
 gl = ax.gridlines(**gridparams)
@@ -134,7 +138,7 @@ gl.xformatter = LONGITUDE_FORMATTER
 gl.yformatter = LATITUDE_FORMATTER
 gl.xlocator = mticker.FixedLocator([150, 180, -180, -150, -120, -90, -60])
 
-plt.savefig('plot_ond_sardara_catches.png', bbox_inches='tight')
+plt.savefig('plot_ond_sardara_catches_%d_%d.png' %(yearinit, yearend), bbox_inches='tight')
 
 lon.min(), lon.max(), lat.min(), lat.max()
 # -
