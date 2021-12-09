@@ -6,11 +6,11 @@
 #       extension: .py
 #       format_name: light
 #       format_version: '1.5'
-#       jupytext_version: 1.11.3
+#       jupytext_version: 1.10.3
 #   kernelspec:
-#     display_name: Python [conda env:nbarrier] *
+#     display_name: Python 3 (ipykernel)
 #     language: python
-#     name: conda-env-nbarrier-py
+#     name: python3
 # ---
 
 # +
@@ -46,6 +46,7 @@ const['l'] = const['length'].values * 100
 const
 
 dirin = '/home1/datawork/nbarrier/apecosm/apecosm_orca1/processed_pacific'
+dirin = 'data/'
 
 eof = xr.open_dataset('%s/full_eof_pacific_OOPE_latmax_%d_lonmin_%d_lonmax_%d.nc' %(dirin, latmax, lonmin, lonmax))
 eof = eof.rename({'w': 'l'})
@@ -70,9 +71,10 @@ time = np.arange(nino.shape[0])
 
 # +
 dicttext = dict(boxstyle='round', facecolor='lightgray', alpha=1)
+plt.rcParams['font.size'] = 15
 
-fig = plt.figure(figsize=(12, 8))
-axgr = AxesGrid(fig, 111,  aspect=False, nrows_ncols=(3, 2), axes_pad=(1.23, 0.4), cbar_pad=0.05)
+fig = plt.figure(figsize=(12, 8), facecolor='white')
+axgr = AxesGrid(fig, 111,  aspect=False, nrows_ncols=(3, 2), axes_pad=(0.6, 0.4), cbar_pad=0.05)
 cbar_axes = axgr.cbar_axes
 
 cpt = 0
@@ -91,16 +93,19 @@ for l in [3, 20, 90]:
         pciroll = pctemp.rolling(time=7*12, center=True).mean()
             
         ax = axgr[cpt]
-        ax.fill_between(time, 0, nino, where=(nino > 0), facecolor='firebrick', interpolate=True)
+        ax.fill_between(time, 0, nino, where=(nino > 0), facecolor='firebrick', interpolate=True, label='ONI index')
         ax.fill_between(time, 0, nino, where=(nino < 0), facecolor='steelblue', interpolate=True)
-        cs = ax.plot(time, pctemp, color='k')
-        ax.plot(time, pciroll, color='cyan', linewidth=2)
-        ax.plot(pci, color='Gold', linewidth=2)
-        title = 'L=%.fcm, EOF %d (%.f' %(l, e + 1, vartemp) + '%' + ')'
+        cs = ax.plot(time, pctemp, color='k', label='PC')
+        ax.plot(time, pciroll, color='cyan', linewidth=2, label='Rolling mean PC')
+        ax.plot(pci, color='Gold', linewidth=2, label='PCI index')
+        title = 'L=%.fcm, EOF %d (%.f' %(l, e + 1, vartemp) + '\%' + ')'
         ax.set_title(title)
         ax.set_xlim(0, time.max())
+        if(cpt == 0): 
+            ax.legend(loc=0, ncol=4, fontsize=10)
+        ax.grid()
         cpt += 1
-plt.savefig('pcs_latmax_%d_lonmin_%d_lonmax_%d.png' %(latmax, lonmin, lonmax))
+plt.savefig('pcs_latmax_%d_lonmin_%d_lonmax_%d.png' %(latmax, lonmin, lonmax), bbox_inches='tight')
 # -
 
 
