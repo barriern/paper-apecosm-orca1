@@ -91,8 +91,8 @@ for l in [3, 20, 90]:
     ax.add_feature(cfeature.COASTLINE)
     ax.add_feature(cfeature.LAND)
     cs.set_clim(-perc, perc)
-    #title = 'L=%.fcm, EOF %d (%.f' %(l, e + 1, vartemp) + '\%' + ')'
-    #ax.set_title(title)
+    title = 'L=%.fcm' %(l)
+    ax.set_title(title)
     ax.set_xlim(-60, 130)
     ax.set_ylim(-40, 40)
     cb.set_label('J/m2')
