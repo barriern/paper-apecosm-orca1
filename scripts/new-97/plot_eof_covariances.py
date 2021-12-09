@@ -127,10 +127,14 @@ for l in [3, 20, 90]:
         ax.set_ylim(-40, 40)
         cb.set_label('J/m2')
         gl = ax.gridlines(**dictgrid)
-        gl.xlabels_top = False
-        gl.ylabels_right = False
-        gl.xlabels_bottom = False
-        gl.ylabels_left = False
+        gl.top_labels = False
+        gl.right_labels = False
+        gl.bottom_labels = False
+        gl.left_labels = False
+        if(cpt in [0, 2, 4]):
+            gl.left_labels = True
+        if(cpt > 3):
+            gl.bottom_labels = True
         gl.xformatter = LONGITUDE_FORMATTER
         gl.yformatter = LATITUDE_FORMATTER
         gl.xlocator = mticker.FixedLocator([150, 180, -150, -120, -90, -60])
