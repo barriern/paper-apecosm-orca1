@@ -63,7 +63,7 @@ for v in varnames:
     dataclim = dataclim[v]
     dataclim
 
-    data = data.groupby('time.month') - dataclim
+    data = (data.groupby('time.month') - dataclim).cumsum(dim='time')
     data
 
     data = data.rename({'w': 'l'})
