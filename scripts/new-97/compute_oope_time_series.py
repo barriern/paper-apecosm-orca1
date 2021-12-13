@@ -8,13 +8,14 @@
 #       format_version: '1.5'
 #       jupytext_version: 1.11.3
 #   kernelspec:
-#     display_name: Python 3
+#     display_name: Python 3 (ipykernel)
 #     language: python
 #     name: python3
 # ---
 
 import xarray as xr
 import matplotlib.pyplot as plt
+import numpy as np
 plt.rcParams['text.usetex'] = False
 
 const = xr.open_dataset('../data/ORCA1_JRAC02_CORMSK_CYC3_FINAL_ConstantFields.nc')
@@ -40,6 +41,17 @@ weights.where(west).plot()
 
 east = (abs(lat) < 5) & (lon <= 0)
 weights.where(east).plot()
+
+plt.figure(facecolor='white')
+mask.plot(cmap='gray')
+ilat, ilon = np.nonzero((east.values == True) & (mask.values== 1))
+nlat, nlon = mask.shape
+x = np.arange(nlon)
+y = np.arange(nlat)
+plt.plot(x[ilon], y[ilat], marker='.', color='steelblue')
+ilat, ilon = np.nonzero((west.values == True) & (mask.values== 1))
+plt.plot(x[ilon], y[ilat], marker='.', color='firebrick')
+plt.savefig('mask_domain.png', bbox_inches='tight')
 
 data = xr.open_dataset('data/pacific_nino97_OOPE.nc', decode_times=True)
 oope = data['OOPE']

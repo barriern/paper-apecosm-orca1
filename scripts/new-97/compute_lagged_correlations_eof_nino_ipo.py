@@ -10,6 +10,7 @@ import os.path
 latmax = 20
 lonmin = 150
 lonmax = -120
+eof = 0
 # -
 
 signs = -np.ones((100))
@@ -36,10 +37,10 @@ data = xr.open_dataset(filename)
 data
 
 pc = data['eofpcs'].values  # bins, eof, time
-pc = pc[:, :, 0]   # bins, time
+pc = pc[:, :, eof]   # bins, time
 pc.shape
 
-pc = (pc.T * signs).T
+#pc = (pc.T * signs).T
 nbins = pc.shape[0]
 
 tpi = xr.open_dataset('../data/filt_tpi.nc')
@@ -80,5 +81,5 @@ dsout['corroni'] = (['l', 'lags'], corroni)
 dsout['lags'] = (['lags'], lags)
 dsout['l'] = (['l'], length * 100)
 #dsout.attrs['file'] = os.path.realpath(__file__)
-dsout.to_netcdf('full_eof_tpi_oni_corr.nc')
+dsout.to_netcdf('full_eof_tpi_oni_corr_eof_%d.nc' %(eof + 1))
 
