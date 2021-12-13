@@ -8,7 +8,7 @@
 #       format_version: '1.5'
 #       jupytext_version: 1.11.3
 #   kernelspec:
-#     display_name: Python 3
+#     display_name: Python 3 (ipykernel)
 #     language: python
 #     name: python3
 # ---
@@ -68,7 +68,7 @@ for v in varnames:
 
     data = data.rename({'w': 'l'})
     data['l'] = length
-    data
+    data = data * const['weight_step']
 
     dsout = xr.Dataset()
 
@@ -81,3 +81,5 @@ for v in varnames:
     dsout['%s_east' %v] = data_east
 
     dsout.to_netcdf('%s_timeseries.nc' %v)
+
+
