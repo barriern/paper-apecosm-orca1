@@ -1,6 +1,7 @@
 **/.ipynb_checkpoints
 **/*.pdf
-**/*.png
+scripts/**/*.png
+save-figs
 **/*.aux
 **/*.bbl
 **/*.blg
