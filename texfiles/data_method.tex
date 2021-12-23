@@ -1,0 +1,39 @@
+\section{Data and method}
+
+\subsection{El Nino index}
+
+In the present study, the internannual ENSO variability is inferred from the Oceanic Nino Index (\url{https://www.cpc.ncep.noaa.gov/data/indices/oni.ascii.txt}, hereafter ONI), which is a 3-month running mean of the sea-surface temperature anomalies averaged over the Niño 3.4 region (5N-5S, 170W-120W).\\
+
+Pacific decadal variability is described using the Tripole Index for the Interdecadal Pacific Oscillation (\url{https://psl.noaa.gov/data/timeseries/IPOTPI/}, hereafter TPI) index, which is based on the difference between the sea-surface temperature anomalies averaged over the central equatorial Pacific and the average of the sea-surface temperature anomalies in the Northwest and Southwest Pacific. The filtered NOAA ERSST V5 version of the index was used (Lanczos filtering with a cutoff period of  13 years).
+
+\subsection{Statistical tools}
+
+\subsubsection{Covariance analysis}
+
+In order to assess the impacts of climate variability (ONI, TPI) on temperature, chlorophyll or fish biomass, covariance analysis has been extensively used. The method used is as follows. First, the monthly climatology of the analysed fields is computed and subtracted from the monthly data. Then, these monthly anomalies are detrended. Finally, the covariance between the resulting time series and the climate indexes are computed for each grid point considered.
+
+\subsubsection{Empirical Orthogonal Functions (EOF) decompositions}
+
+In order to facilitate the analysis of the variability of simulated fish biomass, which varies over time, space and size-class, an Empirical Orthogonal Functions (EOF) decomposition has been performed. The aim is to decompose the 3D biomass anomalies $B'(t, y, x)$ as follows: 
+
+\begin{equation}
+B'(x,y,t) = \sum_{k=0}^{N} PC_k(t) \times EOF_k(x,y)
+\end{equation}
+
+with $N$ the total number of time-steps. As for covariance analysis (see above), detrended fish biomass density anomalies have been computed for each size-class. Then, all points outside of the region of interest have been masked and the dataset has been weighted as follows:
+
+\begin{displaymath}
+W_{tot} = \sum_{(x, y) \in D} S(x,y)
+\end{displaymath}
+
+\begin{displaymath}
+W(x, y) = \sqrt{\frac{W(x, y)}{W_{tot}}}
+\end{displaymath}
+
+Finally, the eigenvalues of the weighted biomass density anomalies have been computed. 
+
+\subsection{Physical and biogeochemical forcing}
+\input{texfiles/nemo_pis_des.tex}
+
+\subsection{Marine Ecosystem Model}
+\input{texfiles/apecosm_des.tex}
