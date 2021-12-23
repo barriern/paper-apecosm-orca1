@@ -1,0 +1,42 @@
+The marine ecosystem model employed is the Apex Predators Ecosystem Model (Apecosm, \citealt{mauryModelingEnvironmentalEffects2007, mauryOverviewAPECOSMSpatialized2010}, which simulates the transfer of energy in marine ecosystems in a 5 dimensional space (space, time and size). The biological processes include size-based opportunistic trophic interactions, competition for food, allocation of energy between growth and reproduction, somatic and maturity maintenance, predatory and starvation mortality (see \citealt{mauryModelingEnvironmentalEffects2007} for a detailed description of the model). The physiological bases of the model are derived from the Dynamic Energy Budget theory (DEB, \cite{kooijmanDynamicEnergyMass2000}). All the physiological rates are temperature-dependent. In addition to biological processes, energy density is also subjected to both advection and diffusion, following \cite{faugerasAdvectiondiffusionreactionSizestructuredFish2005}
+
+In Apecosm, biomass changes are induced by four different mechanisms. First, biomass of a specific size-class can change due to growth process according to the following equation:
+
+\begin{equation}
+\partial_t \varepsilon = - \partial_w(\gamma \varepsilon) + \frac{\gamma}{w}\varepsilon
+\end{equation}
+
+where $\varepsilon$  is the fish biomass density, $w$ the weight and $\gamma$ is the growth rate. Biomass can also decrease due to predation mortality processes:
+
+\begin{equation}
+\partial_t \varepsilon = - M \varepsilon
+\end{equation}
+
+where $M$ is the predation mortality rate, computed using equation 12 of \cite{mauryIndividualsPopulationsCommunities2013}. 
+
+Finally, changes in fish biomass can be induced by fish movements (either passive or active), as discussed in \cite{faugerasAdvectiondiffusionreactionSizestructuredFish2005}:
+
+\begin{equation}
+\partial_t \varepsilon = -\overrightarrow{\nabla}.(\overrightarrow{V} \varepsilon) + \overrightarrow{\nabla} . (D \overrightarrow{\nabla} \varepsilon)
+\end{equation}
+
+with the first term being the contribution of advection and the second term being the contribution of diffusion, $V$ the velocity (which is the combination of active speed and ocean currents) and $D$ the diffusivity coefficient (which is the combination of an active, i.e. foraging, diffusion term and a passive diffusion coefficient).
+
+In order to assess the mechanisms of fish biomass response to ENSO variability, biomass changes induced by growth, predation, advection and diffusion are stored for the entire simulation. Therefore, the biomass for a given size class, at a given location and for a specific time can be reconstructed by using the following equation:
+
+\begin{equation}
+\varepsilon(x,y,T) = \varepsilon(x,y,T=0) + \int_{t=0}^{T} \left[ 
+T_{pred}(x, y,t) + 
+T_{growth}(x, y,t) + 
+T_{adv}(x, y,t) + 
+T_{diff}(x, y,t) 
+\right] dt 
+\end{equation}
+
+where $T_{pred}$, $T_{growth}$, $T_{adv}$ and $T_{diff}$ are the respective biomass increments due to predation, growth, advection and diffusion.
+
+In the present work, three generic communities are simulated: one epipelagic community, one migrant community and one mesopelagic community.. The epilagic community distribution is influenced by temperature and oxygen, while light only influences the functional response. The migrants are only influenced by light: during daytime, they remain at depth, while moving at the surface at night. Mesopolagics, on the other hand, remain at depth during both night and day. Epilagic feed on other epilagic fish only during night daytime. Migrants feed on other migrants and epipelagics, only during night-time. While mesopelagics feed on migrant and mesopelagic during daytime, and only on other mesopelagic during night-time.
+For the sake of simplicity, we will start by detailing the results for three size classes: 3cm, representing small fishes, 20cm, representing intermediate sizes, and 90 cm, representing large individuals. These sizes are also representative of the sizes of tuna target species within the region.\\
+
+In order to ensure that the size-spectrum is fully unfolded, the model has been run three times. First, the model has been initialized from rest and run from 1958 to 2018. Then, the end of this first spin-up phase has been used to run another cycle, which was in turn used to run the simulation presented in the given study.
+
