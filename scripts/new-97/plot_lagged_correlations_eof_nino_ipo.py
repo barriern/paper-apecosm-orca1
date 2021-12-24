@@ -116,7 +116,5 @@ ax.set_xscale('log')
 ax.set_xlim(length.min(), length.max())
 ax.set_ylabel('\%')
 ax.set_title('Explained variance')
-plt.savefig('correlations_eof_oni_tpi_eof_%d.png' %(eof + 1))
 plt.grid(True)
-# -
-
+plt.savefig('correlations_eof_oni_tpi_eof_%d.png' %(eof + 1))
