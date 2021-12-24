@@ -75,18 +75,12 @@ cov['l'] = const['l']
 cov.name = 'cov'
 cov
 
+# +
 letters = list(string.ascii_lowercase)
 dicttext = dict(boxstyle='round', facecolor='lightgray', alpha=1)
-lontext = 120
+lontext = 110
 lattext = 30
 
-lonf.shape
-latf.shape
-cov.shape
-
-lonf.shape
-
-# +
 dictgrid = {'crs':ccrs.PlateCarree(central_longitude=0), 'draw_labels':True, 'linewidth':0.5, 'color':'gray', 'alpha':0.5, 'linestyle':'--'}
 dicttext = dict(boxstyle='round', facecolor='lightgray', alpha=1)
 plt.rcParams['font.size'] = 15
@@ -123,8 +117,7 @@ for l in [3, 20, 90]:
         cs.set_clim(-perc, perc)
         title = 'L=%.fcm, EOF %d (%.f' %(l, e + 1, vartemp) + '\%' + ')'
         ax.set_title(title)
-        ax.set_xlim(-60, 130)
-        ax.set_ylim(-40, 40)
+        ax.set_extent([130, -60 + 360, -40, 40], crs=proj2)
         cb.set_label('J/m2')
         gl = ax.gridlines(**dictgrid)
         gl.top_labels = False
@@ -138,7 +131,8 @@ for l in [3, 20, 90]:
         gl.xformatter = LONGITUDE_FORMATTER
         gl.yformatter = LATITUDE_FORMATTER
         gl.xlocator = mticker.FixedLocator([150, 180, -150, -120, -90, -60])
-
+        ax.text(lontext, lattext, letters[cpt] + ')', ha='center', va='center', bbox=dicttext)
+        
         cpt += 1
 
 plt.savefig('covariance_OOPE_pcs_latmax_%d_lonmin_%d_lonmax_%d_all_sizes.png' %(latmax, lonmin, lonmax), bbox_inches='tight')

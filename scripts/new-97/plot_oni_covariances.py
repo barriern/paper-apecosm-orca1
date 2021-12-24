@@ -27,6 +27,7 @@ sys.path.append('../nino')
 from extract_nino import read_index
 import numpy as np
 import matplotlib.ticker as mticker
+plt.rcParams['font.size'] = 15
 
 ilat = slice(None, -3)
 # -
@@ -59,12 +60,12 @@ eof
 cov = eof['OOPE']
 cov
 
+# +
 letters = list(string.ascii_lowercase)
 dicttext = dict(boxstyle='round', facecolor='lightgray', alpha=1)
-lontext = 120
-lattext = 30
+lontext = 110
+lattext = 27
 
-# +
 dictgrid = {'crs':ccrs.PlateCarree(central_longitude=0), 'draw_labels':True, 'linewidth':0.5, 'color':'gray', 'alpha':0.5, 'linestyle':'--'}
 dicttext = dict(boxstyle='round', facecolor='lightgray', alpha=1)
 plt.rcParams['font.size'] = 15
@@ -93,8 +94,6 @@ for l in [3, 20, 90]:
     cs.set_clim(-perc, perc)
     title = 'L=%.fcm' %(l)
     ax.set_title(title)
-    ax.set_xlim(-60, 130)
-    ax.set_ylim(-40, 40)
     cb.set_label('J/m2')
     gl = ax.gridlines(**dictgrid)
     gl.top_labels = False
@@ -105,7 +104,10 @@ for l in [3, 20, 90]:
         gl.bottom_labels = True
     gl.xformatter = LONGITUDE_FORMATTER
     gl.yformatter = LATITUDE_FORMATTER
-    gl.xlocator = mticker.FixedLocator([150, 180, -150, -120, -90, -60])
+    #gl.xlocator = mticker.FixedLocator([150, 180, -150, -120, -90])
+    ax.text(lontext, lattext, letters[cpt] + ')', bbox=dicttext, ha='center', va='center')
+    #ax.set_extent([130, -60, -40, 40], crs=proj2)
+    ax.set_extent([130, -60 + 360, -40, 40], crs=proj2)
 
     cpt += 1
 

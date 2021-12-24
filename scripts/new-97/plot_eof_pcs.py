@@ -58,22 +58,18 @@ var
 pc = eof['eofpcs']
 pc
 
-letters = list(string.ascii_lowercase)
-dicttext = dict(boxstyle='round', facecolor='lightgray', alpha=1)
-lontext = 120
-lattext = 30
-
-pc.shape
-
-nino.shape
-
 time = np.arange(nino.shape[0])
 
 # +
+letters = list(string.ascii_lowercase)
+dicttext = dict(boxstyle='round', facecolor='lightgray', alpha=1)
+lontext = time[-1] - 50
+lattext = 2.7
+
 dicttext = dict(boxstyle='round', facecolor='lightgray', alpha=1)
 plt.rcParams['font.size'] = 15
 
-fig = plt.figure(figsize=(12, 8), facecolor='white')
+fig = plt.figure(figsize=(12, 10), facecolor='white')
 axgr = AxesGrid(fig, 111,  aspect=False, nrows_ncols=(3, 2), axes_pad=(0.6, 0.4), cbar_pad=0.05)
 cbar_axes = axgr.cbar_axes
 
@@ -102,8 +98,9 @@ for l in [3, 20, 90]:
         ax.set_title(title)
         ax.set_xlim(0, time.max())
         if(cpt == 0): 
-            ax.legend(loc=0, ncol=4, fontsize=10)
+            ax.legend(loc='upper left', ncol=2, fontsize=10)
         ax.grid()
+        ax.text(lontext, lattext, letters[cpt] + ')', ha='center', va='center', bbox=dicttext)
         cpt += 1
 plt.savefig('pcs_latmax_%d_lonmin_%d_lonmax_%d.png' %(latmax, lonmin, lonmax), bbox_inches='tight')
 # -
