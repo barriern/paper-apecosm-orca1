@@ -17,12 +17,12 @@ from cycler import cycler
 from matplotlib.axes import Axes
 
 ilat = slice(None, -3)
-latmax = 10
+latmax = 20
 lonmin = 150
-lonmax = -100
+lonmax = -120
 # -
 
-dirin = '/home1/datawork/nbarrier/apecosm/apecosm_orca1/processed_pacific'
+dirin = 'data'
 
 letters = list(string.ascii_lowercase)
 dicttext = dict(boxstyle='round', facecolor='lightgray', alpha=1)
@@ -98,6 +98,8 @@ for l in sizes:
 
         corrcoef = np.corrcoef(nino, pctemp)[0, 1]
         if(corrcoef < 0):
+            if((e == 1) & (l == sizes[1])):
+                print(corrcoef)
             eoftemp *= -1
             pctemp *= -1
 
