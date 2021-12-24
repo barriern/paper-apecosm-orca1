@@ -93,6 +93,11 @@ axes_class = (GeoAxes, dict(map_projection=proj))
 axgr = AxesGrid(fig, 111,  axes_class=axes_class, nrows_ncols=(3, 2), axes_pad=(0.6, 0.4), label_mode='', cbar_mode='each', cbar_pad=0.05)
 cbar_axes = axgr.cbar_axes
 
+clim = {}
+clim[3] = 70
+clim[20] = 6
+clim[90] = 3
+
 cpt = 0
 for l in [3, 20, 90]:
     for e in range(2):
@@ -108,7 +113,9 @@ for l in [3, 20, 90]:
         corr = np.corrcoef(pctemp, nino)[0, 1]
         if(corr < 0):
             temp *= -1
-            
+               
+        perc = clim[l]
+        
         ax = axgr[cpt]
         cs = ax.pcolormesh(lonf, latf, temp[1:, 1:], transform=proj2, cmap=plt.cm.RdBu_r)
         cb = plt.colorbar(cs, cbar_axes[cpt])
@@ -137,4 +144,9 @@ for l in [3, 20, 90]:
 
 plt.savefig('covariance_OOPE_pcs_latmax_%d_lonmin_%d_lonmax_%d_all_sizes.png' %(latmax, lonmin, lonmax), bbox_inches='tight')
 # -
+ax = plt.axes(projection=proj)
+perc = np.percentile(np.abs(np.ravel(toto[toto.mask == False])), 99)
+cs = ax.pcolormesh(lonf, latf, toto[1:, 1:], transform=proj2, cmap=plt.cm.RdBu_r)
+cs.set_clim(-perc, perc)
+
 

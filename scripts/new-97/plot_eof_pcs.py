@@ -58,6 +58,9 @@ var
 pc = eof['eofpcs']
 pc
 
+dates = ['%.4d-%.2d' %(d.year, d.month) for d in pc['time'].values]
+dates
+
 time = np.arange(nino.shape[0])
 
 # +
@@ -70,7 +73,7 @@ dicttext = dict(boxstyle='round', facecolor='lightgray', alpha=1)
 plt.rcParams['font.size'] = 15
 
 fig = plt.figure(figsize=(12, 10), facecolor='white')
-axgr = AxesGrid(fig, 111,  aspect=False, nrows_ncols=(3, 2), axes_pad=(0.6, 0.4), cbar_pad=0.05)
+axgr = AxesGrid(fig, 111,  aspect=False, nrows_ncols=(3, 2), axes_pad=(0.6, 0.4), cbar_pad=0.05, share_all=True)
 cbar_axes = axgr.cbar_axes
 
 cpt = 0
@@ -92,8 +95,8 @@ for l in [3, 20, 90]:
         ax.fill_between(time, 0, nino, where=(nino > 0), facecolor='firebrick', interpolate=True, label='ONI index')
         ax.fill_between(time, 0, nino, where=(nino < 0), facecolor='steelblue', interpolate=True)
         cs = ax.plot(time, pctemp, color='k', label='PC')
-        ax.plot(time, pciroll, color='cyan', linewidth=2, label='Rolling mean PC')
-        ax.plot(pci, color='Gold', linewidth=2, label='PCI index')
+        ax.plot(time, pciroll, color='plum', linewidth=4, label='Rolling mean PC', linestyle='-')
+        ax.plot(pci, color='Gold', linewidth=4, label='PCI index')
         title = 'L=%.fcm, EOF %d (%.f' %(l, e + 1, vartemp) + '\%' + ')'
         ax.set_title(title)
         ax.set_xlim(0, time.max())
@@ -101,6 +104,10 @@ for l in [3, 20, 90]:
             ax.legend(loc='upper left', ncol=2, fontsize=10)
         ax.grid()
         ax.text(lontext, lattext, letters[cpt] + ')', ha='center', va='center', bbox=dicttext)
+        stride= 5 * 12
+        ax.set_xticks(time[2*12::stride])
+        ax.set_xticklabels(dates[2*12::stride], ha='right', rotation=45)
+        
         cpt += 1
 plt.savefig('pcs_latmax_%d_lonmin_%d_lonmax_%d.png' %(latmax, lonmin, lonmax), bbox_inches='tight')
 # -
