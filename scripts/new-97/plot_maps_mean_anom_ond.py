@@ -50,6 +50,18 @@ wstep
 length = const['length'] * 100
 length
 
+# ## Loading the covariances
+
+filename = 'data/covariance_OOPE_anomalies_oni_sizes.nc'
+filename
+
+cov = xr.open_dataset(filename).isel(y=yslice)
+cov = cov.rename({'w': 'l'})
+cov['l'] = const['l']
+cov = cov['OOPE'].sel(lags=0) * wstep
+cov = cov.sel(l=[3, 20, 90], method='nearest')
+cov
+
 # ## Loading the climatology
 
 clim = xr.open_dataset('data/pacific_clim_OOPE.nc').rename({'w': 'l'}).isel(y=yslice)
@@ -130,20 +142,33 @@ lontext2 = 110
 lattext2 = -30
 dicttext = dict(boxstyle='round', facecolor='lightgray', alpha=1)
 
+
+def manage_axes(gl, cpt):
+    
+    gl.top_labels = False
+    gl.right_labels = False
+    gl.bottom_labels = False
+    gl.left_labels = False
+    if cpt in [0, 3, 6]:
+        gl.left_labels = True
+    if cpt in [6, 7, 8]:
+        gl.bottom_labels = True
+
+
 # +
 plt.rcParams['font.size'] = 15
 
-fig = plt.figure(figsize=(12, 16))
+fig = plt.figure(figsize=(16, 16))
 plt.subplots_adjust(top=0.95)
 axes_class = (GeoAxes, dict(map_projection=proj))
 
 letters = list(string.ascii_lowercase)
 
-axgr = AxesGrid(fig, 111,  axes_class=axes_class, nrows_ncols=(3, 2), axes_pad=(0.7, 0.75), label_mode='', cbar_mode='each', cbar_size=0.1, cbar_pad=0.3, cbar_location="bottom")
+axgr = AxesGrid(fig, 111,  axes_class=axes_class, nrows_ncols=(3, 3), axes_pad=(0.5, 0.5), label_mode='', cbar_mode='each', cbar_size=0.1, cbar_pad=0.3, cbar_location="bottom")
 
 ## Plotting the mean
 for l in range(3):
-    cpt = (l * 2)
+    cpt = (l * 3)
     ax = axgr[cpt]
     
     temp = varclim.isel(l=l)
@@ -156,11 +181,10 @@ for l in range(3):
     ax.add_feature(cfeature.COASTLINE, zorder=1001)
 
     gl = ax.gridlines(**gridparams)
-    gl.xlabels_top = False
-    gl.ylabels_right = False
+
     gl.xformatter = LONGITUDE_FORMATTER
     gl.yformatter = LATITUDE_FORMATTER
-    gl.xlocator = mticker.FixedLocator([150, 180, -180, -150, -120, -90, -60])
+    gl.xlocator = mticker.FixedLocator([150, 180, -180, -150, -120, -90])
     ax.set_ylim(-40, 40)
     ax.set_xlim(-60, 130)
     ax.text(lontext, lattext, letters[cpt] + ")", ha='center', va='center', transform=proj, bbox=dicttext)
@@ -168,14 +192,17 @@ for l in range(3):
     
     cbax = axgr.cbar_axes[cpt]
     cb = cbax.colorbar(cs)
-    cb.set_label('Mean biomass dens. (Log(J/m2))')
+    if(l == 0):
+        #cb.set_label('Mean biomass dens. (Log(J/m2))')
+        ax.set_title('Mean biomass dens.\n(Log(J/m2))')
+    manage_axes(gl, cpt)
     
     cpt += 1
     
 ## Plotting the anomalies
 for l in range(3):
     
-    cpt = (l * 2 + 1)
+    cpt = (l * 3 + 1)
     ax = axgr[cpt]
     
     temp = varanom.isel(l=l)
@@ -194,11 +221,9 @@ for l in range(3):
     ax.add_feature(cfeature.COASTLINE, zorder=1001)
 
     gl = ax.gridlines(**gridparams)
-    gl.xlabels_top = False
-    gl.ylabels_right = False
     gl.xformatter = LONGITUDE_FORMATTER
     gl.yformatter = LATITUDE_FORMATTER
-    gl.xlocator = mticker.FixedLocator([150, 180, -180, -150, -120, -90, -60])
+    gl.xlocator = mticker.FixedLocator([150, 180, -180, -150, -120, -90])
     ax.set_ylim(-40, 40)
     ax.set_xlim(-60, 130)
     ax.text(lontext, lattext, letters[cpt] + ")", ha='center', va='center', transform=proj, bbox=dicttext)
@@ -206,9 +231,49 @@ for l in range(3):
     
     cbax = axgr.cbar_axes[cpt]
     cb = cbax.colorbar(cs)
-    cb.set_label('97-OND biomass anoms (J/m2)')
+    if l == 0:
+        #cb.set_label('97-OND biomass anoms (J/m2)')
+        ax.set_title('97-OND biomass anoms\n(J/m2)')
+    manage_axes(gl, cpt)
     
     cpt += 1
+    
+## Plotting the anomalies
+for l in range(3):
+    
+    cpt = (l * 3 + 2)
+    ax = axgr[cpt]
+    
+    temp = cov.isel(l=l)
+    ltemp = float(temp.l)
+    temp = temp.to_masked_array()
+    
+    ccc = np.percentile(np.abs(np.ravel(temp[temp.mask == False])), 98)
+    print('ccc = ', ccc)
+    
+    cs = ax.pcolormesh(lonf, latf, temp[1:, 1:], transform=proj2, shading='auto', cmap=plt.cm.RdBu_r)
+    cs.set_clim(-ccc, ccc)
+    ax.add_feature(cfeature.LAND, zorder=1000, color='lightgray')
+    ax.add_feature(cfeature.COASTLINE, zorder=1001)
+
+    gl = ax.gridlines(**gridparams)
+    gl.xformatter = LONGITUDE_FORMATTER
+    gl.yformatter = LATITUDE_FORMATTER
+    gl.xlocator = mticker.FixedLocator([150, 180, -180, -150, -120, -90])
+    ax.set_ylim(-40, 40)
+    ax.set_xlim(-60, 130)
+    ax.text(lontext, lattext, letters[cpt] + ")", ha='center', va='center', transform=proj, bbox=dicttext)
+    ax.text(lontext2, lattext2, '%.f cm' %ltemp, ha='center', va='center', transform=proj, bbox=dicttext, zorder=2000)
+    
+    cbax = axgr.cbar_axes[cpt]
+    cb = cbax.colorbar(cs)
+    if(l == 0):
+        #cb.set_label('Cov. ONI/biomass anoms (J/m2)')
+        ax.set_title('Cov. ONI/biomass anoms\n(J/m2)')
+    manage_axes(gl, cpt)
+    
+    cpt += 1    
+    
     
 plt.savefig('map_mean_anom_OND_97.png', bbox_inches='tight', facecolor='white')
 plt.show()
