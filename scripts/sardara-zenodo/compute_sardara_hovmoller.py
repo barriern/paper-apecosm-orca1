@@ -6,9 +6,9 @@
 #       extension: .py
 #       format_name: light
 #       format_version: '1.5'
-#       jupytext_version: 1.11.5
+#       jupytext_version: 1.10.3
 #   kernelspec:
-#     display_name: Python 3
+#     display_name: Python 3 (ipykernel)
 #     language: python
 #     name: python3
 # ---
@@ -33,36 +33,17 @@ catch = data['catch'].sum(dim='species')
 date = data['time'].values
 date[:24]
 
-iok = np.nonzero((date >= 199701) & (date <=199812))[0]
-iok
+catch = catch.where(abs(catch['lat']) <= 10)
+catch
 
-subcatch = catch.isel(time=iok)
-subcatch
-
-subcatch = subcatch.where(abs(subcatch['lat']) <= 10)
-subcatch
-
-ntime = subcatch.shape[0]
+ntime = catch.shape[0]
 time = np.arange(ntime)
 time
 
-lon = subcatch['lon'].values
+lon = catch['lon'].values
 lon
 
-output = subcatch.sum(dim='lat')
-toplot = output.values
-toplot = np.log10(toplot, where=toplot >0, out=toplot)
-toplot = np.ma.masked_where(toplot==0, toplot)
-cs = plt.pcolormesh(lon, time, toplot, shading='auto')
-plt.colorbar(cs)
-plt.gca().set_xlim(150, 260)
-
-toplot
-
+output = catch.sum(dim='lat')
 output
 
 output.to_netcdf('hovmoller_sardara.nc')
-
-output
-
-
