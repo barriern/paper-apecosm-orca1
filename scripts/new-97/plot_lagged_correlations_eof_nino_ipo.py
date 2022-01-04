@@ -27,10 +27,11 @@ eofvar = eofvar.rename({'w': 'l'})
 eofvar['l'] = length2
 eofvar = eofvar[:, eof]
 eofvar
-# -
 
+# +
 corrtpi = data['corrtpi'].values  # nsize, nlags
 corroni = data['corroni'].values
+
 nsize, nlags = corroni.shape
 if(eof == 1):
     lagref = 20
@@ -39,6 +40,10 @@ else:
 iii = np.nonzero(lags == lagref)[0][0]
 iii
 corroni.shape
+# -
+
+sigtpi = data['sigtpi'].values  # nsize, nlags
+sigoni = data['sigoni'].values
 
 signs_oni = np.sign(corroni[:, iii])  # nsize
 signs_oni.shape
@@ -49,10 +54,14 @@ il = np.nonzero(length2 <= 100)[0]
 length = length2[il]
 corrtpi = corrtpi[il, :]
 corroni = corroni[il, :]
+sigtpi = sigtpi[il, :]
+sigoni = sigoni[il, :]
 
 ilags = np.nonzero(lags >= 0)[0]
 corrtpi = corrtpi[:, ilags]
 corroni = corroni[:, ilags]
+sigtpi = sigtpi[:, ilags]
+sigoni = sigoni[:, ilags]
 lags = lags[ilags]
 
 cmax = 0.8
@@ -62,8 +71,11 @@ lev = np.arange(0, 1 + step, step)
 lev = np.arange(-0.2, 0.85 + step, step)
 lev = np.arange(-cmax, cmax + step, step)
 
+
+
 # +
 plt.rcParams['font.size'] = 15
+al = 0.3
 
 fig = plt.figure(figsize=(10, 14), facecolor='white')
 #axgr = ImageGrid(fig, 311,  nrows_ncols=(2, 1), label_mode='L', aspect=False, 
@@ -77,24 +89,22 @@ ax = plt.subplot(311)
 cs = ax.pcolor(length, lags, corroni.T, shading='auto')
 cs.set_clim(-cmax, cmax)
 cl = ax.contour(length, lags,  corroni.T, colors='k', linewidths=0.5, levels=lev)
-cl2 = ax.contour(length, lags, corroni.T, colors='k', linewidths=2, levels=0)
+cl2 = ax.contour(length, lags, corroni.T, colors='k', linewidths=2, levels=[0])
 cb = plt.colorbar(cs)
-#ax.set_xlabel('Lags (month)')
-ax.set_ylabel('Length (cm)')
+ax.set_ylabel('Lags (month)')
 ax.set_title('ONI')
 ax.grid(True)
-#cb = cbar_axes[0].colorbar(cs)
 cb.set_label('Correlation PC %d' %(eof + 1))
-#ax.axvline(lagref)
 plt.tick_params(labelbottom=False)
+
+isize, ilag = np.nonzero(np.abs(corroni) >= np.abs(sigoni))
+plt.plot(length[isize], lags[ilag], linestyle='none', marker='.', color='k', alpha=al)
 
 ax = plt.subplot(312, sharex=ax)
 #cs = ax.contourf(lags, length, corrtpi, levels=lev)
 cs = ax.pcolor(length, lags, corrtpi.T, shading='auto')
 cs.set_clim(-cmax, cmax)
 cl = ax.contour(length, lags,  corrtpi.T, colors='k', linewidths=0.5, levels=lev)
-cl2 = ax.contour(length, lags, corrtpi.T, colors='k', linewidths=2, levels=0)
-#cb = plt.colorbar(cs, cax=cbar_axes[1], shrink=0.1, aspect=0.8)
 cb = plt.colorbar(cs)
 ax.set_ylabel('Lags (month)')
 ax.set_title('Filt. TPI')
@@ -104,6 +114,9 @@ ax.set_xlim(length.min(), length.max())
 ax.grid(True)
 ax.set_xscale('log')
 plt.tick_params(labelbottom=False)
+
+isize, ilag = np.nonzero(np.abs(corrtpi) >= np.abs(sigtpi))
+plt.plot(length[isize], lags[ilag], linestyle='none', marker='.', color='k', alpha=al)
 
 pos1 = ax.get_position() # get the original position 
 offset = 0.25
@@ -118,3 +131,6 @@ ax.set_ylabel('\%')
 ax.set_title('Explained variance')
 plt.grid(True)
 plt.savefig('correlations_eof_oni_tpi_eof_%d.png' %(eof + 1), bbox_inches='tight')
+# -
+
+
