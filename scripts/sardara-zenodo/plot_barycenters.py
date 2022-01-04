@@ -21,9 +21,10 @@ import scipy.signal as sig
 
 anom = False
 window = 12
+prefix = 'school_'
 # -
 
-apecosm = xr.open_dataset('barycenter_apecosm.nc')
+apecosm = xr.open_dataset('%sbarycenter_apecosm.nc' %prefix)
 apecosm = apecosm['__xarray_dataarray_variable__']
 apecosm = apecosm.rolling(time=window, center=True).mean()
 if(anom):
@@ -68,6 +69,7 @@ toplot1 = sig.detrend(toplot1) + toplot1.mean()
 toplot2 = sardara.values[istart:][:-16]
 toplot2 = sig.detrend(toplot2) + toplot2.mean()
 
+datestr = ['%.4d-%.2d' %(y,m) for y, m in zip(years, months)]
 
 plt.rcParams['font.size'] = 15
 plt.figure(facecolor='white', figsize=(12, 8))
@@ -76,17 +78,11 @@ plt.plot(time, apecosm.values, label="Apecosm")
 plt.grid(True)
 plt.plot(time[iok][istart:], sardara.values[istart:], label="Sardara")
 plt.plot(time[istart2:], old_sardara.values[old_iok][istart2:], label="New Sardara")
-plt.plot(time[istart2:], toplot1, label="Det. New Sardara")
-plt.plot(time[iok][istart:][:-16], toplot2, label="Det. Sardara")
+stride = 3*12
 t = ax.set_xticks(time[::stride])
 tl = ax.set_xticklabels(datestr[::stride], ha='right', rotation=45)
 ax.set_xlim(time.min(), time.max())
 plt.grid(True)
 plt.legend(loc=0)
 l = plt.ylabel('Longitude of biomass bary.')
-plt.savefig('barycenters.png', bbox_inches='tight')
-# -
-
-sardara.values[istart:][:-16]
-
-
+plt.savefig('%sbarycenters.png' %prefix, bbox_inches='tight')

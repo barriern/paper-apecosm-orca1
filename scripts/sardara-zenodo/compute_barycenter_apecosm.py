@@ -15,7 +15,9 @@
 
 import xarray as xr
 
-data = xr.open_dataset('integrated_biomass_30-70cm-10N-10S.nc')
+prefix = 'school_'
+
+data = xr.open_dataset('%sintegrated_biomass_30-70cm-10N-10S.nc' %prefix)
 data
 
 data['x'] = (data['x'] + 360) % 360
@@ -33,4 +35,4 @@ barycenter
 
 barycenter.plot()
 
-barycenter.to_netcdf('barycenter_apecosm.nc')
+barycenter.to_netcdf('%sbarycenter_apecosm.nc' %prefix)
