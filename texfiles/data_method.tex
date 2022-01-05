@@ -35,6 +35,12 @@ W(x, y) = \sqrt{\frac{W(x, y)}{W_{tot}}}
 
 Finally, the eigenvalues of the weighted biomass density anomalies have been computed. 
 
+\subsection{Fish biomass estimates}
+
+In order to see if Apecosm consistently reproduces the fish biomass variability in the tropical Pacific Ocean, the IRD Level 2 global monthly catch of tuna, tuna-like and shark species dataset \citep{taconetGlobalMonthlyCatch2018} has been used.
+
+First, the purse-seine (PS) captures of skipjack and yellowfin tunas has been extracted from the raw input file. Then, non-monthly observations (i.e. when the difference between the end and start dates exceed 31 days) have been discarded, as well as those which are unlocalized. Finally, the remaining observations have been regridding into a regular $1x1$ grid using the overlapping area between the observation polygon and the cell area. The final product is a $3D$ array of dimensions \verb+(time, y, x)+.
+
 \subsection{Physical and biogeochemical forcing}
 \input{texfiles/nemo_pis_des.tex}
 
