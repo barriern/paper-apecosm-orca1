@@ -25,7 +25,7 @@ lonwest = 110
 loneast = -60
 zmax = 250
 
-grid = 'OOPE'
+grid = '*passive*'
 # -
 
 dirmd = '/home/datawork-marbec-pmod/forcings/APECOSM/ORCA1_HINDCAST/'
@@ -46,6 +46,7 @@ depth = (z1d <= zmax)
 depth
 
 dirin = '/home/datawork-marbec-pmod/outputs/APECOSM/ORCA1/final-runs/output'
+#dirin = '/home/datawork-marbec-pmod/outputs/APECOSM/ORCA1/trends/output'
 filelist = glob('%s/*%s*nc' %(dirin, grid))
 filelist.sort()
 filelist
@@ -57,7 +58,7 @@ if(grid == 'FORAGE'):
     dataout = data.where((domain == True) & (depth == True), drop=True)
 else:
     dataout = data.where((domain == True), drop=True)
-dataout    
+dataout
 
 for f in filelist:
     

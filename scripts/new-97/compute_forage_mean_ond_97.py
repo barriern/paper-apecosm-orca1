@@ -8,7 +8,7 @@
 #       format_version: '1.5'
 #       jupytext_version: 1.11.3
 #   kernelspec:
-#     display_name: Python 3
+#     display_name: Python 3 (ipykernel)
 #     language: python
 #     name: python3
 # ---
@@ -33,7 +33,7 @@ volume
 lat = mesh['gphit']
 lat
 
-volume = volume.where(abs(lat) <= 5)
+volume = volume.where(abs(lat) == 0)
 volume.isel(z=0).plot()
 
 volume = volume.rename({'z': 'depth'})

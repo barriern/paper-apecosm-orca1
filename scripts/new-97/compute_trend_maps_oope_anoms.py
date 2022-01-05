@@ -58,7 +58,7 @@ varnames = [
 ]
 varnames
 
-for v in varnames[1:]:
+for v in varnames[:]:
     
     print('Processing ', v)
     
@@ -74,10 +74,8 @@ for v in varnames[1:]:
     tempanom = tempanom.rename({'w' : 'l'})
     tempanom['l'] = length
 
-    newtrend = oopeanom.isel(time=0) + tempanom.cumsum(dim='time')
+    newtrend = tempanom.cumsum(dim='time')
     
     filename = 'data/integrated_maps_%s.nc' %v
     with ProgressBar():
         newtrend.to_netcdf(filename)
-
-

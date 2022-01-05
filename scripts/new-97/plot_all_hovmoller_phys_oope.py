@@ -8,7 +8,7 @@
 #       format_version: '1.5'
 #       jupytext_version: 1.11.3
 #   kernelspec:
-#     display_name: Python 3
+#     display_name: Python 3 (ipykernel)
 #     language: python
 #     name: python3
 # ---
@@ -40,8 +40,8 @@ mesh
 lat = mesh['gphit']
 lat
 
-mesh = mesh.where(abs(lat) <= latmax)
-mesh
+mesh = mesh.where(abs(lat) == 0)
+mesh['tmask'].plot()
 
 lon0 = mesh['glamt'].mean(dim='y')
 lon0 = (lon0 + 360) % 360
@@ -50,15 +50,16 @@ lon0
 surface = mesh['e1t'] * mesh['e2t'] * mesh['tmask']
 surface
 
-boolean = (lon0 >= 150)
+boolean = ((lon0 >= 150) & (lon0 <= 270))
 surface = surface.where(boolean, drop=True)
 lon0 = lon0.where(boolean, drop=True)
+surface.plot()
+boolean
 
 # ## Loading the NEMO/Pisces anomalies
 
 data = xr.open_mfdataset('data/pacific_0-50_*_anom.nc', compat='override').where(boolean, drop=True)
 data = data.sel(time_counter=slice('1997-01-01', '1998-12-31'))
-data
 
 data['PLK'] = data['GOC'] + data['PHY2'] + data['ZOO'] + data['ZOO2']
 data
@@ -114,9 +115,9 @@ stride = 3
 
 quant = 0.99
 
-lontext = 292
+lontext = 260
 lattext = y[-3]
-fs = 20
+fs = 15
 plt.rcParams['font.size'] = 15
 plt.rcParams['image.cmap'] = 'RdBu_r'
 
@@ -136,6 +137,7 @@ cpt = 0
 for v in ['thetao', 'PLK', 'uo']:
     ax = grid[cpt]
     temp = (data[v] * surface).sum(dim='y') / surfsum
+    print(temp.values[0])
     cmax = float(abs(temp).quantile(quant))
     cs = ax.pcolormesh(x, y, temp, shading='auto')
     cl = ax.contour(x, y, temp, levels=np.linspace(-cmax, cmax, 11), colors='k', linewidths=0.5)
@@ -172,7 +174,7 @@ for l in range(nlength):
     ax.set_xlabel('Longitude')
     ax.text(lontext, lattext, letters[cpt] + ")", ha='right', va='center', bbox=dicttext, fontsize=fs)
     ax.xaxis.set_major_formatter(formatter0)
-    labels = ['150', '180', '-150', '-120', '-90', '-60']
+    labels = ['180', '-150', '-120', '-90']
     xticks = np.array([float(l) for l in labels])
     xticks[xticks < 0] += 360
     ax.set_xticks(xticks)

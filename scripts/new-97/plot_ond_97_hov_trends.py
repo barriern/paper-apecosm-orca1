@@ -143,19 +143,24 @@ def plot(ax, toplot, wstep, contour=True, levels=None, clim=None, trend=True):
         cl2 = ax.contour(lon[ilon], time, toplot, levels=0, linewidths=1, colors='k')
     stride = 3
     ax.set_yticks(time[::stride])
-    ax.set_yticklabels(datestr[::stride])
+    ax.set_yticklabels(datestr[::stride], rotation=45, va='top')
     ax.xaxis.set_major_formatter(formatter0)
     ax.grid(True, linewidth=0.5, color='gray', linestyle='--')
+    labels = ['180', '-150', '-120', '-90']
+    xticks = np.array([float(l) for l in labels])
+    xticks[xticks < 0] += 360
+    ax.set_xticks(xticks)
+    plt.setp(ax.get_xticklabels(), ha='right', rotation=45)
     return cs
 
 
 dicttext = dict(boxstyle='round', facecolor='lightgray', alpha=1)
 
 # +
-fig = plt.figure(figsize=(14, 12), facecolor='white')
+fig = plt.figure(figsize=(13, 14), facecolor='white')
 plt.rcParams['font.size'] = 13
 
-axgr = ImageGrid(fig, 111, nrows_ncols=(3, 3), axes_pad=(0.7, 0.5), cbar_pad=0.1, direction='row', aspect=False, cbar_mode="each", share_all=True)
+axgr = ImageGrid(fig, 111, nrows_ncols=(3, 3), axes_pad=(0.9, 0.5), cbar_pad=0.1, direction='row', aspect=False, cbar_mode="each", share_all=True)
 
 i = -1
 
@@ -187,6 +192,7 @@ for l in [3, 20, 90]:
 #         axgr[i].set_title('Total')
 
     trend = compute_trend(['predationTrend']).sel(l=l, method='nearest')
+    #trend = compute_trend(varnames).sel(l=l, method='nearest')
     toplot = trend.values
     i += 1
     cs = plot(axgr[i], toplot, ws, )
@@ -220,6 +226,72 @@ for l in [3, 20, 90]:
     axgr[i].text(lon2, time2, '%scm' %l, bbox=dicttext, ha='center', va='center')
 
 plt.savefig('hovmoller_anoms_oope_trends.png', bbox_inches='tight')
+# +
+fig = plt.figure(figsize=(13, 14), facecolor='white')
+plt.rcParams['font.size'] = 13
+
+axgr = ImageGrid(fig, 111, nrows_ncols=(3, 3), axes_pad=(0.9, 0.5), cbar_pad=0.1, direction='row', aspect=False, cbar_mode="each", share_all=True)
+
+i = -1
+
+time1 = 2
+lon1 = 255
+
+time2 = len(time) - 3
+lon2 = 255
+
+#var = varnames
+var = [
+    'zadv_trend',
+    'zdiff_trend',
+    'madv_trend',
+    'mdiff_trend',
+]
+var = ['predationTrend', 'growthTrend']
+#var = varnames
+
+for l in [3, 20, 90]:
+
+    ws = float(wstep.sel(l=l, method='nearest'))
+    
+    trend = compute_trend(varnames).sel(l=l, method='nearest')
+    toplot = trend.values
+    i += 1
+    cs = plot(axgr[i], toplot, ws)
+    cb = plt.colorbar(cs, cax=axgr.cbar_axes[i])
+    cb.set_label('J/m2')
+    if l == 3:
+        axgr[i].set_title('Total')
+    cl = cs.get_clim()
+        
+    trend = compute_trend(['predationTrend', 'growthTrend']).sel(l=l, method='nearest')
+    toplot = trend.values
+    i += 1
+    cs = plot(axgr[i], toplot, ws, clim=cl)
+    cb = plt.colorbar(cs, cax=axgr.cbar_axes[i])
+    cb.set_label('J/m2')
+    if l == 3:
+        axgr[i].set_title('Total')
+    
+        
+    var = [
+    'zadv_trend',
+    'zdiff_trend',
+    'madv_trend',
+    'mdiff_trend',
+    ]
+    trend = compute_trend(var).sel(l=l, method='nearest')
+    #trend = compute_trend(varnames).sel(l=l, method='nearest')
+    toplot = trend.values
+    i += 1
+    cs = plot(axgr[i], toplot, ws, clim=cl)
+    cb = plt.colorbar(cs, cax=axgr.cbar_axes[i])
+    cb.set_label('J/m2')
+    if l == 3:
+        axgr[i].set_title(var)
+    axgr[i].text(lon1, time1, '%s)' %letters[i], bbox=dicttext, ha='center', va='center')
+    axgr[i].text(lon2, time2, '%scm' %l, bbox=dicttext, ha='center', va='center')
 # -
+
 
 

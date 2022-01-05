@@ -8,7 +8,7 @@
 #       format_version: '1.5'
 #       jupytext_version: 1.11.3
 #   kernelspec:
-#     display_name: Python 3
+#     display_name: Python 3 (ipykernel)
 #     language: python
 #     name: python3
 # ---
@@ -24,20 +24,13 @@ chunk = {'y' : 126 //4, 'x': 126 // 2}
 varname = 'thetao'
 filename = 'grid_T'
 
-varname = 'uo'
-filename = 'speed_U'
+#varname = 'uo'
+#filename = 'speed_U'
 
-varname = 'PLK'
-filename = 'ptrc_T'
-
-filelist = glob('data/*%s*nc' %filename)
+#varname = 'PLK'
+#filename = 'ptrc_T'
 # -
 
-
-filelist
-xr.open_dataset(filelist[0])
-
-glob('*nc')
 
 # ## Loading mesh mask
 
@@ -50,7 +43,7 @@ volume
 lat = mesh['gphit']
 lat
 
-volume = volume.where(abs(lat) <= 5)
+volume = volume.where(abs(lat) == 0)
 volume.isel(z=0).plot()
 
 volume = volume.rename({'z': 'olevel'})
@@ -87,19 +80,17 @@ varanoms
 # ## Compute the mean climatology
 
 tsclim = ((varclim * volume).sum(dim=['y']) / (volume.sum(dim=['y']))).mean(dim='month')
-tsclim
+tsclim.values[0, :]
 
-delayed_clim = tsclim.to_netcdf('mean_%s.nc' %varname, compute=False)
+delayed_clim = tsclim.to_netcdf('data/mean_%s.nc' %varname, compute=False)
 
 tsanoms = ((varanoms * volume).sum(dim=['y']) / (volume.sum(dim=['y']))).mean(dim='time_counter')
 tsanoms
 
-delayed_anoms = tsanoms.to_netcdf('mean_%s_anomalies_ond_97.nc' %varname, compute=False)
+delayed_anoms = tsanoms.to_netcdf('data/mean_%s_anomalies_ond_97.nc' %varname, compute=False)
 
 with ProgressBar():
     delayed_clim.compute()
 
 with ProgressBar():
     delayed_anoms.compute()
-
-

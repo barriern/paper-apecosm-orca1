@@ -8,7 +8,7 @@
 #       format_version: '1.5'
 #       jupytext_version: 1.11.3
 #   kernelspec:
-#     display_name: Python 3
+#     display_name: Python 3 (ipykernel)
 #     language: python
 #     name: python3
 # ---
@@ -23,9 +23,9 @@ from cartopy.mpl.gridliner import LONGITUDE_FORMATTER, LATITUDE_FORMATTER
 from dask.diagnostics import ProgressBar
 
 latmax = 1
-grid = 'speed_U'
-varname = 'uo'
-cell = 'u'
+grid = 'ptrc_T'
+varname = 'ZOO'
+cell = 't'
 dirin = '/home1/datawork/nbarrier/apecosm/apecosm_orca1/processed_pacific'
 # -
 
@@ -35,10 +35,11 @@ mesh = xr.open_dataset('%s/pacific_mesh_mask.nc' %dirin)
 mesh = mesh.rename({'z': 'olevel'})
 mesh
 
-lat = mesh['gphif']
+lat = mesh['gphit']
 lat
 
-mesh = mesh.where(abs(lat) <= latmax)
+mesh = mesh.where(abs(lat) == 0)
+mesh['tmask'].plot()
 
 lon0 = mesh['glamt'].mean(dim='y').isel(olevel=0)
 lon0 = (lon0 + 360) % 360
