@@ -38,4 +38,12 @@ barycenter.plot()
 
 barycenter.to_netcdf('barycenter_sardara.nc')
 
+barycenter.to_dataframe(name='lon').to_csv('barycenter_sardara.csv')
+
+import matplotlib.pyplot as plt
+import numpy as np
+time = barycenter['time'].values
+iok = np.nonzero((time >= 199001) & (time <= 201612))[0]
+plt.plot(barycenter.values[iok])
+
 

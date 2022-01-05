@@ -15,7 +15,7 @@
 
 import xarray as xr
 
-prefix = 'school_'
+prefix = ''
 
 data = xr.open_dataset('%sintegrated_biomass_30-70cm-10N-10S.nc' %prefix)
 data
@@ -33,6 +33,15 @@ data
 barycenter = (data['x'] * data['OOPE']).sum(dim='x') / (data['OOPE'].sum(dim='x'))
 barycenter
 
-barycenter.plot()
+import matplotlib.pyplot as plt
+import numpy as np
+plt.figure(figsize=(8, 12))
+time = np.arange(barycenter.shape[0])
+plt.plot(barycenter.values, time)
+#plt.gca().set_xticks(np.arange(140, -120 + 360, 20))
 
 barycenter.to_netcdf('%sbarycenter_apecosm.nc' %prefix)
+
+barycenter.to_dataframe(name='lon').to_csv('%sbarycenter_apecosm.csv' %prefix)
+
+

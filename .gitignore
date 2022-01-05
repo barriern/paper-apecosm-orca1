@@ -21,3 +21,4 @@ doc
 **/__pycache__
 **/data
 **/*.ipynb
+**/*.csv

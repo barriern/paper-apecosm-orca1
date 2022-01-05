@@ -22,6 +22,7 @@ from cartopy.mpl.ticker import (LatitudeFormatter, LongitudeFormatter,
 
 ymin = 2014
 ymax = 2017
+prefix = 'school_'
 # -
 
 obs = xr.open_dataset('hovmoller_old_sardara.nc')
@@ -33,7 +34,7 @@ obs
 
 lonobs = obs['lon']
 
-data = xr.open_dataset('integrated_biomass_30-70cm-10N-10S.nc')
+data = xr.open_dataset('%sintegrated_biomass_30-70cm-10N-10S.nc' %prefix)
 data = data['OOPE'] / 4.e6
 
 data = data.sel(time=slice('%d-01-01' %ymin, '%d-12-31' %ymax))
@@ -82,4 +83,4 @@ ax.set_yticklabels(datestr[::stride], va='top', rotation=45)
 ax.xaxis.set_major_formatter(formatter0)
 
 plt.gca().set_xlim(150, 260)
-plt.savefig('hovmoller_bis.png', bbox_inches='tight')
+plt.savefig('%shovmoller_bis.png' %prefix, bbox_inches='tight')
