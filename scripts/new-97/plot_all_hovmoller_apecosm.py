@@ -22,7 +22,7 @@ import string
 
 plt.rcParams['text.usetex'] = False
 
-latmax = 5
+latmax = 0
 
 letters = list(string.ascii_lowercase)
 
@@ -54,11 +54,13 @@ isizes = [14, 45, 80]
 data = xr.open_mfdataset('data/pacific_[a-zA-Z]*_anom.nc').isel(w=isizes).sel(time=slice('1997-01', '1998-12'))
 data
 
-data = data.where(lon0 >= 150, drop=True)
-mesh = mesh.where(lon0 >= 150, drop=True)
-surface = surface.where(lon0 >= 150, drop=True)
+test = (lon0 >= 150) & (lon0 <= 270)
 
-lon0 = lon0.where(lon0 >= 150, drop=True)
+data = data.where(test, drop=True)
+mesh = mesh.where(test, drop=True)
+surface = surface.where(test, drop=True)
+
+lon0 = lon0.where(test, drop=True)
 
 data['adv'] = data['madv_trend'] + data['zadv_trend']
 data
@@ -86,13 +88,17 @@ dates = data['time'].values
 dates
 
 surfsum = surface.sum(dim='y')
+surface.plot()
 
 y = np.arange(len(dates))
 datestr = ['%.4d-%.2d' %(d.year, d.month) for d in dates]
 datestr
 
 # +
-varnames = ['repfonct_day', 'gamma1', 'mort_day', 'int-adv']
+import warnings
+warnings.filterwarnings("ignore")
+
+varnames = ['u_passive', 'u_active', 'v_passive', 'v_active', ]
 nvars = len(varnames)
 
 sizes = [0, 1, 2]
@@ -111,24 +117,34 @@ fmt = lambda x, pos: '%.e' %(x)
 
 quant = 0.98
 
-lontext = 292
+lontext = 270 - 10
 lattext = y[-3]
 lattext2 = y[2]
-fs = 20
+fs = 15
 plt.rcParams['font.size'] = 15
 plt.rcParams['image.cmap'] = 'RdBu_r'
 
 units = {}
 units['int-adv'] = 'J/m2'
+units['OOPE'] = 'J/m2'
 units['gamma1'] = ''
 units['mort_day'] = ''
 units['repfonct_day'] = ''
+units['u_active'] = 'm/s'
+units['v_active'] = 'm/s'
+units['u_passive'] = 'm/s'
+units['v_passive'] = 'm/s'
 
 name = {}
 name['int-adv'] = 'Adv. trend'
 name['gamma1'] = 'Growth rate'
 name['mort_day'] = 'Mort. rate'
 name['repfonct_day'] = 'Func. response'
+name['OOPE'] = 'OOPE'
+name['u_active'] = 'uact'
+name['v_active'] = 'vact'
+name['u_passive'] = 'upas'
+name['v_passive'] = 'vpas'
 
 cpt = 0
 for v in varnames:
@@ -161,3 +177,6 @@ for v in varnames:
         ax.text(lontext, lattext2, '%.f cm' %length[s], ha='right', va='center', bbox=dicttext, fontsize=fs)
         cpt += 1
 plt.savefig('plot_all_hovmoller_apecosm.png', bbox_inches='tight')
+# -
+
+
