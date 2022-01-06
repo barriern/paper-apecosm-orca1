@@ -5,25 +5,27 @@
 
 In the present study, the internannual ENSO variability is inferred from the Oceanic Nino Index (\url{https://www.cpc.ncep.noaa.gov/data/indices/oni.ascii.txt}, hereafter ONI), which is a 3-month running mean of the sea-surface temperature anomalies averaged over the Niño 3.4 region (5N-5S, 170W-120W).\\
 
-Pacific decadal variability is described using the Tripole Index for the Interdecadal Pacific Oscillation (\url{https://psl.noaa.gov/data/timeseries/IPOTPI/}, hereafter TPI) index, which is based on the difference between the sea-surface temperature anomalies averaged over the central equatorial Pacific and the average of the sea-surface temperature anomalies in the Northwest and Southwest Pacific. The filtered NOAA ERSST V5 version of the index was used (Lanczos filtering with a cutoff period of  13 years).
+Pacific decadal variability is given by the Tripole Index for the Interdecadal Pacific Oscillation (\url{https://psl.noaa.gov/data/timeseries/IPOTPI/}, hereafter TPI) index, which is based on the difference between the central equatorial Pacific sea-surface temperature anomalies and the Northwest/Southwest Pacific sea-surface temperature anomalies. In this study, the filtered NOAA ERSST V5 version of the index was used.
 
 \subsection{Statistical tools}
 
-\subsubsection{Covariance analysis}
+\subsubsection{Covariance and correlation analysis}
 \label{sec:cov}
 
-In order to assess the impacts of climate variability (ONI, TPI) on temperature, chlorophyll or fish biomass, covariance analysis has been extensively used. The method used is as follows. First, the monthly climatology of the analysed fields is computed and subtracted from the monthly data. Then, these monthly anomalies are detrended. Finally, the covariance between the resulting time series and the climate indexes are computed for each grid point considered.
+In order to assess the impacts of climate variability (ONI, TPI) on temperature, chlorophyll or fish biomass, covariance analysis has been extensively used. First, the monthly climatology of the analysed fields is computed and subtracted from the monthly data, hence leading to monthly anomalies. Then, these monthly anomalies are detrended. Finally, the covariance between the resulting time series and the climate indexes are computed for each grid point considered. 
+
+Correlations are computed in the same way. Their significance has been inferred using a Student t-test, in which the effective number of degrees of freedom has been corrected based on the 1-lag autocorrelation of the 2 two time-series \citep{brethertonEffectiveNumberSpatial1999}.
 
 \subsubsection{Empirical Orthogonal Functions (EOF) decompositions}
 \label{sec:eof}
 
-In order to facilitate the analysis of the variability of simulated fish biomass, which varies over time, space and size-class, an Empirical Orthogonal Functions (EOF) decomposition has been performed. The aim is to decompose the 3D biomass anomalies $B'(t, y, x)$ as follows: 
+In order to facilitate the analysis of the variability of simulated fish biomass, which varies over time, space and size-class, an Empirical Orthogonal Functions (EOF) decomposition has been performed. The aim is to decompose the detrended 3D biomass anomalies $B'(t, y, x)$ as follows: 
 
 \begin{equation}
 B'(x,y,t) = \sum_{k=0}^{N} PC_k(t) \times EOF_k(x,y)
 \end{equation}
 
-with $N$ the total number of time-steps. As for covariance analysis (see above), detrended fish biomass density anomalies have been computed for each size-class. Then, all points outside of the region of interest have been masked and the dataset has been weighted as follows:
+with $N$ the total number of time-steps. First, all points outside of the region of interest (20N-20S, 150E-120W) have been masked and the biomass anomalies has been weighted by the square-root of the cell surface:
 
 \begin{displaymath}
 W_{tot} = \sum_{(x, y) \in D} S(x,y)
@@ -33,13 +35,23 @@ W_{tot} = \sum_{(x, y) \in D} S(x,y)
 W(x, y) = \sqrt{\frac{W(x, y)}{W_{tot}}}
 \end{displaymath}
 
-Finally, the eigenvalues of the weighted biomass density anomalies have been computed. 
+Finally, the EOF have been computed using the Python \verb+eofs+ package (\url{https://ajdawson.github.io/eofs/latest/}.
 
-\subsection{Fish biomass estimates}
+\subsection{Observation-based sea-surface temperature data}
+
+Observation-based estimates of sea-surface temperatures are extracted from the the Hadley Sea-Surface Temperature (HadISST1, \citealt{raynerGlobalAnalysesSea2003}). HadISST uses reduced space optimal interpolation applied to SSTs from the Marine Data Bank (mainly ship tracks) and ICOADS through 1981 and a blend of in-situ and adjusted satellite-derived SSTs for 1982-onwards. For this study, monthly sea-surface temperature anomalies have been extracted from the HadISST and detrended for the 1958-2018 period. 
+
+\subsection{Observation-based chlorophyll data}
+
+Chlorophyll observation-based estimates are extracted from the monthly OceanColour-CCI V5 CHL-a dataset\footnote{http://dx.doi.org/10.5285/1dbe7a109c0244aaad713e078fd3059a}  \citep{sathyendranathOceanColourTimeSeries2019} over the 1997-09/2018-12 period. 
+
+For our purpose, the high resolution dataset (4 km) has been regridded on a regular 1-degree resolution grid by computing weighted Chl averages over $24x24$ boxes, with the weights being provided by the the cosine of latitude. When more than $1/3$ of the data used in the averaging is missing, the regridded cell is masked. The monthly climatology of Chl has then been computed over the 1998-2008 period and used to extract the Chl anomalies over the full period.
+
+\subsection{Observation-based fish biomass estimates}
 
 In order to see if Apecosm consistently reproduces the fish biomass variability in the tropical Pacific Ocean, the IRD Level 2 global monthly catch of tuna, tuna-like and shark species dataset \citep{taconetGlobalMonthlyCatch2018} has been used.
 
-First, the purse-seine (PS) captures of skipjack and yellowfin tunas has been extracted from the raw input file. Then, non-monthly observations (i.e. when the difference between the end and start dates exceed 31 days) have been discarded, as well as those which are unlocalized. Finally, the remaining observations have been regridding into a regular $1x1$ grid using the overlapping area between the observation polygon and the cell area. The final product is a $3D$ array of dimensions \verb+(time, y, x)+.
+First, the purse-seine captures of skipjack and yellowfin tunas has been extracted from the raw input file. Then, non-monthly observations (i.e. when the difference between the end and start dates exceed 31 days) have been discarded, as well as those which are unlocalized. Finally, the remaining observations have been regridded into a regular $1x1$ grid using the overlapping area between the observation polygon and the cell area. The final product is a $3D$ array of dimensions \verb+(time, y, x)+.
 
 \subsection{Physical and biogeochemical forcing}
 \input{texfiles/nemo_pis_des.tex}
