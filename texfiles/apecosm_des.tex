@@ -1,4 +1,4 @@
-The marine ecosystem model used in this study is the Apex Predators Ecosystem Model (Apecosm, \citealt{mauryModelingEnvironmentalEffects2007, mauryOverviewAPECOSMSpatialized2010}), which simulates the transfer of energy in marine ecosystems in a 5 dimensional space (space, time, community and size). The biological processes include size-based opportunistic trophic interactions, competition for food, allocation of energy between growth and reproduction, somatic and maturity maintenance, predatory and starvation mortality (see \citealt{mauryModelingEnvironmentalEffects2007} for a detailed description of the model). The physiological bases of the model are derived from the Dynamic Energy Budget theory (DEB, \citealt{kooijmanDynamicEnergyMass2000}). All the physiological rates are temperature-dependent. In addition to biological processes, energy density is also subjected to both passive and active advection/diffusion, following \cite{faugerasAdvectiondiffusionreactionSizestructuredFish2005}
+The marine ecosystem model used in this study is the Apex Predators Ecosystem Model (Apecosm, \citealt{mauryModelingEnvironmentalEffects2007, mauryOverviewAPECOSMSpatialized2010}), which simulates the transfer of energy in marine ecosystems in a 5 dimensional space (space, time, community and size). The biological processes include size-based opportunistic trophic interactions, competition for food, allocation of energy between growth and reproduction, somatic and maturity maintenance, predatory and starvation mortality (see \citealt{mauryModelingEnvironmentalEffects2007} for a detailed description of the model). The physiological bases of the model are derived from the Dynamic Energy Budget theory (DEB, \citealt{kooijmanDynamicEnergyMass2000}). All the physiological rates are temperature-dependent. In addition to biological processes, energy density is also subjected to both passive (via ocean currents) and active (foraging behaviour) advection/diffusion, following \cite{faugerasAdvectiondiffusionreactionSizestructuredFish2005}.
 
 Changes of fish biomass induced by growth is given by:
 
@@ -7,7 +7,7 @@ Changes of fish biomass induced by growth is given by:
 \label{eq:growth}
 \end{equation}
 
-where $\varepsilon$  is the fish biomass density, $w$ the weight and $\gamma$ is the growth rate. Changes driven by predation mortality are given byL:
+where $\varepsilon$  is the fish biomass density, $w$ the weight and $\gamma$ is the growth rate. Changes driven by predation mortality are given by:
 
 \begin{equation}
 \partial_t \varepsilon = - M \varepsilon
@@ -23,23 +23,23 @@ Finally, changes in fish biomass induced by fish movements are given by:
 \label{eq:move}
 \end{equation}
 
-with the first term being the contribution of advection and the second term being the contribution of diffusion, $V$ the velocity (which is the combination of active speed and ocean currents) and $D$ the diffusivity coefficient (which is the combination of an active, i.e. foraging, diffusion term and a passive diffusion coefficient).
+with the first term being the contribution of advection and the second term being the contribution of diffusion, $V$ the velocity and $D$ the diffusivity coefficient.
 
-In order to ensure that the size-spectrum is fully unfolded, the model has been integrated three times. First, the model has been initialized from rest and run from 1958 to 2018, using the outputs of the NEMO-PISCES simulation. Then, the end of this first spin-up phase has been used to run another cycle, which was in turn used to run the simulation presented in the given study.
+In order to ensure that the size-spectrum is fully unfolded, the model has been integrated three times. First, the model has been initialized from rest and integrated from 1958 to 2018, using the outputs of the NEMO-PISCES simulation. Then, the end of this first spin-up phase has been used to run another cycle, which was in turn used to run the simulation presented in the following.
 
 In order to assess the mechanisms of fish biomass response to ENSO variability, biomass changes induced by growth, predation, advection and diffusion are stored for the entire simulation. Therefore, the biomass for a given size class, at a given location and for a specific time can be reconstructed by using the following equation:
 
 \begin{equation}
-\varepsilon(x,y,T) = \varepsilon(x,y,T=0) + \int_{t=0}^{T} \left[ 
-T_{pred}(x, y,t) + 
-T_{growth}(x, y,t) + 
-T_{adv}(x, y,t) + 
-T_{diff}(x, y,t) 
+\varepsilon(T) = \varepsilon(T=0) + \int_{t=0}^{T} \left[ 
+T_{pred}(t) +
+T_{growth}(t) + 
+T_{adv}(t) + 
+T_{diff}(t) 
 \right] dt 
 \label{eq:rec_oope}
 \end{equation}
 
-with $\varepsilon(x,y,T=0)$ the fish biomass at the beginning of the simulation and $T_{pred}$, $T_{growth}$, $T_{adv}$ and $T_{diff}$ the respective biomass increments due to predation, growth, advection and diffusion, given by equations \ref{eq:pred}, \ref{eq:growth} and \ref{eq:move}, respectively.
+with $\varepsilon(x,y,s,T=0)$ the fish biomass at the beginning of the simulation and $T_{pred}$, $T_{growth}$, $T_{adv}$ and $T_{diff}$ the respective biomass increments due to predation, growth, advection and diffusion, given by equations \ref{eq:pred}, \ref{eq:growth} and \ref{eq:move}, respectively.
 
 In the present work, three generic communities are simulated: one epipelagic community, one migrant community and one mesopelagic community. The epilagic community remains close to the surface its vertical distribution is influenced by temperature and oxygen, while light only influences their functional response. The migrants are only influenced by light, which modifies their vertical habitat and their functional response: during daytime, they remain at depth, while moving at the surface at night for feeding. Mesopolagics, on the other hand, remain at depth during both night and day, their vertical distribution being only impacted by the light. 
 %Epilagic feed on other epilagic fish only during night daytime. Migrants feed on other migrants and epipelagics, only during night-time. While mesopelagics feed on migrant and mesopelagic during daytime, and only on other mesopelagic during night-time.
