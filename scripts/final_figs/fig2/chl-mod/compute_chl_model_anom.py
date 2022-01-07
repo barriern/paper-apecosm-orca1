@@ -7,27 +7,21 @@ from glob import glob
 dirin = 'data/'
 
 datac = xr.open_dataset('%s/clim_chl_monthly_model.nc' %dirin)
-clim = datac['clim_chl'].to_masked_array()
+clim = datac['clim_chl']
+clim
 
-data = xr.open_mfdataset("data/CHL*nc", combine="by_coords")
+data = xr.open_mfdataset("/home/datawork-marbec-pmod/forcings/APECOSM/ORCA1_HINDCAST/JRA_CO2/*add_T*nc", combine="by_coords")
 data = data.isel(olevel=0)
 chl = data['NCHL'] + data['DCHL']
+chl
 
-ntime, nlat, nlon = chl.shape
-nyears = ntime // 12
+anom = chl.groupby('time_counter.month') - clim
+anom.name = 'anom_chl'
+anom
 
-index = np.arange(12)
+from dask.diagnostics import ProgressBar
+delayed = anom.to_netcdf('%s/anom_chl_monthly_model.nc' %dirin, compute=False)
+with ProgressBar():
+    delayed.compute()
 
-anom = np.zeros((ntime, nlat, nlon), dtype=np.float)
 
-for p in range(nyears):
-
-    anom[index, :, :] = chl.isel(time_counter=index).to_masked_array() - clim
-    index += 12
-
-dsout = xr.Dataset()
-dsout['anom_chl'] = (['time', 'y', 'x'], anom)
-dsout['time'] = data['time_counter']
-
-dsout.attrs['file'] = os.path.realpath(__file__)
-dsout.to_netcdf('%s/anom_chl_monthly_model.nc' %dirin)

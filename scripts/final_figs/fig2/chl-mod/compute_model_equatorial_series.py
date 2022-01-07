@@ -6,14 +6,15 @@ import cartopy.feature as cfeature
 import apecosm.ts as ts
 import os.path
 
-mesh = xr.open_dataset('../../data/mesh_mask_eORCA1_v2.2.nc')
-tmask = mesh['tmask'].values[0][0]
-lon = mesh['glamt'].values[0]
-lat = mesh['gphit'].values[0]
+mesh = xr.open_dataset('../../../data/mesh_mask_eORCA1_v2.2.nc').isel(t=0)
+tmask = mesh['tmask'].values[0]
+lon = mesh['glamt'].values
+lat = mesh['gphit'].values
 e1t = mesh['e1t'].values
 e2t = mesh['e2t'].values
 
 output = tmask.copy()
+output
 
 lonmin = 150
 lonmax = -80
@@ -25,20 +26,20 @@ test = (test & test2 & tmask)
 ilat, ilon = np.nonzero(test == True)
 output[ilat, ilon] = 2
 
-surf = e1t * e2t
+surf = mesh['e1t'] * mesh['e2t'] * mesh['tmaskutil']
+surf = surf.where(test)
+surf.plot()
 
-data = xr.open_mfdataset('data/CHL*nc')
+data = xr.open_mfdataset('/home/datawork-marbec-pmod/forcings/APECOSM/ORCA1_HINDCAST/JRA_CO2/*add_T*nc').isel(olevel=0)
 time = data['time_counter']
 data = data['NCHL'] + data['DCHL']
-data = np.squeeze(data.to_masked_array())
+data
 
-num = (surf * data)[:, ilat, ilon]
-den = (surf)[:, ilat, ilon]
+output = (surf * data).sum(dim=['x', 'y']) / surf.sum(dim=['x', 'y'])
+output.name = 'chl'
+output
 
-output = np.sum(num, axis=-1) / np.sum(den, axis=-1)
-
-dsout = xr.Dataset()
-dsout['time'] = time
-dsout['chl'] = (['time_counter'], output)
-dsout.attrs['file'] = os.path.realpath(__file__)
-dsout.to_netcdf('simulated_equatorial_mean.nc')
+from dask.diagnostics import ProgressBar
+delayed = output.to_netcdf('data/simulated_equatorial_mean.nc', compute=False)
+with ProgressBar():
+    delayed.compute()
