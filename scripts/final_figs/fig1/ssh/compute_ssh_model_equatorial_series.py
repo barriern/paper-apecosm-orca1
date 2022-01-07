@@ -16,12 +16,17 @@ e2t = mesh['e2t'].values
 output = tmask.copy()
 output
 
-lonmin = 150
-lonmax = -80
+latmin = -5
+latmax = 5
+lonmax = -120
+lonmin = -170
 
-test = (np.abs(lat) <= 2)
-test2 = (lon <= lonmax) | (lon >= lonmin)
-test = (test & test2 & tmask)
+test = (lat <= latmax) & (lat >= latmin)
+test = test & (lon<=lonmax) & (lon>=lonmin)
+test = test & (tmask == 1)
+xrsurf = mesh['e1t'] * mesh['e2t'] * mesh['tmaskutil']
+xrsurf = xrsurf.where(test)
+xrsurf.plot()
 
 ilat, ilon = np.nonzero(test == True)
 output[ilat, ilon] = 2
@@ -40,7 +45,7 @@ output.name = 'ssh'
 output
 
 from dask.diagnostics import ProgressBar
-delayed = output.to_netcdf('data/ssh_simulated_equatorial_mean.nc', compute=False)
+delayed = output.to_netcdf('../data/ssh_simulated_equatorial_mean.nc', compute=False)
 with ProgressBar():
     delayed.compute()
 
