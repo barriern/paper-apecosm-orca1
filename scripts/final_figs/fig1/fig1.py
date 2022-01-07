@@ -42,7 +42,7 @@ bottom = 0.1
 height = 0.45
 
 axes = (left, bottom, width, height)
-axgr = AxesGrid(fig, axes,  axes_class=axes_class, nrows_ncols=(2, 1), axes_pad=(0.7, 0.75), label_mode='', cbar_mode='each', cbar_size=0.1, cbar_pad=0.3, cbar_location="bottom")
+axgr = AxesGrid(fig, axes,  axes_class=axes_class, nrows_ncols=(2, 2), axes_pad=(0.7, 0.75), label_mode='', cbar_mode='each', cbar_size=0.1, cbar_pad=0.3, cbar_location="bottom")
 
 axout = list(enumerate(axgr))
 axout = [p[1] for p in axout]
@@ -54,6 +54,10 @@ lonhad = hadley['lon'].values
 lathad = hadley['lat'].values
 hadoni = hadley['covoni'].to_masked_array().T
 hadoni = np.ma.masked_where(hadoni == 0, hadoni)
+
+model = xr.open_dataset('data/cov_modssh_oni_tpi.nc')
+modsshoni = model['covoni'].to_masked_array().T * 100
+modsshoni = np.ma.masked_where(modsshoni == 0, modsshoni)
 
 model = xr.open_dataset('data/cov_modsst_oni_tpi.nc')
 modoni = model['covoni'].to_masked_array().T
@@ -92,9 +96,9 @@ try:
 except:
     cb.set_label_text('Covariance [C]')
     
-################################################################### Plotting covariances MOD
+################################################################### Plotting covariances SST MOD
     
-iiii = 1 
+iiii = 2
 ax = axgr[iiii]
 
 cs = ax.pcolormesh(lonf, latf, modoni[1:, 1:], transform=proj2)
@@ -122,8 +126,39 @@ except:
 
 ax.set_title('Model SST / ONI')
 
+################################################################### Plotting covariances SSH MOD
+    
+iiii = 1
+ax = axgr[iiii]
 
-################################################################### Plotting time-series
+cs = ax.pcolormesh(lonf, latf, modsshoni[1:, 1:], transform=proj2)
+#cs.set_clim(-ccc, ccc)
+ax.add_feature(cfeature.LAND, zorder=1000, color='lightgray')
+ax.add_feature(cfeature.COASTLINE, zorder=1001)
+ax.text(lontext, lattext, letters[iiii] + ")", ha='center', va='center', transform=proj, bbox=dicttext)
+
+gl = ax.gridlines(**gridparams)
+gl.top_labels = False
+gl.right_labels = False
+gl.xformatter = LONGITUDE_FORMATTER
+gl.yformatter = LATITUDE_FORMATTER
+xticks = np.array([150, 180, -180, -150, -120, -90, -60])
+gl.xlocator = mticker.FixedLocator(xticks)
+ax.set_ylim(-40, 40)
+ax.set_xlim(-60, 130)
+cs.set_clim(-8, 8)
+
+cbax = axgr.cbar_axes[iiii]
+cb = cbax.colorbar(cs)
+try:
+    cb.set_label('Covariance [cm]')
+except:
+    cb.set_label_text('Covariance [cm]')
+
+ax.set_title('Model SSH / ONI')
+
+
+################################################################### Plotting time-series ONI index
 
 dnino, nino = read_index('../../data/index/oni.data')
 iok = np.nonzero((dnino >= 195801) & (dnino <= 201812))[0]
@@ -141,22 +176,11 @@ months = data['time_counter.month'].values
 enso = data['enso'].rolling(time_counter=3, center=True).mean()
 #enso = data['enso'].values
 nmod = len(time)
-ensof = np.zeros(enso.shape)
-
-index = np.arange(3)
-for i in range(1, nmod - 1):
-    ensof[i] = enso[index].mean()
-    index += 1
-
-ensof[ensof == 0] = np.nan
 
 istart = np.nonzero(dnino == 195802)[0][0]
 iend = np.nonzero(dnino == 201811)[0][0] + 1
 
-test = np.corrcoef(ensof[1:-1], nino[istart:iend])
-print(ensof.shape, nino.shape)
-print(test)
-test = np.corrcoef(ensof[1:-1], nino[1:-1])[0, 1]
+test = np.corrcoef(enso[1:-1], nino[istart:iend])[0, 1]
 print('Correlation ONI', test)
 
 istart = np.nonzero(dnino == 195801)[0][0]
@@ -167,7 +191,7 @@ xticks = np.arange(2*12, len(time), 5 * 12)
 
 left = 0.07
 width = 0.85
-bottom = 0.62
+bottom = 0.55
 height = 0.1
 
 axes = (left, bottom, width, height)
@@ -177,7 +201,7 @@ alpha = 0.7
 ax = plt.axes(axes)
 l1 = plt.fill_between(time, 0, nino, where=(nino>0), color='firebrick', interpolate=True)
 l2 = plt.fill_between(time, 0, nino, where=(nino<0), color='steelblue', interpolate=True)
-l3 = plt.plot(time, ensof, 'k', label='Sim.', alpha=alpha)
+l3 = plt.plot(time, enso, 'k', label='Sim.', alpha=alpha)
 plt.legend([l1, l3[0]], ['Obs.', 'Model'], loc=0, fontsize=8, ncol=2)
 ax.set_title('ONI')
 
@@ -190,3 +214,6 @@ ax.set_ylim(-4, 4)
 ax.text(time[-1] - 50, -3, 'a' + ")", ha='center', va='center', bbox=dicttext)
 
 plt.savefig('fig1', bbox_inches='tight')
+# -
+
+
