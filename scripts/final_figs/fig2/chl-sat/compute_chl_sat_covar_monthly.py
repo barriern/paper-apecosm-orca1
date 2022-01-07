@@ -4,18 +4,17 @@ import numpy as np
 import os.path
 import scipy.stats as stats
 
+# +
 import sys
-sys.path.append("../../nino")
+sys.path.append("../../../nino")
 from extract_nino import read_index
 
-daten, nino = read_index(filename='../../data/index/oni.data', keepnan=False)
+dirin = '/home1/datawork/nbarrier/apecosm/apecosm_orca1/processed_pacific/'
+# -
 
-data = xr.open_mfdataset("data/anom*nc", combine='by_coords', decode_times=False)
-realtime = data['time'].values
-print(realtime)
-print(realtime)
+daten, nino = read_index(filename='../../../data/index/oni.data', keepnan=False)
 
-data = xr.open_mfdataset("data/anom*nc", combine='by_coords')
+data = xr.open_mfdataset("%s/anom_interpolated*nc" %dirin, combine='by_coords')
 lat = data['lat'].values
 lon = data['lon'].values
 date = data['time.year'] * 100 + data['time.month']
@@ -23,8 +22,7 @@ date = date.values
 
 dmax = np.min([date.max(), daten.max()])
 dmin = np.max([date.min(), daten.min()])
-
-dmax = 201812
+dmax, dmin
 
 inino = np.nonzero((daten <= dmax) & (daten >= dmin))
 idata = np.nonzero((date <= dmax) & (date >= dmin))[0]
@@ -36,6 +34,7 @@ data = data.isel(time=idata)
 data = data['chl_anom'].values
 
 data = data.T  # time, lat, lon -> lon, lat, time
+data.shape
 
 nlon, nlat, ntime = data.shape
 
@@ -59,9 +58,4 @@ count = count.T
 dsout = xr.Dataset({'lon': lon, 'lat':lat})
 dsout['cov'] = (['lat', 'lon'], output)
 dsout['count'] = (['lat', 'lon'], count)
-dsout.attrs['file'] = os.path.relpath(__file__)
-dsout.to_netcdf("covariance_satellite_data.nc")
-
-
-
-
+dsout.to_netcdf("%s/covariance_satellite_data.nc" %dirin)

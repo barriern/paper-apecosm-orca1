@@ -3,7 +3,8 @@ from glob import glob
 import numpy as np
 import os.path
 
-filelist = np.sort(glob('raw/ESACCI-OC-L3S-CHLOR_A-MERGED-1M_MONTHLY_4km_GEO_PML_OCx-[0-9]*nc'))
+filelist = np.sort(glob('/home1/scratch/nbarrier/sat-chl/ESACCI-OC-L3S-CHLOR_A-MERGED-1M_MONTHLY_4km_GEO_PML_OCx-[0-9]*nc'))
+filelist
 
 latout = np.arange(-89.5, 89.5 + 1, 1)[::-1]
 lonout = np.arange(0.5, 360, 1)
@@ -32,18 +33,18 @@ for f in filelist:
 
     # init. output and weights arrays
     chlout = np.zeros((1, nlatout, nlonout))
-    countout = np.zeros((1, nlatout, nlonout), dtype=np.int)
+    countout = np.zeros((1, nlatout, nlonout), dtype=int)
     weights = np.cos(np.deg2rad(latin))
     
     # slice for latitude
-    ilat = np.array([0, 24], dtype=np.int)
+    ilat = np.array([0, 24], dtype=int)
     for j in range(nlatout):
         
         # converts  sl array to sl object
         sllat = slice(ilat[0], ilat[1])
 
         # slice for longitude
-        ilon = np.array([0, 24], dtype=np.int)
+        ilon = np.array([0, 24], dtype=int)
 
         for i in range(nlonout):
             # converts  sl array to sl object
@@ -63,7 +64,7 @@ for f in filelist:
             ilon += 24
         ilat += 24
     
-    fout = 'interpolated_%s' %(os.path.basename(f))
+    fout = '/home1/scratch/nbarrier/sat-chl/interpolated_%s' %(os.path.basename(f))
     dataout = xr.Dataset({'lon': lonout, 'lat': latout})
     dataout['time'] = time
     dataout['chlor_a'] = (['time', 'lat', 'lon'], chlout)
