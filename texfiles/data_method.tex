@@ -5,8 +5,6 @@
 
 In the present study, the internannual ENSO variability is inferred from the Oceanic Nino Index (\url{https://www.cpc.ncep.noaa.gov/data/indices/oni.ascii.txt}, hereafter ONI), which is a 3-month running mean of the sea-surface temperature anomalies averaged over the Niño 3.4 region (5N-5S, 170W-120W).\\
 
-Pacific decadal variability is given by the Tripole Index for the Interdecadal Pacific Oscillation (\url{https://psl.noaa.gov/data/timeseries/IPOTPI/}, hereafter TPI) index, which is based on the difference between the central equatorial Pacific sea-surface temperature anomalies and the Northwest/Southwest Pacific sea-surface temperature anomalies. In this study, the filtered NOAA ERSST V5 version of the index was used.
-
 \subsection{Statistical tools}
 
 \subsubsection{Covariance and correlation analysis}
@@ -15,27 +13,6 @@ Pacific decadal variability is given by the Tripole Index for the Interdecadal P
 In order to assess the impacts of climate variability (ONI, TPI) on temperature, chlorophyll or fish biomass, covariance analysis has been extensively used. First, the monthly climatology of the analysed fields is computed and subtracted from the monthly data, hence leading to monthly anomalies. Then, these monthly anomalies are detrended. Finally, the covariance between the resulting time series and the climate indexes are computed for each grid point considered. 
 
 Correlations are computed in the same way. Their significance has been inferred using a Student t-test, in which the effective number of degrees of freedom has been corrected based on the 1-lag autocorrelation of the 2 two time-series \citep{brethertonEffectiveNumberSpatial1999}.
-
-\subsubsection{Empirical Orthogonal Functions (EOF) decompositions}
-\label{sec:eof}
-
-In order to facilitate the analysis of the variability of simulated fish biomass, which varies over time, space and size-class, an Empirical Orthogonal Functions (EOF) decomposition has been performed. The aim is to decompose the detrended 3D biomass anomalies $B'(t, y, x)$ as follows: 
-
-\begin{equation}
-B'(x,y,t) = \sum_{k=0}^{N} PC_k(t) \times EOF_k(x,y)
-\end{equation}
-
-with $N$ the total number of time-steps. First, all points outside of the region of interest (20N-20S, 150E-120W) have been masked and the biomass anomalies has been weighted by the square-root of the cell surface:
-
-\begin{displaymath}
-W_{tot} = \sum_{(x, y) \in D} S(x,y)
-\end{displaymath}
-
-\begin{displaymath}
-W(x, y) = \sqrt{\frac{W(x, y)}{W_{tot}}}
-\end{displaymath}
-
-Finally, the EOF have been computed using the Python \verb+eofs+ package (\url{https://ajdawson.github.io/eofs/latest/}).
 
 \subsection{Observation-based sea-surface temperature data}
 
