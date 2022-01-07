@@ -8,7 +8,8 @@ import apecosm.ts as ts
 import scipy.signal as sig
 import os.path
 
-data = xr.open_mfdataset("data/HadISST_sst.nc")
+data = xr.open_mfdataset("/home1/scratch/nbarrier/HadISST_sst.nc")
+data
 
 # ## Recovering the anomalies
 
@@ -20,8 +21,6 @@ date = year * 100 + month
 print(date)
 
 iok = np.nonzero((date >= 195801) & (date <= 201812))[0]
-print(date[iok])
-print(iok)
 
 lon = data['longitude'].values
 lat = data['latitude'].values
@@ -31,13 +30,19 @@ sst = data['sst']
 dims = sst.dims  # time, lat, lon
 print(sst.shape)
 time = data['time']
+sst
 
-sst = sst.to_masked_array()
-clim, sst = ts.get_monthly_clim(sst)  # time, lat, lon
-del(clim) 
-sst = sst.T  # lon, lat, time
+clim = data.sel(time=slice('1971-01-01','2000-12-31'))
+clim = clim['sst'].groupby('time.month').mean(dim='time')
+clim
+
+anoms = data['sst'].groupby('time.month') - clim
+anoms
 
 # ## Detrending the anomalies
+
+sst = anoms.to_masked_array().T
+sst.shape
 
 nx, ny, nt = sst.shape
 
@@ -51,9 +56,8 @@ for i in range(nx):
 # ## Writting the output
 
 dsout = xr.Dataset()
-dsout['sst'] = (('lon', 'lat', 'time'), sst)
+dsout['sst'] = (('time', 'lat', 'lon'), sst.T)
 dsout['time'] = time
 dsout['lat'] = (['lat'], lat)
 dsout['lon'] = (['lon'], lon)
-dsout.attrs['file'] = os.path.realpath(__file__)
-dsout.to_netcdf('hadsst_anoms.nc')
+dsout.to_netcdf('../data/hadsst_anoms.nc')

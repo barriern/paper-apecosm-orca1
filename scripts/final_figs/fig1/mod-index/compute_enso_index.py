@@ -21,22 +21,19 @@ import apecosm.ts as ts
 #
 # First, we define the input directory and the file to process:
 
-dirin = '/home/datawork-marbec-pmod/forcings/APECOSM/ORCA1_HINDCAST/JRA_CO2'
-os.listdir(dirin)
-filelist = glob('%s/surface*nc' %dirin)
+dirin = '/home/datawork-marbec-pmod/forcings/APECOSM/ORCA1_HINDCAST/JRA_CO2/'
+filelist = glob('%s/*grid_T*nc' %dirin)
 filelist.sort()
 filelist
 
-Then, we define the output directory:
+# Then, we define the output directory:
 
-dirout = os.getenv('DATAWORK')
-dirout = os.path.join(dirout, 'apecosm', 'apecosm_orca1', 'diags', 'final_diags')
-dirout
+dirout = '../data'
 
 # ## Reading the mesh mask
 
-mesh = xr.open_dataset("../../../data/mesh_mask_eORCA1_v2.2.nc")
-tmask = np.squeeze(mesh['tmask'].values[0, 0])
+mesh = xr.open_dataset("../../../data/mesh_mask_eORCA1_v2.2.nc").isel(t=0)
+tmask = np.squeeze(mesh['tmask'].values[0])
 e1t = mesh['e1t'].values
 e2t = mesh['e2t'].values
 surf = e1t * e2t
@@ -46,8 +43,8 @@ lon = mesh['glamt'].values
 lat = mesh['gphit'].values
 lon = np.squeeze(lon)
 lat = np.squeeze(lat)
-lonf = mesh['glamf'].values[0]
-latf = mesh['gphif'].values[0]
+lonf = mesh['glamf'].values
+latf = mesh['gphif'].values
 
 # Now, the ONI domain (Nino 3.4) domain is extracted, as indicated in https://climatedataguide.ucar.edu/climate-data/nino-sst-indices-nino-12-3-34-4-oni-and-tni
 
@@ -59,6 +56,9 @@ lonmin = -170
 test = (lat <= latmax) & (lat >= latmin)
 test = test & (lon<=lonmax) & (lon>=lonmin)
 test = test & (tmask == 1)
+xrsurf = mesh['e1t'] * mesh['e2t'] * mesh['tmaskutil']
+xrsurf = xrsurf.where(test)
+xrsurf.plot()
 
 ilat, ilon = np.nonzero(test == True)
 
@@ -71,7 +71,7 @@ output = tmask.copy()
 output[ilat, ilon] = 2
 
 plt.figure()
-ax = plt.gca(projection=proj)
+ax = plt.axes(projection=proj)
 cs = ax.pcolormesh(lonf, latf, output[1:, 1:], transform=proj2)
 ax.add_feature(cfeature.LAND)
 ax.add_feature(cfeature.COASTLINE)
@@ -86,46 +86,27 @@ plt.show()
 # ### Computation of climatology
 
 data = xr.open_mfdataset(filelist).isel(olevel=0)
+data = data['thetao']
 years = data['time_counter.year'].values
 months = data['time_counter.month'].values
 date = years * 100 + months
+data
 
-datestart = 197101
-dateend = 200012
-
-iclim = np.nonzero((date >= datestart) & (date <= dateend))[0]
-
-sst = np.squeeze(data['thetao'].values)
-ntime, nlat, nlon = sst.shape
-
-clim, anom = ts.get_monthly_clim(sst[iclim, :, :])
+clim = data.sel(time_counter=slice('1971-01-01', '2000-12-31'))
+clim = clim.groupby('time_counter.month').mean(dim='time_counter')
+clim
 
 # ### Computation of anomalies
 
-# Then, the anomalies are computed for every year.
-
-nyears = ntime // 12
-index = np.arange(12)
-
-anom = np.zeros(sst.shape)
-for y in range(nyears):
-    anom[index] = sst[index] - clim
-    index += 12
+anom = data.groupby('time_counter.month') - clim
+anom
 
 # ### Computation of ONI index
 #
 # Now the weighted mean of the SST anomalies is computed, with the weights provided by the cell surface.
 
-surf = surf[np.newaxis, :, :] 
+output = (anom * xrsurf).sum(dim=['x', 'y']) / xrsurf.sum(dim=['x', 'y'])
+output.name = 'enso'
+output
 
-numer = np.sum(surf[:, ilat, ilon] * anom[:, ilat, ilon], axis=-1)
-denom = np.sum(surf[:, ilat, ilon], axis=-1)
-output = numer / denom
-
-timeout = data['time_counter.year'].values * 100 + data['time_counter.month'].values 
-
-dsout = xr.Dataset({'enso':(['time'], output)})
-dsout['time'] = (['time'], timeout)
-dsout.attrs['script'] = os.path.realpath(__file__)
-dsout.attrs['description'] = 'EOF for densities by class'
-dsout.to_netcdf('%s/simulated_enso_index.nc' %(dirout))
+output.to_netcdf('../data/simulated_enso_index.nc')

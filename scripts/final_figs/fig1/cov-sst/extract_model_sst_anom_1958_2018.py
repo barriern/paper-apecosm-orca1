@@ -10,20 +10,25 @@ import os.path
 
 # **Note: here, the NEMO data has been extracted using `ncks -d olevel,0 ...`**
 
-data = xr.open_mfdataset("data/nemo/*nc")
+data = xr.open_mfdataset("/home/datawork-marbec-pmod/forcings/APECOSM/ORCA1_HINDCAST/JRA_CO2/*grid_T*nc").isel(olevel=0)
 sst = data['thetao']
+sst
 
-sst = np.squeeze(sst.to_masked_array())
-print(sst.shape)
-clim, sst = ts.get_monthly_clim(sst)  # time, lat, lon
-del(clim) 
-sst = sst.T  # lon, lat, time
+clim = sst.sel(time_counter=slice('1971-01-01', '2000-12-31'))
+clim = clim.groupby('time_counter.month').mean(dim='time_counter')
+clim
+
+anom = sst.groupby('time_counter.month') - clim
+anom
 
 # ## Detrending the time-series
 #
 # Here, SST time-series has been transposed in order to improve computation time.
 
+sst = anom.to_masked_array().T
+
 nx, ny, nt = sst.shape
+sst.shape
 
 for i in range(nx):
     for j in range(ny):
@@ -36,5 +41,4 @@ for i in range(nx):
 
 dsout = xr.Dataset()
 dsout['sst'] = (('x', 'y', 'time'), sst)
-dsout.attrs['file'] = os.path.realpath(__file__)
-dsout.to_netcdf('modsst_anoms.nc')
+dsout.to_netcdf('../data/modsst_anoms.nc')
