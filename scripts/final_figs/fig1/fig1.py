@@ -271,9 +271,8 @@ alpha = 0.7
 
 ax = plt.axes(axes)
 l3 = plt.plot(time, sshmod['ssh'].values * 100, 'k', label='Sim.', alpha=alpha)
-l3 = plt.plot(time[iii], sshobs['ssh'].values * 100, label='Sim.', alpha=alpha, color='orange')
-# plt.legend([l1, l3[0]], ['Obs.', 'Model'], loc=0, fontsize=8, ncol=2)
-# ax.set_title('ONI')
+l1 = plt.plot(time[iii], sshobs['ssh'].values * 100, label='Sim.', alpha=alpha, color='orange')
+plt.legend([l1[0], l3[0]], ['Obs.', 'Model'], loc=0, fontsize=8, ncol=2)
 plt.ylabel('[cm]')
 plt.title('SSH Nino34')
 
