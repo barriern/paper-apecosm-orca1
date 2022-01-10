@@ -63,6 +63,12 @@ model = xr.open_dataset('data/cov_modsst_oni_tpi.nc')
 modoni = model['covoni'].to_masked_array().T
 modoni = np.ma.masked_where(modoni == 0, modoni)
 
+model = xr.open_dataset('data/cov_obsssh_oni_tpi.nc')
+lonsat = model['longitude'].values
+latsat = model['latitude'].values
+obssshoni = model['covoni'].to_masked_array().T * 100
+obssshoni = np.ma.masked_where(obssshoni == 0, obssshoni)
+
 lontext = 120
 lattext = 30
 dicttext = dict(boxstyle='round', facecolor='lightgray', alpha=1)
@@ -86,7 +92,7 @@ gl.yformatter = LATITUDE_FORMATTER
 gl.xlocator = mticker.FixedLocator([150, 180, -180, -150, -120, -90, -60])
 ax.set_ylim(-40, 40)
 ax.set_xlim(-60, 130)
-ax.text(lontext, lattext, letters[iiii] + ")", ha='center', va='center', transform=proj, bbox=dicttext)
+ax.text(lontext, lattext, 'b' + ")", ha='center', va='center', transform=proj, bbox=dicttext)
 
 ax.set_title('Hadley SST / ONI')
 cbax = axgr.cbar_axes[iiii]
@@ -105,7 +111,7 @@ cs = ax.pcolormesh(lonf, latf, modoni[1:, 1:], transform=proj2)
 cs.set_clim(-ccc, ccc)
 ax.add_feature(cfeature.LAND, zorder=1000, color='lightgray')
 ax.add_feature(cfeature.COASTLINE, zorder=1001)
-ax.text(lontext, lattext, letters[iiii] + ")", ha='center', va='center', transform=proj, bbox=dicttext)
+ax.text(lontext, lattext, 'c' + ")", ha='center', va='center', transform=proj, bbox=dicttext)
 
 gl = ax.gridlines(**gridparams)
 gl.top_labels = False
@@ -128,14 +134,14 @@ ax.set_title('Model SST / ONI')
 
 ################################################################### Plotting covariances SSH MOD
     
-iiii = 1
+iiii = 3
 ax = axgr[iiii]
 
-cs = ax.pcolormesh(lonf, latf, modsshoni[1:, 1:], transform=proj2)
+cs = ax.pcolormesh(lonf, latf, modsshoni[1:, 1:].T, transform=proj2)
 #cs.set_clim(-ccc, ccc)
 ax.add_feature(cfeature.LAND, zorder=1000, color='lightgray')
 ax.add_feature(cfeature.COASTLINE, zorder=1001)
-ax.text(lontext, lattext, letters[iiii] + ")", ha='center', va='center', transform=proj, bbox=dicttext)
+ax.text(lontext, lattext, 'f' + ")", ha='center', va='center', transform=proj, bbox=dicttext)
 
 gl = ax.gridlines(**gridparams)
 gl.top_labels = False
@@ -156,6 +162,37 @@ except:
     cb.set_label_text('Covariance [cm]')
 
 ax.set_title('Model SSH / ONI')
+
+################################################################### Plotting covariances SSH OBS
+    
+iiii = 1
+ax = axgr[iiii]
+
+cs = ax.pcolormesh(lonsat, latsat, obssshoni[:, :].T, transform=proj2, shading='auto')
+#cs.set_clim(-ccc, ccc)
+ax.add_feature(cfeature.LAND, zorder=1000, color='lightgray')
+ax.add_feature(cfeature.COASTLINE, zorder=1001)
+ax.text(lontext, lattext, 'e' + ")", ha='center', va='center', transform=proj, bbox=dicttext)
+
+gl = ax.gridlines(**gridparams)
+gl.top_labels = False
+gl.right_labels = False
+gl.xformatter = LONGITUDE_FORMATTER
+gl.yformatter = LATITUDE_FORMATTER
+xticks = np.array([150, 180, -180, -150, -120, -90, -60])
+gl.xlocator = mticker.FixedLocator(xticks)
+ax.set_ylim(-40, 40)
+ax.set_xlim(-60, 130)
+cs.set_clim(-8, 8)
+
+cbax = axgr.cbar_axes[iiii]
+cb = cbax.colorbar(cs)
+try:
+    cb.set_label('Covariance [cm]')
+except:
+    cb.set_label_text('Covariance [cm]')
+
+ax.set_title('Obs SSH / ONI')
 
 
 ################################################################### Plotting time-series ONI index
@@ -189,9 +226,9 @@ test = np.corrcoef(enso, nino[istart:iend])
 
 xticks = np.arange(2*12, len(time), 5 * 12)
 
-left = 0.07
-width = 0.85
-bottom = 0.55
+left = 0.05
+width = 0.4
+bottom = 0.53
 height = 0.1
 
 axes = (left, bottom, width, height)
@@ -213,7 +250,41 @@ ax.set_xlim(time.min(), time.max())
 ax.set_ylim(-4, 4)
 ax.text(time[-1] - 50, -3, 'a' + ")", ha='center', va='center', bbox=dicttext)
 
+####################################### Plotting SSH time-series
+
+sshobs = xr.open_dataset('data/ssh_obs_equatorial_mean.nc').sel(time=slice('1993-01-01', '2018-12-31'))
+sshmod = xr.open_dataset('data/ssh_simulated_equatorial_mean.nc')
+
+sshobs = sshobs.groupby('time.month') - sshobs.groupby('time.month').mean(dim='time')
+sshmod = sshmod.groupby('time_counter.month') - sshmod.sel(time_counter=slice('1993-01-01', '2018-12-31')).groupby('time_counter.month').mean(dim='time_counter')
+
+datemod = sshmod['time_counter.year'].values * 100 + sshmod['time_counter.month'].values
+iii = np.nonzero((datemod >= 199301) & (datemod <= 201812))[0]
+
+print('Correlation SSH', np.corrcoef(sshobs['ssh'].values, sshmod['ssh'].values[iii])[0, 1])
+
+left = 0.55
+
+axes = (left, bottom, width, height)
+
+alpha = 0.7
+
+ax = plt.axes(axes)
+l3 = plt.plot(time, sshmod['ssh'].values * 100, 'k', label='Sim.', alpha=alpha)
+l3 = plt.plot(time[iii], sshobs['ssh'].values * 100, label='Sim.', alpha=alpha, color='orange')
+# plt.legend([l1, l3[0]], ['Obs.', 'Model'], loc=0, fontsize=8, ncol=2)
+# ax.set_title('ONI')
+plt.ylabel('[cm]')
+plt.title('SSH Nino34')
+
+#plt.legend(loc=0)
+ax.set_xticks(time[xticks])
+ax.set_xticklabels(labels[xticks], rotation=45, ha='right')
+ax.grid(True)
+ax.set_xlim(time.min(), time.max())
+ax.set_ylim(-20, 20)
+ax.text(time[-1] - 50, -15, 'd' + ")", ha='center', va='center', bbox=dicttext)
+
 plt.savefig('fig1', bbox_inches='tight')
 # -
-
 
