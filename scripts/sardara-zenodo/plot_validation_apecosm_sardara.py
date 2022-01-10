@@ -6,7 +6,7 @@
 #       extension: .py
 #       format_name: light
 #       format_version: '1.5'
-#       jupytext_version: 1.10.3
+#       jupytext_version: 1.11.3
 #   kernelspec:
 #     display_name: Python 3 (ipykernel)
 #     language: python
@@ -79,40 +79,19 @@ const = xr.open_dataset('../data/ORCA1_JRAC02_CORMSK_CYC3_FINAL_ConstantFields.n
 const = const.rename({'wpred': 'l'})
 const['l'] = const['length'] * 100
 
+compo_ape = xr.open_dataset('map_to_plot_ape.nc')
+compo_ape = compo_ape['OOPE']
 
-def extract_data(year):
-    data = xr.open_dataset('pacific_ORCA1_JRAC02_CORMSK_CYC3_FINAL_OOPE_Y%.4dD030.nc' %year).isel(y=ilat)
-    data = data['OOPE']
-    data = data.isel(time=slice(-3, None)).mean(dim='time')
-    data = data.rename({'w': 'l'})
-    data['l'] = const['l']
-    data = (data * const['weight_step']).sel(l=slice(30, 70)).sum(dim='l')
-    return data
-
-
-oope2 = extract_data(2015)
-oope1 = extract_data(2013)
-oope0 = extract_data(2012)
-
-# +
-if zenodo:
-    catchmap = xr.open_dataset('regridded_catch_gear_PS.nc')
-    catchmap = catchmap.where(abs(catchmap['lat']) <= 10, drop=True)
-    catchmap = catchmap['catch'].sum(dim=['species'])
-else:
-    data1 = xr.open_dataset('../sardara/data/regridded_catch_gear_PS_species_SKJ_1x1.nc')
-    data2 = xr.open_dataset('../sardara/data/regridded_catch_gear_PS_species_YFT_1x1.nc')
-    catchmap = data1['catch'] + data2['catch']
-
-catchmap2 = catchmap.sel(time=slice(201510, 201512)).mean(dim='time')
-catchmap1 = catchmap.sel(time=slice(201310, 201312)).mean(dim='time')
-catchmap0 = catchmap.sel(time=slice(201210, 201212)).mean(dim='time')
+compo_sar = xr.open_dataset('map_to_plot_sar.nc')
+compo_sar = compo_sar['catch']
+compo_sar
 
 # +
 plt.rcParams['font.size'] = 15
 formatter0 = LongitudeFormatter(dateline_direction_label=True)
+plt.rcParams['image.cmap'] = 'RdBu_r'
 
-plt.figure(figsize = (12, 12), facecolor='white')
+plt.figure(figsize = (12, 14), facecolor='white')
 
 ax = plt.axes([0.05, 0.5, 0.3, 0.4])
 
@@ -190,23 +169,14 @@ ax.set_title('Biomass and catch barycenters')
 
 ############################################################# plotting right panel
 
-pos = np.array([-0.05, 0.02, 0.9, 0.4])
+xxx0 = -0.05
+yyy0 = 0.0
+www0 = 0.9
+hhh0 = 0.2
+pos = np.array([xxx0, yyy0, www0, hhh0])
+
 ax = plt.axes(pos, projection=ccrs.PlateCarree(central_longitude=180))
 projin = ccrs.PlateCarree()
-
-toplot = catchmap2 - 0.5 * (catchmap1 + catchmap0)
-toplot = toplot.where(toplot != 0)
-toplot2 = (oope2 - 0.5 * (oope1 + oope0)).to_masked_array()
-
-mask = np.ma.getmaskarray(toplot2)
-lon1d = np.ravel(lont[~mask])
-lat1d = np.ravel(latt[~mask])
-toplot1d = np.ravel(toplot2[~mask])
-projin = ccrs.PlateCarree()
-projout = ccrs.PlateCarree(central_longitude=180)
-output = projout.transform_points(projin, lon1d, lat1d)
-lonout = output[..., 0]
-latout = output[..., 1]
 
 gridparams = {'crs': ccrs.PlateCarree(central_longitude=0),
               'draw_labels':True, 'linewidth':0.5,
@@ -219,20 +189,50 @@ gl.ylocator = mticker.FixedLocator(np.arange(-90, 90 + 20, 20))
 gl.xformatter = LONGITUDE_FORMATTER
 gl.yformatter = LATITUDE_FORMATTER
 
-
-cs = ax.pcolormesh(catchmap['lon'], catchmap['lat'], toplot.values, shading='auto', transform=projin)
+cs = ax.pcolormesh(compo_sar['lon'], compo_sar['lat'], compo_sar.values, shading='auto', transform=projin)
 space = 50
 #cs = ax.pcolormesh(lonf, latf, toplot2[1:, 1:], linewidths=1, transform=projin)
-cl = plt.tricontour(lonout, latout, toplot1d, colors='k', linewidths=0.5, levels=np.arange(-400 - space, 400 + space, space))
-ax.add_feature(cfeature.LAND, zorder=10)
-ax.add_feature(cfeature.COASTLINE, zorder=11)
-cb = plt.colorbar(cs, shrink=0.7, location='bottom', pad=0.07)
-cs.set_clim(-400, 400)
-#cb.add_lines(cl)
-cb.set_label('Catch anoms. (MT)')
+#cl = plt.tricontour(lonout, latout, toplot1d, colors='k', linewidths=0.5, levels=np.arange(-400 - space, 400 + space, space))
+ax.add_feature(cfeature.LAND)
+ax.add_feature(cfeature.COASTLINE)
+cb = plt.colorbar(cs, shrink=0.7, location='right', pad=0.07)
+cb.set_label('Catch anoms. (MT/m2)')
 ax.set_title('OND15 - 0.5 x (OND12 + OND13)')
+ax.set_extent([130, -60 + 360, -40, 40], crs=projin)
+
+#################################################################### Apecosm
+
+yyy0 += hhh0 + 0.03
+pos = np.array([xxx0, yyy0, www0, hhh0])
+
+ax = plt.axes(pos, projection=ccrs.PlateCarree(central_longitude=180))
+projin = ccrs.PlateCarree()
+
+gridparams = {'crs': ccrs.PlateCarree(central_longitude=0),
+              'draw_labels':True, 'linewidth':0.5,
+              'color':'k', 'alpha':1, 'linestyle':'--'}
+gl = ax.gridlines(**gridparams, zorder=10)
+gl.top_labels = False
+gl.right_labels = False
+gl.xlocator = mticker.FixedLocator(np.arange(-180, 180 + 40, 40))
+gl.ylocator = mticker.FixedLocator(np.arange(-90, 90 + 20, 20))
+gl.xformatter = LONGITUDE_FORMATTER
+gl.yformatter = LATITUDE_FORMATTER
+
+cs = ax.pcolormesh(lonf, latf, compo_ape.values[1:, 1:], transform=projin)
+#space = 50
+#cs = ax.pcolormesh(lonf, latf, toplot2[1:, 1:], linewidths=1, transform=projin)
+#cl = plt.tricontour(lonout, latout, toplot1d, colors='k', linewidths=0.5, levels=np.arange(-400 - space, 400 + space, space))
+ax.add_feature(cfeature.LAND)
+ax.add_feature(cfeature.COASTLINE)
+cb = plt.colorbar(cs, shrink=0.7, location='right', pad=0.07)
+ccc = 3e-8
+cs.set_clim(-ccc, ccc)
+cb.add_lines(cl)
+cb.set_label('Biomass anoms. (MT/m2)')
+#ax.set_title('OND15 - 0.5 x (OND12 + OND13)')
+ax.set_extent([130, -60 + 360, -40, 40], crs=projin)
 
 plt.savefig('plot_validation_apecosm.png', bbox_inches='tight')
 # -
-
 
