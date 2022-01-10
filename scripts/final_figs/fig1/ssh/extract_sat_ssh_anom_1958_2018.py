@@ -11,33 +11,43 @@ import os.path
 
 data = xr.open_mfdataset("../data/cmems_obs-sl_glo_phy-ssh_my_allsat-l4-duacs-0.25deg_P1M-m_1641569308380.nc")
 sst = data['sla']
+sst = sst.chunk({'latitude': 100, 'longitude': 100})
+sst
 
 clim = sst.sel(time=slice('1993-01-01', '2018-12-31'))
 clim = clim.groupby('time.month').mean(dim='time')
 clim
 
 anom = sst.groupby('time.month') - clim
+anom = anom.chunk({'time' : anom.shape[0]})
 anom
+
 
 # ## Detrending the time-series
 #
 # Here, SST time-series has been transposed in order to improve computation time.
 
-sst = anom.to_masked_array().T
-sst.shape
+# +
+def gufunc_detrend(x):
+    x[np.isnan(x)] = 0
+    return sig.detrend(x)
 
-nx, ny, nt = sst.shape
+def xarray_detrend(x, dim):
+    return xr.apply_ufunc(
+        gufunc_detrend,
+        x,
+        input_core_dims=[[dim]],
+        output_core_dims=[[dim]],
+        dask="parallelized",
+        output_dtypes=[np.float32],
+    )
 
-for i in range(nx):
-    for j in range(ny):
-        try:
-            sst[i, j] = sig.detrend(sst[i, j])
-        except:
-            pass
+
+# -
+
+detrended = xarray_detrend(anom, dim='time')
+detrended
 
 # ## Writting the output dataset
 
-dsout = xr.Dataset()
-dsout['ssh'] = (('x', 'y', 'time'), sst)
-dsout['time'] = anom['time']
-dsout.to_netcdf('../data/obsssh_anoms.nc')
+delayed = detrended.to_netcdf('../data/obsssh_anoms.nc', compute=False)

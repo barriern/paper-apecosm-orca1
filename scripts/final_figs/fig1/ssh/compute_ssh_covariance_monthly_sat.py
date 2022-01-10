@@ -14,25 +14,23 @@ nino = nino[iok]
 nino.shape
 
 data = xr.open_dataset('../data/obsssh_anoms.nc')
-#don = data['lon']
-#lat = data['lat']
-sst = data['ssh']
-sst
+lon = data['longitude']
+lat = data['latitude']
+sst = data['sla']
 sst = sst.sel(time=slice('1993-01-01', '2018-12-31'))
 sst
 
-nx, ny, nt = sst.shape
-covoni = np.zeros((nx, ny))
-sst.shape
+ny, nx, nt = sst.shape
+covoni = np.zeros((ny, nx))
 
-for i in range(nx):
-    for j in range(ny):
-        temp = sst[i, j]
-        covoni[i, j] = np.cov(temp, nino)[0, 1]
+for j in range(ny):
+    for i in range(nx):
+        temp = sst.isel(longitude=i, latitude=j).values
+        covoni[j, i] = np.cov(temp, nino)[0, 1]
 
 dsout = xr.Dataset()
-#dsout['lon'] = lon
-#dsout['lat'] = lat
-dsout['covoni'] = (['x', 'y'], covoni)
+dsout['lon'] = lon
+dsout['lat'] = lat
+dsout['covoni'] = (['y', 'x'], covoni)
 dsout.to_netcdf('../data/cov_obsssh_oni_tpi.nc')
 
