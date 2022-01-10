@@ -6,9 +6,9 @@
 #       extension: .py
 #       format_name: light
 #       format_version: '1.5'
-#       jupytext_version: 1.11.3
+#       jupytext_version: 1.11.5
 #   kernelspec:
-#     display_name: Python 3 (ipykernel)
+#     display_name: Python 3
 #     language: python
 #     name: python3
 # ---
@@ -90,6 +90,7 @@ compo_sar
 plt.rcParams['font.size'] = 15
 formatter0 = LongitudeFormatter(dateline_direction_label=True)
 plt.rcParams['image.cmap'] = 'RdBu_r'
+dicttext = dict(boxstyle='round', facecolor='lightgray', alpha=1)
 
 plt.figure(figsize = (12, 14), facecolor='white')
 
@@ -116,8 +117,9 @@ ax.set_yticklabels(datestr[::stride], va='top', rotation=45)
 
 ax.xaxis.set_major_formatter(formatter0)
 ax.set_xticks(np.arange(160, -120 + 360, 20))
-ax.set_xticks(np.arange(140, -120 + 360, 20))
+#ax.set_xticks(np.arange(140, -120 + 360, 20))
 plt.setp(ax.get_xticklabels(), rotation=45, ha='right')
+plt.text(apecosm['x'].values[-1], time[0], 'a)', bbox=dicttext, ha='center', va='center')
 
 cb = plt.colorbar(cs)
 ax.set_xlim(140, -120+360)
@@ -170,7 +172,7 @@ ax.set_title('Biomass and catch barycenters')
 ############################################################# plotting right panel
 
 xxx0 = -0.05
-yyy0 = 0.0
+yyy0 = 0.22
 www0 = 0.9
 hhh0 = 0.2
 pos = np.array([xxx0, yyy0, www0, hhh0])
@@ -190,9 +192,8 @@ gl.xformatter = LONGITUDE_FORMATTER
 gl.yformatter = LATITUDE_FORMATTER
 
 cs = ax.pcolormesh(compo_sar['lon'], compo_sar['lat'], compo_sar.values, shading='auto', transform=projin)
-space = 50
-#cs = ax.pcolormesh(lonf, latf, toplot2[1:, 1:], linewidths=1, transform=projin)
-#cl = plt.tricontour(lonout, latout, toplot1d, colors='k', linewidths=0.5, levels=np.arange(-400 - space, 400 + space, space))
+ccc = 3e-8
+cs.set_clim(-ccc, ccc)
 ax.add_feature(cfeature.LAND)
 ax.add_feature(cfeature.COASTLINE)
 cb = plt.colorbar(cs, shrink=0.7, location='right', pad=0.07)
@@ -200,9 +201,11 @@ cb.set_label('Catch anoms. (MT/m2)')
 ax.set_title('OND15 - 0.5 x (OND12 + OND13)')
 ax.set_extent([130, -60 + 360, -40, 40], crs=projin)
 
+plt.text(apecosm['x'].values[-1], time[0], 'b)', bbox=dicttext, ha='center', va='center')
+
 #################################################################### Apecosm
 
-yyy0 += hhh0 + 0.03
+yyy0 -= hhh0 + 0.03
 pos = np.array([xxx0, yyy0, www0, hhh0])
 
 ax = plt.axes(pos, projection=ccrs.PlateCarree(central_longitude=180))
@@ -220,9 +223,6 @@ gl.xformatter = LONGITUDE_FORMATTER
 gl.yformatter = LATITUDE_FORMATTER
 
 cs = ax.pcolormesh(lonf, latf, compo_ape.values[1:, 1:], transform=projin)
-#space = 50
-#cs = ax.pcolormesh(lonf, latf, toplot2[1:, 1:], linewidths=1, transform=projin)
-#cl = plt.tricontour(lonout, latout, toplot1d, colors='k', linewidths=0.5, levels=np.arange(-400 - space, 400 + space, space))
 ax.add_feature(cfeature.LAND)
 ax.add_feature(cfeature.COASTLINE)
 cb = plt.colorbar(cs, shrink=0.7, location='right', pad=0.07)
@@ -230,7 +230,6 @@ ccc = 3e-8
 cs.set_clim(-ccc, ccc)
 cb.add_lines(cl)
 cb.set_label('Biomass anoms. (MT/m2)')
-#ax.set_title('OND15 - 0.5 x (OND12 + OND13)')
 ax.set_extent([130, -60 + 360, -40, 40], crs=projin)
 
 plt.savefig('plot_validation_apecosm.png', bbox_inches='tight')
