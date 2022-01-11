@@ -15,18 +15,22 @@ In order to assess the impacts of climate variability (ONI, TPI) on temperature,
 Correlations are computed in the same way. Their significance has been inferred using a Student t-test, in which the effective number of degrees of freedom has been corrected based on the 1-lag autocorrelation of the 2 two time-series \citep{brethertonEffectiveNumberSpatial1999}.
 
 \subsection{Observation-based sea-surface temperature data}
+\label{sec:sst}
 
 Observation-based estimates of sea-surface temperatures are extracted from the the Hadley Sea-Surface Temperature (HadISST1, \citealt{raynerGlobalAnalysesSea2003}). It uses reduced space optimal interpolation applied to SSTs from the Marine Data Bank (mainly ship tracks) and ICOADS through 1981 and a blend of in-situ and adjusted satellite-derived SSTs for 1982-onwards. For this study, monthly sea-surface temperature anomalies have been extracted and detrended for the 1958-2018 period.
 
 \subsection{Observation-based sea-level anomalies}
+\label{sec:ssh}
 
 Observation-based sea-level anomalies have been extracted from the reprocessed Global Ocean Gridded L4 Sea-Surface Heights data, provided by the Copernicus Climate Service (\url{https://doi.org/10.48670/moi-00148}), provided as monthly values on a regular $0.25 \times 0.25$ grid from 1993-01 to 2020-12-31. This product was processed by the DUACS multimission altimeter data processing system, which processes data from all altimeter missions: Jason-3, Sentinel-3A, HY-2A, Saral/AltiKa, Cryosat-2, Jason-2, Jason-1, T/P, ENVISAT, GFO, ERS1/2. Using along-track altimeter data, gridded sea-level anomalies are extracted by using an Optimal Interpolation off all the flying satellites.
 
 \subsection{Observation-based chlorophyll data}
+\label{sec:chl}
 
 Chlorophyll observation-based estimates are extracted from the monthly OceanColour-CCI V5 CHL-a dataset\footnote{http://dx.doi.org/10.5285/1dbe7a109c0244aaad713e078fd3059a}  \citep{sathyendranathOceanColourTimeSeries2019} over the 1997-09/2018-12 period. For our purpose, the high resolution dataset (4 km) has been regridded on a regular 1-degree resolution grid by computing weighted Chl averages over $24\times24$ boxes, with the weights being provided by the the cosine of latitude. When more than $1/3$ of the data used in the averaging is missing, the regridded cell is masked. The monthly climatology of Chl has then been computed over the 1998-2008 period and used to extract the Chl anomalies over the full period.
 
 \subsection{Observation-based fish biomass estimates}
+\label{sec:fish}
 
 Fish biomass estimates are extracted from the IRD Level 2 global monthly catch of tuna, tuna-like and shark species dataset\footnote{https://doi.org/10.5281/zenodo.1164128} \citep{taconetGlobalMonthlyCatch2018}. First, the purse-seine captures of skipjack and yellowfin tunas have been extracted from the raw input file. Then, non-monthly observations (i.e. when the difference between the end and start dates exceed 31 days) have been discarded, as well as those which are unlocalized. Finally, the remaining observations have been regridded into a regular 1-degree reolution grid using the overlapping area between the observation polygon and the cell area. The final product is a $3D$ array of dimensions \verb+(time, y, x)+ that extends from 1959 to 2016.
 
