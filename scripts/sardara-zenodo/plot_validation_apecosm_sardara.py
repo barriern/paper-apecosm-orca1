@@ -45,7 +45,7 @@ baryape = (apecosm['x'] * apecosm).sum(dim=['x']) / apecosm.sum(dim='x')
 if(roll):
     baryape = baryape.rolling(time=window, center=True).mean()
     
-apecosm = apecosm.sel(time=slice(start, end)) / 4e6
+apecosm = apecosm.sel(time=slice(start, end)) / (4e6 * 1e3)
 # -
 
 if zenodo:
@@ -173,7 +173,7 @@ ax.xaxis.set_major_formatter(formatter0)
 ax.set_xticks(np.arange(160, -120 + 360, 20))
 plt.setp(ax.get_xticklabels(), rotation=45, ha='right')
 
-cb.set_label('Log(MT)')
+cb.set_label('Log(Tons)')
 ax.set_xlim(xlim)
 ax.set_title('Catches and Biomass')
 
@@ -208,7 +208,7 @@ cs.set_clim(-ccc, ccc)
 ax.add_feature(cfeature.LAND)
 ax.add_feature(cfeature.COASTLINE)
 cb = plt.colorbar(cs, shrink=0.7, location='right', pad=0.07)
-cb.set_label('Catch anoms. (MT/m2)')
+cb.set_label('Catch anoms. (Tons/m2)')
 ax.set_title('NINO - NINA composites')
 ax.set_extent([130, -60 + 360, -40, 40], crs=projin)
 
@@ -240,7 +240,7 @@ cb = plt.colorbar(cs, shrink=0.7, location='right', pad=0.07)
 ccc = 3e-8
 cs.set_clim(-ccc, ccc)
 cb.add_lines(cl)
-cb.set_label('Biomass anoms. (MT/m2)')
+cb.set_label('Biomass anoms. (Tons/m2)')
 ax.set_extent([130, -60 + 360, -40, 40], crs=projin)
 plt.text(compo_sar['lon'].values[-10], compo_sar['lat'].values[-10], 'd)', bbox=dicttext, ha='center', va='center', transform=projin)
 
