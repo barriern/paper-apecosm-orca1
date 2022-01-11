@@ -6,9 +6,9 @@
 #       extension: .py
 #       format_name: light
 #       format_version: '1.5'
-#       jupytext_version: 1.11.5
+#       jupytext_version: 1.10.3
 #   kernelspec:
-#     display_name: Python 3
+#     display_name: Python 3 (ipykernel)
 #     language: python
 #     name: python3
 # ---
@@ -94,6 +94,8 @@ dicttext = dict(boxstyle='round', facecolor='lightgray', alpha=1)
 
 plt.figure(figsize = (12, 14), facecolor='white')
 
+############################################################ Plotting Hovmoller diagram
+
 ax = plt.axes([0.05, 0.5, 0.3, 0.4])
 
 apeyears = apecosm['time.year'].values
@@ -119,13 +121,13 @@ ax.xaxis.set_major_formatter(formatter0)
 ax.set_xticks(np.arange(160, -120 + 360, 20))
 #ax.set_xticks(np.arange(140, -120 + 360, 20))
 plt.setp(ax.get_xticklabels(), rotation=45, ha='right')
-plt.text(apecosm['x'].values[-1], time[0], 'a)', bbox=dicttext, ha='center', va='center')
+plt.text(apecosm['x'].values[-10], time[-10], 'a)', bbox=dicttext, ha='center', va='center')
 
 cb = plt.colorbar(cs)
 ax.set_xlim(140, -120+360)
 xlim = ax.get_xlim()
 
-############################################################ plotting lower panel
+############################################################ plotting barycenter time series
 
 pos1 = ax.get_position()
 offset = 0.45
@@ -139,11 +141,17 @@ datebaryape = baryape['time'].values
 datebaryape = [d.year * 100 + d.month for d in datebaryape]
 datebarysar = barysartemp['time'].values
 
+tape = np.arange(732)
+
 yyy = datebarysar // 100
 mmm = datebarysar - 100 * yyy
 
 test = (datebaryape >= datebarysar[0]) & (datebaryape <= datebarysar[-1])
 iok = np.nonzero(test)[0]
+
+tape = tape[iok]
+alpha = 1.09214162799967
+corr = np.log(alpha * tape[-1]) / np.log(alpha * tape)
 
 time = np.arange(len(datebarysar))
 datestr = np.array(['%.4d-%.2d' %(y, m) for y, m in zip(yyy, mmm)])
@@ -155,6 +163,8 @@ iline = np.nonzero(datestr=='2008-01')[0]
 
 plt.plot(baryape[iok], time, label='Apecosm')
 plt.plot(barysartemp, time, label='Sardara')
+#plt.plot(barysartemp * corr, time, label='Det. Sardara')
+
 plt.legend()
 plt.axhline(time[iline], color='k', linestyle='--')
 plt.ylim(time.min(), time.max())
@@ -168,11 +178,12 @@ ax.set_xlim(xlim)
 ax.set_title('Catches and Biomass')
 
 ax.set_title('Biomass and catch barycenters')
+plt.text(-140+360+10, time[-25], 'b)', bbox=dicttext, ha='center', va='center')
 
-############################################################# plotting right panel
+############################################################# plotting catch composites
 
 xxx0 = -0.05
-yyy0 = 0.22
+yyy0 = 0.23
 www0 = 0.9
 hhh0 = 0.2
 pos = np.array([xxx0, yyy0, www0, hhh0])
@@ -198,12 +209,12 @@ ax.add_feature(cfeature.LAND)
 ax.add_feature(cfeature.COASTLINE)
 cb = plt.colorbar(cs, shrink=0.7, location='right', pad=0.07)
 cb.set_label('Catch anoms. (MT/m2)')
-ax.set_title('OND15 - 0.5 x (OND12 + OND13)')
+ax.set_title('NINO - NINA composites')
 ax.set_extent([130, -60 + 360, -40, 40], crs=projin)
 
-plt.text(apecosm['x'].values[-1], time[0], 'b)', bbox=dicttext, ha='center', va='center')
+plt.text(compo_sar['lon'].values[-10], compo_sar['lat'].values[-10], 'c)', bbox=dicttext, ha='center', va='center', transform=projin)
 
-#################################################################### Apecosm
+#################################################################### Plot Apecosm composites
 
 yyy0 -= hhh0 + 0.03
 pos = np.array([xxx0, yyy0, www0, hhh0])
@@ -231,7 +242,42 @@ cs.set_clim(-ccc, ccc)
 cb.add_lines(cl)
 cb.set_label('Biomass anoms. (MT/m2)')
 ax.set_extent([130, -60 + 360, -40, 40], crs=projin)
+plt.text(compo_sar['lon'].values[-10], compo_sar['lat'].values[-10], 'd)', bbox=dicttext, ha='center', va='center', transform=projin)
 
 plt.savefig('plot_validation_apecosm.png', bbox_inches='tight')
+# +
+# extraction of sardar bary to match apecosm time
+barysartemp = barysar.sel(time=slice(195801, 201812))
+barysartemp
+
+# creation of time step array
+time = np.arange(barysartemp.shape[0])
+time
+
+alpha = 1.09214162799967
+
+# extraction of time-step for time-series "goot" sardar data
+iok = np.nonzero((barysartemp['time'].values >= 198301) & (barysartemp['time'].values <= 201812))[0]
+
+# extraction of ape barycenter for this sardara period
+baryapetemp = baryape.sel(time=slice('1983-01-01', '2018-12-31'))
+baryapetemp.shape, time[iok].shape
+
+iii = time[iok]
+iii
+def func(time, alpha):
+    
+    output = barysartemp[iok].values[:-2] * (np.log(alpha * time[-1]) / np.log(alpha * time))
+    return output
+
+import scipy.optimize as opt
+popt, pcov = opt.curve_fit(func, time[iok][:-2], baryapetemp.values[:-2])
+popt
 # -
+
+plt.plot(time[iok][:-2], baryapetemp.values[:-2])
+plt.plot(time[iok][:-2], barysartemp.values[iok][:-2])
+plt.plot(time[iok][:-2], func(time[iok][:-2], popt[0]))
+plt.plot(time[iok][:-2], func(time[iok][:-2], alpha))
+
 
