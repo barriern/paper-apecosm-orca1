@@ -1,41 +1,46 @@
-\section{Data and method}
+\section{Numerical models}
 
-In the present section, the different datasets, statistical tools and numerical models used in this study are presented.
-
-\subsection{El Nino index}
-\label{sec:oni}
-
-The internannual ENSO variability is inferred from the Oceanic Nino Index\footnote{\url{https://www.cpc.ncep.noaa.gov/data/indices/oni.ascii.txt}} (hereafter ONI), which is the NOAA official ENSO indicator: events are classified as full-fledged El Niño or La Niña events if the anomalies exceed +0.5C or -0.5C for at least five consecutive months. It is based on a 3-month running mean of sea-surface temperature anomalies averaged over the Niño 3.4 region (5N-5S, 170W-120W).\\
-
-\subsection{Covariance analysis}
-\label{sec:cov}
-
-In order to assess the spatial signature of ENSO variability on physical, biogeochemical and biological variables, covariance analysis is used. For each grid cell, the monthly climatology of the analysed fields is removed, and the resulting monthly anomalies are detrended. Finally, the covariance between the detrended anomalies and the ONI index is computed. The resulting map can be interpreted as the monthly anomalies associated with an ONI value of 1.
-%Correlations are computed in the same way. 
-%Their significance has been inferred using a Student t-test, in which the effective number of degrees of freedom has been corrected based on the 1-lag autocorrelation of the 2 two time-series \citep{brethertonEffectiveNumberSpatial1999}.
-
-\subsection{Observation-based sea-surface temperature data}
-\label{sec:sst}
-
-Observation-based estimates of sea-surface temperatures are extracted from the Hadley Sea-Surface Temperature dataset\footnote{\url{https://www.metoffice.gov.uk/hadobs/hadisst/data/download.html}} (HadISST1, \citealt{raynerGlobalAnalysesSea2003}). It uses reduced space optimal interpolation applied to SSTs from the Marine Data Bank (mainly ship tracks) and ICOADS through 1981 and a blend of in-situ and adjusted satellite-derived SSTs for 1982-onwards. The resulting dataset is provided as monthly sea-surface temperature maps on a $1\times 1$ regular grid. For this study, a monthly climatology has been computed from 1971 to 2000, from which monthly sea-surface temperature anomalies have been extracted and detrended on the 1958-2018 period.
-
-\subsection{Observation-based sea-level anomalies}
-\label{sec:ssh}
-
-Observation-based sea-level anomalies are extracted from the reprocessed Global Ocean Gridded L4 Sea-Surface Heights\footnote{\url{https://doi.org/10.48670/moi-00148}} data, provided by the Copernicus Climate Service as monthly values on a regular $0.25 \times 0.25$ grid from 1993-01 to 2020-12. This product was built by the DUACS multimission altimeter data processing system, which processes data from all altimeter missions: Jason-3, Sentinel-3A, HY-2A, Saral/AltiKa, Cryosat-2, Jason-2, Jason-1, T/P, ENVISAT, GFO, ERS1/2. Using along-track altimeter data, gridded sea-level anomalies are extracted by using an Optimal Interpolation off all the flying satellites. For our study, a monthly sea-level climatology was computed from 1993 to 2018 and used to extract monthly sea-level anomalies, which have been detrended.
-
-\subsection{Observation-based chlorophyll data}
-\label{sec:chl}
-
-Chlorophyll observation-based estimates are extracted from the monthly OceanColour-CCI V5 CHL-a dataset\footnote{\url{http://dx.doi.org/10.5285/1dbe7a109c0244aaad713e078fd3059a}} \citep{sathyendranathOceanColourTimeSeries2019} over the 1997-09/2018-12 period. For our purpose, the high resolution dataset (4 km) has been regridded on a regular $1\times 1$ grid by computing weighted chlorophyll averages over $24\times24$ boxes, with the weights being provided by the cosine of latitude. When more than $1/3$ of the data used in the averaging is missing, the regridded cell is masked. The monthly climatology has then been computed over the 1998-2008 period and used to extract monthly anomalies, which have then been detrended.
-
-\subsection{Observation-based fish biomass estimates}
-\label{sec:fish}
-
-Fish biomass estimates are extracted from the IRD Level 2 global monthly catch of tuna, tuna-like and shark species dataset\footnote{\url{https://doi.org/10.5281/zenodo.1164128}} \citep{taconetGlobalMonthlyCatch2018}. First, the purse-seine captures of skipjack and yellowfin tunas have been extracted from the raw input file. Then, non-monthly observations (i.e. when the difference between the end and start dates exceed 31 days) have been discarded, as well as those which are unlocalized. Finally, the remaining observations have been regridded into on a regular $1 \times 1$ grid using the overlapping area between the observation polygon and the destination cell. The final product is a $3D$ array of dimensions (time and space) that extends from 1959 to 2016. However, due to the early poor data coverage, this dataset was used from 1985 onward.
+Numerical models are valuable tools to understand the mechanisms that drive the physical, biogeochemical and biological response to ENSO variability. 
+In the present section, the two numerical simulations used in this study are described.
 
 \subsection{Physical and biogeochemical model}
+\label{sec:nemo}
 \input{texfiles/nemo_pis_des.tex}
 
 \subsection{Marine ecosystem model}
+\label{sec:apecosm}
 \input{texfiles/apecosm_des.tex}
+
+%\section{Data and method}
+%
+%In the present section, the different observation-based datasets used in this study to validate the numerical models are presented. 
+%
+%%and statistical tools used in this study are presented.
+%
+%
+%
+%\subsection{Sea-level anomalies}
+%\label{sec:ssh}
+%
+%Observation-based sea-level anomalies are obtained from the reprocessed Global Ocean Gridded L4 Sea-Surface Heights\footnote{\url{https://doi.org/10.48670/moi-00148}} data, provided by the Copernicus Climate Service as monthly values on a regular $0.25 \times 0.25$ grid from 1993-01 to 2020-12. This product was built by the DUACS multimission altimeter data processing system, which processes data from all altimeter missions: Jason-3, Sentinel-3A, HY-2A, Saral/AltiKa, Cryosat-2, Jason-2, Jason-1, T/P, ENVISAT, GFO, ERS1/2. Using along-track altimeter data, gridded sea-level anomalies are extracted by using an Optimal Interpolation off all the flying satellites. 
+%
+%%For our study, a monthly sea-level climatology was computed from 1993 to 2018 and used to extract monthly sea-level anomalies, which have been detrended.
+%
+%\subsection{Chlorophyll}
+%\label{sec:chl}
+%
+%Chlorophyll observation-based estimates are extracted from the monthly OceanColour-CCI V5 CHL-a dataset\footnote{\url{http://dx.doi.org/10.5285/1dbe7a109c0244aaad713e078fd3059a}} \citep{sathyendranathOceanColourTimeSeries2019} over the 1997-09/2018-12 period. For our purpose, the high resolution dataset (4 km) has been regridded on a regular $1\times 1$ grid by computing weighted chlorophyll averages over $24\times24$ boxes, with the weights being provided by the cosine of latitude. When more than $1/3$ of the data used in the averaging is missing, the regridded cell is masked. 
+%
+%%The monthly climatology has then been computed over the 1998-2008 period and used to extract monthly anomalies, which have then been detrended.
+%
+%\subsection{Fish biomass estimates}
+%\label{sec:fish}
+%
+%Fish biomass estimates are extracted from the IRD Level 2 global monthly catch of tuna, tuna-like and shark species dataset\footnote{\url{https://doi.org/10.5281/zenodo.1164128}} \citep{taconetGlobalMonthlyCatch2018}. First, the purse-seine captures of skipjack and yellowfin tunas have been extracted from the raw input file. Then, non-monthly observations (i.e. when the difference between the end and start dates exceed 31 days) have been discarded, as well as those which are unlocalized. Finally, the remaining observations have been regridded into on a regular $1 \times 1$ grid using the overlapping area between the observation polygon and the destination cell. The final product is a $3D$ array of dimensions (time and space) that extends from 1959 to 2016. However, due to the early poor data coverage, this dataset was used from 1985 onward.
+%
+%%\subsection{Covariance analysis}
+%%\label{sec:cov}
+%%
+%%In order to assess the spatial signature of ENSO variability on physical, biogeochemical and biological variables, covariance analysis is used. For each grid cell, the monthly climatology of the analysed fields is removed, and the resulting monthly anomalies are detrended. Finally, the covariance between the detrended anomalies and the ONI index is computed. The resulting map can be interpreted as the monthly anomalies associated with an ONI value of 1.
+%%%Correlations are computed in the same way. 
+%%%Their significance has been inferred using a Student t-test, in which the effective number of degrees of freedom has been corrected based on the 1-lag autocorrelation of the 2 two time-series \citep{brethertonEffectiveNumberSpatial1999}.
