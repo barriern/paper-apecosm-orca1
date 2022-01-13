@@ -16,11 +16,17 @@ import apecosm.ts as ts
 import scipy.signal as sig
 plt.rcParams['image.cmap'] = 'RdBu_r'
 
+latbox = [-5, -5, 5, 5, -5]
+lonbox = [-170, -120, -120, -170, -170]
+
+
 letters = list(string.ascii_lowercase)
 letters = letters[1:]
 
 proj = ccrs.PlateCarree(central_longitude=180)
 proj2 = ccrs.PlateCarree(central_longitude=0)
+
+dictpbox = {'transform': proj2, 'linestyle': '--', 'linewidth': 1}
 
 gridparams = {'crs': ccrs.PlateCarree(central_longitude=0), 'draw_labels':True, 'linewidth':0.5, 'color':'gray', 'alpha':0.5, 'linestyle':'--'}
 
@@ -83,6 +89,7 @@ cs = ax.pcolormesh(lonhad, lathad, hadoni, transform=proj2, shading='auto')
 cs.set_clim(-ccc, ccc)
 ax.add_feature(cfeature.LAND, zorder=1000, color='lightgray')
 ax.add_feature(cfeature.COASTLINE, zorder=1001)
+ax.plot(lonbox, latbox, **dictpbox)
 
 gl = ax.gridlines(**gridparams)
 gl.top_labels = False
@@ -112,6 +119,7 @@ cs.set_clim(-ccc, ccc)
 ax.add_feature(cfeature.LAND, zorder=1000, color='lightgray')
 ax.add_feature(cfeature.COASTLINE, zorder=1001)
 ax.text(lontext, lattext, 'c' + ")", ha='center', va='center', transform=proj, bbox=dicttext)
+ax.plot(lonbox, latbox, **dictpbox)
 
 gl = ax.gridlines(**gridparams)
 gl.top_labels = False
@@ -142,6 +150,7 @@ cs = ax.pcolormesh(lonf, latf, modsshoni[1:, 1:].T, transform=proj2)
 ax.add_feature(cfeature.LAND, zorder=1000, color='lightgray')
 ax.add_feature(cfeature.COASTLINE, zorder=1001)
 ax.text(lontext, lattext, 'f' + ")", ha='center', va='center', transform=proj, bbox=dicttext)
+ax.plot(lonbox, latbox, **dictpbox)
 
 gl = ax.gridlines(**gridparams)
 gl.top_labels = False
@@ -153,6 +162,7 @@ gl.xlocator = mticker.FixedLocator(xticks)
 ax.set_ylim(-40, 40)
 ax.set_xlim(-60, 130)
 cs.set_clim(-8, 8)
+
 
 cbax = axgr.cbar_axes[iiii]
 cb = cbax.colorbar(cs)
@@ -173,6 +183,7 @@ cs = ax.pcolormesh(lonsat, latsat, obssshoni[:, :].T, transform=proj2, shading='
 ax.add_feature(cfeature.LAND, zorder=1000, color='lightgray')
 ax.add_feature(cfeature.COASTLINE, zorder=1001)
 ax.text(lontext, lattext, 'e' + ")", ha='center', va='center', transform=proj, bbox=dicttext)
+ax.plot(lonbox, latbox, **dictpbox)
 
 gl = ax.gridlines(**gridparams)
 gl.top_labels = False
