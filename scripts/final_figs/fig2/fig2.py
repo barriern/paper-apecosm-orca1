@@ -24,6 +24,11 @@ letters = letters[1:]
 proj = ccrs.PlateCarree(central_longitude=180)
 proj2 = ccrs.PlateCarree(central_longitude=0)
 
+latbox = [-2, -2, 2, 2, -2]
+lonbox = [150, 150, -80, -80, 150]
+lonbox = [150, -80 + 360, -80 + 360, 150, 150]
+dictpbox = {'transform': proj2, 'linestyle': '--', 'linewidth': 1, 'color':'k'}
+
 gridparams = {'crs': ccrs.PlateCarree(central_longitude=0), 'draw_labels':True, 'linewidth':0.5, 'color':'gray', 'alpha':0.5, 'linestyle':'--'}
 
 mesh = xr.open_dataset('../../data/mesh_mask_eORCA1_v2.2.nc')
@@ -57,7 +62,7 @@ lontext = 120
 lattext = 30
 
 # processing obs
-data = xr.open_dataset("chl-sat/data/covariance_satellite_data.nc")
+data = xr.open_dataset("data/covariance_satellite_data.nc")
 cov = data['cov'].to_masked_array()
 cov = np.ma.masked_where(cov == 0, cov)
 lon = data['lon'].values
@@ -68,7 +73,8 @@ ax = axgr[iiii]
 ax.set_ylim(-40, 40)
 ax.set_xlim(-60, 130)
 
-cs = ax.pcolormesh(lon, lat, cov, transform=ccrs.PlateCarree())
+cs = ax.pcolormesh(lon, lat, cov, transform=ccrs.PlateCarree(), shading='auto')
+ax.plot(lonbox, latbox, **dictpbox)
 
 cs.set_clim(-ccc, ccc)
 ax.add_feature(cfeature.LAND, zorder=1000, color='lightgray')
@@ -96,7 +102,7 @@ tmask = mesh['tmask'].values[0]
 lonf = mesh['glamf'].values
 latf = mesh['gphit'].values
 
-data = xr.open_dataset("chl-mod/data/cov_modchl_oni_tpi.nc")
+data = xr.open_dataset("data/cov_modchl_oni_tpi.nc")
 cov = data['covoni'].values
 cov = np.ma.masked_where(tmask == 0, cov)
 
@@ -104,6 +110,7 @@ iiii = 1
 ax2 = axgr[iiii]
 
 cs = ax2.pcolormesh(lonf, latf, cov[1:, 1:], transform=proj2)
+ax2.plot(lonbox, latbox, **dictpbox)
 cs.set_clim(-ccc, ccc)
 ax2.add_feature(cfeature.LAND, zorder=1000, color='lightgray')
 ax2.add_feature(cfeature.COASTLINE, zorder=1001)
@@ -134,11 +141,11 @@ iok = np.nonzero((dnino >= 195801) & (dnino <= 201812))[0]
 dnino = dnino[iok]
 nino = nino[iok]
 
-data = xr.open_dataset('chl-mod/data/simulated_equatorial_mean.nc')
+data = xr.open_dataset('data/simulated_equatorial_mean.nc')
 datemod = data['time_counter.year'] * 100 + data['time_counter.month'] 
 datemod = datemod.values
 mod = data['chl'].values
-data = xr.open_dataset('chl-sat/data/obs_equatorial_mean.nc')
+data = xr.open_dataset('data/obs_equatorial_mean.nc')
 obs = data['chl'].values
 date = data['time.year'] * 100 + data['time.month']
 date = date.values
@@ -244,3 +251,6 @@ alpha = 0.7
 # axbis.get_yaxis().set_visible(False)  # removes xlabels
 
 plt.savefig('fig2', bbox_inches='tight')
+# -
+
+
