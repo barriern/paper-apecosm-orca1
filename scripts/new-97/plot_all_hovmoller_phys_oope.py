@@ -85,6 +85,7 @@ grid = ImageGrid(fig, 111,  # similar to subplot(111)
                  cbar_mode='each', aspect=False, cbar_pad=0.1)
 cbar_axes = grid.cbar_axes
 stride = 3
+plt.rcParams['font.size'] = 15
 
 y = np.arange(1, 25)
 
@@ -112,7 +113,7 @@ names['uo'] = 'Zonal vel.'
 cpt = 0
 for v in ['thetao', 'PLK', 'uo']:
     ax = grid[cpt]
-    temp = (data[v] * e3t).sum(dim='olevel') #/ e3t.sum(dim='olevel')
+    temp = (data[v] * e3t).sum(dim='olevel') / e3t.sum(dim='olevel')
     cmax = float(abs(temp).quantile(quant))
     cs = ax.pcolormesh(x, y, temp, shading='auto')
     cl = ax.contour(x, y, temp, levels=np.linspace(-cmax, cmax, 11), colors='k', linewidths=0.5)
@@ -154,3 +155,6 @@ for l in range(nlength):
     cpt += 1
 
 plt.savefig('plot_all_hovmoller_phys_oope.png', bbox_inches='tight')
+# -
+
+

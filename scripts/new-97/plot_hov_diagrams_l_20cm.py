@@ -80,7 +80,7 @@ def plot(ax, toplot, wstep, contour=True, levels=None, clim=None, trend=True):
     if levels is None:
         levels = np.linspace(cmin, cmax, 11)
 
-    time = np.arange(toplot.shape[0])
+    time = np.arange(toplot.shape[0]) + 1
 
     cs = ax.pcolormesh(lon[ilon], time, toplot, shading='auto')
     cs.set_clim(cmin, cmax)
@@ -118,13 +118,15 @@ lon1 = 255
 time2 = len(time) - 3
 lon2 = 255
 
+ccc = 15
+
 axgr = ImageGrid(fig, 111, nrows_ncols=(3, 2), axes_pad=(0.9, 0.5), cbar_pad=0.1, direction='row', aspect=False, cbar_mode="each", share_all=True)
 
 cpt = 0
 ax = axgr[cpt]
 toplot = oope.values
 toplot = toplot - toplot[0]
-cs, cl = plot(ax, toplot, wstep, clim=15)
+cs, cl = plot(ax, toplot, wstep, clim=ccc)
 cb = plt.colorbar(cs, cax=axgr.cbar_axes[cpt])
 ax.text(lon2, time2, 'B', **textprop)
 #ax.text(lon1, time1, 'a)', **textprop)
@@ -132,37 +134,37 @@ ax.text(lon2, time2, 'B', **textprop)
 cpt = 1
 toplot = (growth + pred + zadv + madv + zdiff + mdiff).cumsum(dim='time').values
 ax = axgr[cpt]
-cs, cl = plot(ax, toplot, wstep, clim=15)
+cs, cl = plot(ax, toplot, wstep, clim=ccc)
 cb = plt.colorbar(cs, cax=axgr.cbar_axes[cpt])
 ax.text(lon2, time2, 'T', **textprop)
 
 cpt = 2
 toplot = (growth).cumsum(dim='time').values
 ax = axgr[cpt]
-cs, cl = plot(ax, toplot, wstep, clim=15)
+cs, cl = plot(ax, toplot, wstep, clim=ccc)
 cb = plt.colorbar(cs, cax=axgr.cbar_axes[cpt])
 ax.text(lon2, time2, 'G', **textprop)
 
 cpt = 3
 toplot = (pred).cumsum(dim='time').values
 ax = axgr[cpt]
-cs, cl = plot(ax, toplot, wstep, clim=15)
+cs, cl = plot(ax, toplot, wstep, clim=ccc)
 cb = plt.colorbar(cs, cax=axgr.cbar_axes[cpt])
 ax.text(lon2, time2, 'P', **textprop)
 
 cpt = 4
 toplot = (pred + growth).cumsum(dim='time').values
 ax = axgr[cpt]
-cs, cl = plot(ax, toplot, wstep, clim=15)
+cs, cl = plot(ax, toplot, wstep, clim=ccc)
 cb = plt.colorbar(cs, cax=axgr.cbar_axes[cpt])
 ax.text(lon2, time2, 'P+G', **textprop)
 
 cpt = 5
 toplot = (zadv + madv + zdiff + mdiff).cumsum(dim='time').values
 ax = axgr[cpt]
-cs, cl = plot(ax, toplot, wstep, clim=15)
+cs, cl = plot(ax, toplot, wstep, clim=ccc)
 cb = plt.colorbar(cs, cax=axgr.cbar_axes[cpt])
 ax.text(lon2, time2, 'A+D', **textprop)
-plt.savefig('hov_compo_l_%d.png' %l0)
+plt.savefig('hov_compo_l_%d.png' %l0, bbox_inches='tight')
 # -
 

@@ -80,7 +80,7 @@ def plot(ax, toplot, wstep, contour=True, levels=None, clim=None, trend=True):
     if levels is None:
         levels = np.linspace(cmin, cmax, 11)
 
-    time = np.arange(toplot.shape[0])
+    time = np.arange(toplot.shape[0]) + 1
 
     cs = ax.pcolormesh(lon[ilon], time, toplot, shading='auto')
     cs.set_clim(cmin, cmax)
@@ -88,8 +88,6 @@ def plot(ax, toplot, wstep, contour=True, levels=None, clim=None, trend=True):
         cl = ax.contour(lon[ilon], time, toplot, levels=levels, colors='k', linewidths=0.5)
         cl2 = ax.contour(lon[ilon], time, toplot, levels=0, linewidths=1, colors='k')
     stride = 3
-    #ax.set_yticks(time[::stride])
-    #ax.set_yticklabels(datestr[::stride], rotation=45, va='top')
     ax.xaxis.set_major_formatter(formatter0)
     ax.grid(True, linewidth=0.5, color='gray', linestyle='--')
     labels = ['180', '-150', '-120', '-90']
@@ -163,6 +161,6 @@ ax = axgr[cpt]
 cs, cl = plot(ax, toplot, wstep, clim=5)
 cb = plt.colorbar(cs, cax=axgr.cbar_axes[cpt])
 ax.text(lon2, time2, 'A+D', **textprop)
-plt.savefig('hov_compo_l_%d.png' %l0)
+plt.savefig('hov_compo_l_%d.png' %l0, bbox_inches='tight')
 # -
 
