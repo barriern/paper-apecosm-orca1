@@ -21,6 +21,7 @@ import numpy as np
 import string
 from cartopy.mpl.ticker import LongitudeFormatter
 
+zmax = 50
 formatter0 = LongitudeFormatter(dateline_direction_label=True)
 
 plt.rcParams['text.usetex'] = False
@@ -32,77 +33,49 @@ letters = list(string.ascii_lowercase)
 dicttext = dict(boxstyle='round', facecolor='lightgray', alpha=1)
 # -
 
+const = xr.open_dataset('../data/ORCA1_JRAC02_CORMSK_CYC3_FINAL_ConstantFields.nc')
+const = const.rename({'wpred': 'l'})
+const['l'] = const['length'] * 100
+
 # ## Loading mesh file
 
-mesh = xr.open_dataset('data/pacific_mesh_mask.nc').isel(z=0)
-mesh
+mesh = xr.open_dataset('data/pacific_mesh_mask.nc').isel(y=61)
+mesh = mesh.rename({'z': 'olevel'})
+mesh['olevel'] = mesh['gdept_1d'].isel(x=0)
+mesh = mesh.where(mesh['olevel'] <= zmax)
 
-lat = mesh['gphit']
-lat
+e3t = mesh['e3t_0']
 
-mesh = mesh.where(abs(lat) == 0)
-mesh['tmask'].plot()
-
-lon0 = mesh['glamt'].mean(dim='y')
+lon0 = mesh['glamt'].isel(olevel=0)
 lon0 = (lon0 + 360) % 360
 lon0
 
-surface = mesh['e1t'] * mesh['e2t'] * mesh['tmask']
-surface
-
 boolean = ((lon0 >= 150) & (lon0 <= 270))
-surface = surface.where(boolean, drop=True)
 lon0 = lon0.where(boolean, drop=True)
-surface.plot()
-boolean
+e3t = e3t.where(boolean, drop=True)
 
 # ## Loading the NEMO/Pisces anomalies
 
-data = xr.open_mfdataset('data/pacific_0-50_*_anom.nc', compat='override').where(boolean, drop=True)
-data = data.sel(time_counter=slice('1997-01-01', '1998-12-31'))
+data = xr.open_mfdataset('data/nino_equatorial_composites_*.nc', compat='override').where(boolean, drop=True)
+data
 
 data['PLK'] = data['GOC'] + data['PHY2'] + data['ZOO'] + data['ZOO2']
 data
 
-# ## Loading Apecosm anomalies
+oope = data['OOPE']
+oope['l'] = const['l']
+oope = oope * const['weight_step']
 
-isizes = [14, 45, 80]
-
-dataape = xr.open_dataset('data/pacific_OOPE_anom.nc').where(boolean, drop=True)
-dataape = dataape.sel(time=slice('1997-01-01', '1998-12-31'))
-dataape
-
-oope = dataape['OOPE']
+lengths = [3, 20, 90]
+oope = oope.sel(l=lengths, method='nearest')
 oope
 
-const = xr.open_dataset('../data/ORCA1_JRAC02_CORMSK_CYC3_FINAL_ConstantFields.nc').isel(wpred=isizes)
-
-length = const['length'].values * 100
-length
-
-wstep = const['weight_step'].values
-wstep
-
-oope = oope.isel(w=isizes)
-oope
-
-oope = oope.rename({'w': 'length'})
-oope['length'] = length
-oope
+e3t['olevel'] = data['olevel']
 
 # ## Plotting the hovmoller
 
 x = lon0.values
 x
-
-dates = data['time_counter'].values
-dates
-
-surfsum = surface.sum(dim='y')
-
-y = np.arange(len(dates))
-datestr = ['%.4d-%.2d' %(d.year, d.month) for d in dates]
-datestr
 
 # +
 fig = plt.figure(facecolor='white', figsize=(14, 10))
@@ -112,6 +85,8 @@ grid = ImageGrid(fig, 111,  # similar to subplot(111)
                  cbar_mode='each', aspect=False, cbar_pad=0.1)
 cbar_axes = grid.cbar_axes
 stride = 3
+
+y = np.arange(1, 25)
 
 quant = 0.99
 
@@ -128,6 +103,7 @@ units['uo'] = 'm/s'
 units['oope'] = 'J/m2'
 
 
+
 names = {}
 names['thetao'] = 'Temperature'
 names['PLK'] = 'Plankton conc.'
@@ -136,40 +112,35 @@ names['uo'] = 'Zonal vel.'
 cpt = 0
 for v in ['thetao', 'PLK', 'uo']:
     ax = grid[cpt]
-    temp = (data[v] * surface).sum(dim='y') / surfsum
-    print(temp.values[0])
+    temp = (data[v] * e3t).sum(dim='olevel') #/ e3t.sum(dim='olevel')
     cmax = float(abs(temp).quantile(quant))
     cs = ax.pcolormesh(x, y, temp, shading='auto')
     cl = ax.contour(x, y, temp, levels=np.linspace(-cmax, cmax, 11), colors='k', linewidths=0.5)
     cl0 = ax.contour(x, y, temp, levels=0, colors='k', linewidths=1)
     cs.set_clim(-cmax, cmax)
     cb = plt.colorbar(cs, cbar_axes[cpt])
-    ax.set_yticks(y[::stride])
-    ax.set_yticklabels(datestr[::stride], rotation=45, va='top')
     ax.grid(True)
     ax.set_xlabel('Longitude')
     ax.set_title(names[v])
     cb.set_label(units[v])
     ax.text(lontext, lattext, letters[cpt] + ")", ha='right', va='center', bbox=dicttext, fontsize=fs)
     ax.xaxis.set_major_formatter(formatter0)
+    ax.set_ylim(y.min(), y.max())
     cpt += 1
 
 
-nlength = len(length)
+nlength = len(lengths)
 for l in range(nlength):
     ax = grid[cpt]
-    temp = (oope.isel(length=l) * surface).sum(dim='y') / surfsum
-    temp *= wstep[l]
+    temp = oope.isel(l=l)
     cmax = float(abs(temp).quantile(quant))
     cs = ax.pcolormesh(x, y, temp, shading='auto')
     cl = ax.contour(x, y, temp, levels=np.linspace(-cmax, cmax, 11), colors='k', linewidths=0.5)
     cl0 = ax.contour(x, y, temp, levels=0, colors='k', linewidths=1)
     cs.set_clim(-cmax, cmax)
     cb = plt.colorbar(cs, cbar_axes[cpt])
-    ax.set_title('Biomass dens., L=%.f cm' %length[l])
+    ax.set_title('Biomass dens., L=%.f cm' %lengths[l])
     cb.set_label(units['oope'])
-    ax.set_yticks(y[::stride])
-    ax.set_yticklabels(datestr[::stride], rotation=45, va='top')
     ax.grid(True)
     ax.set_xlabel('Longitude')
     ax.text(lontext, lattext, letters[cpt] + ")", ha='right', va='center', bbox=dicttext, fontsize=fs)
@@ -179,10 +150,7 @@ for l in range(nlength):
     xticks[xticks < 0] += 360
     ax.set_xticks(xticks)
     plt.setp(ax.get_xticklabels(), ha='right', rotation=45)
-
+    ax.set_ylim(y.min(), y.max())
     cpt += 1
 
 plt.savefig('plot_all_hovmoller_phys_oope.png', bbox_inches='tight')
-# -
-
-

@@ -12,20 +12,15 @@ import string
 letters = list(string.ascii_lowercase)
 # -
 
-mesh = xr.open_dataset('data/pacific_mesh_mask.nc')
+mesh = xr.open_dataset('data/pacific_mesh_mask.nc').isel(y=61)
+mesh
 
-lat = mesh['gphit']
-lat
-
-mesh = mesh.where(abs(lat) == 0)
-mesh['tmask'].isel(z=0).plot()
-
-lon0 = mesh['glamt'].mean(dim='y').isel(z=0)
+lon0 = mesh['glamt'].isel(z=0)
 lon0
 
 lon0 = (lon0 + 360) % 360
 
-depth = mesh['gdept_1d'].mean(dim='y').isel(x=0)
+depth = mesh['gdept_1d'].isel(x=0)
 depth
 
 dicttext = dict(boxstyle='round', facecolor='lightgray', alpha=1)
@@ -86,11 +81,11 @@ dictext2 = dict(ha='left', va='center', bbox=dicttext, zorder=20)
 # plottiing thetao
 cpt = 0
 ax = axgr[cpt]
-clim = xr.open_dataset('data/mean_thetao.nc')
-clim = clim['__xarray_dataarray_variable__'].to_masked_array()
+clim = xr.open_dataset('data/mean_thetao_profile.nc')
+clim = clim['thetao'].to_masked_array()
 
-anom = xr.open_dataset('data/mean_thetao_anomalies_ond_97.nc')
-anom = anom['__xarray_dataarray_variable__'].values
+anom = xr.open_dataset('data/composite_thetao_profile.nc')
+anom = anom['thetao'].values
 
 cl = ax.contour(lon0[iok], -depth[:-1], clim[:-1, iok], 11, colors='k')
 plt.clabel(cl)
@@ -104,11 +99,11 @@ ax.text(lontext, ztext, 'a)', **dictext2)
 # plotiing uo
 cpt = 2
 ax = axgr[cpt]
-clim = xr.open_dataset('data/mean_uo.nc')
-clim = clim['__xarray_dataarray_variable__'].to_masked_array()
+clim = xr.open_dataset('data/mean_uo_profile.nc')
+clim = clim['uo'].to_masked_array()
 
-anom = xr.open_dataset('data/mean_uo_anomalies_ond_97.nc')
-anom = anom['__xarray_dataarray_variable__'].to_masked_array()
+anom = xr.open_dataset('data/composite_uo_profile.nc')
+anom = anom['uo'].to_masked_array()
 
 step = 0.1
 cl = ax.contour(lon0[iok], -depth[:-1], clim[:-1, iok], colors='k', levels = np.arange(-1, 1 + step, step))
@@ -126,11 +121,18 @@ cs.set_clim(-ccc, ccc)
 # plotiing PLK
 cpt = 4
 ax = axgr[cpt]
-clim = xr.open_dataset('data/mean_PLK.nc')
-clim = clim['__xarray_dataarray_variable__'].to_masked_array()
 
-anom = xr.open_dataset('data/mean_PLK_anomalies_ond_97.nc')
-anom = anom['__xarray_dataarray_variable__'].to_masked_array()
+varlist = ['GOC', 'ZOO',  'ZOO2', 'PHY2',]
+for v in varlist:
+    tempclim = xr.open_dataset('data/mean_%s_profile.nc' %v)
+    tempanom = xr.open_dataset('data/composite_%s_profile.nc' %v)
+    if(v == varlist[0]):
+        clim = tempclim[v].to_masked_array()
+        anom = tempanom[v].to_masked_array()
+    else:
+        clim += tempclim[v].to_masked_array()
+        anom += tempanom[v].to_masked_array()
+
 step = 0.05
 cl = ax.contour(lon0[iok], -depth[:-1], clim[:-1, iok], 21, colors='k')
 plt.clabel(cl)
@@ -143,12 +145,12 @@ ax.text(lontext2, ztext, 'LTL', **dictext2)
 ax.text(lontext, ztext, 'c)', **dictext2)
 ax.set_ylabel('Depth (m)')
 
-# ### plotting forage
-clim = xr.open_dataset('data/mean_forage.nc')
-clim = clim['__xarray_dataarray_variable__'].to_masked_array()
+# # ### plotting forage
+clim = xr.open_dataset('data/mean_FORAGE_profile.nc')
+clim = clim['FORAGE'].to_masked_array()[0]
 
-anom = xr.open_dataset('data/mean_forage_anomalies_ond_97.nc')
-anom = anom['__xarray_dataarray_variable__'].to_masked_array()
+anom = xr.open_dataset('data/composite_FORAGE_profile.nc')
+anom = anom['FORAGE'].to_masked_array()[0]
 
 print(clim.shape)
 

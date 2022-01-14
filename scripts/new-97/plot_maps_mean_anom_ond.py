@@ -6,7 +6,7 @@
 #       extension: .py
 #       format_name: light
 #       format_version: '1.5'
-#       jupytext_version: 1.10.3
+#       jupytext_version: 1.11.3
 #   kernelspec:
 #     display_name: Python 3 (ipykernel)
 #     language: python
@@ -81,7 +81,7 @@ varclim
 #
 # Now we extract the anomalies for the OND months of 97 (peak of El Nino). First, we read the raw OOPE data:
 
-anom = xr.open_dataset('data/pacific_nino97_OOPE.nc').isel(y=yslice)
+anom = xr.open_dataset('data/composite_OOPE_map.nc').isel(y=yslice)
 anom
 
 # Again, we rename the `w` dimension and change the length coordinate into `cm`
@@ -94,26 +94,10 @@ anom.coords['l'] = length
 anom = anom.sel(l=[3, 20, 90], method='nearest')
 anom
 
-# And we extract the given time period (OND for the 97 Nino)
-
-anom = anom.sel(time=slice('1997-10-01', '1997-12-31'))
-anom
-
 # Now, we move from `J/m2/kg` into `J/m2` for the raw fields.
 
 varanom = anom['OOPE'] * wstep
 varanom.name = 'OOPE'
-varanom
-
-# Finally, the monthly anomalies are computed.
-
-varanom = varanom.groupby('time.month') - (clim['OOPE'] * wstep).sel(l=[3, 20, 90], method='nearest')
-varanom.name = 'OOPE'
-varanom
-
-# Now, the mean anomalies over the period are computed:
-
-varanom = varanom.mean(dim='time')
 varanom
 
 # ## Loading the mesh mask
@@ -194,7 +178,7 @@ for l in range(3):
     cb = cbax.colorbar(cs)
     if(l == 0):
         #cb.set_label('Mean biomass dens. (Log(J/m2))')
-        ax.set_title('Mean biomass dens.\n(Log(J/m2))')
+        ax.set_title('Mean biomass dens.\nLog(J/m2)')
     manage_axes(gl, cpt)
     
     cpt += 1
@@ -233,7 +217,7 @@ for l in range(3):
     cb = cbax.colorbar(cs)
     if l == 0:
         #cb.set_label('97-OND biomass anoms (J/m2)')
-        ax.set_title('97-OND biomass anoms\n(J/m2)')
+        ax.set_title('NINO biomass anoms\nJ/m2')
     manage_axes(gl, cpt)
     
     cpt += 1
@@ -269,7 +253,7 @@ for l in range(3):
     cb = cbax.colorbar(cs)
     if(l == 0):
         #cb.set_label('Cov. ONI/biomass anoms (J/m2)')
-        ax.set_title('Cov. ONI/biomass anoms\n(J/m2)')
+        ax.set_title('Cov. ONI/biomass anoms\nJ/m2')
     manage_axes(gl, cpt)
     
     cpt += 1    
@@ -277,3 +261,6 @@ for l in range(3):
     
 plt.savefig('map_mean_anom_OND_97.png', bbox_inches='tight', facecolor='white')
 plt.show()
+# -
+
+
