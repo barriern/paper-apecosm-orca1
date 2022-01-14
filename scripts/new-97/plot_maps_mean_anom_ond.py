@@ -118,6 +118,23 @@ latf
 proj = ccrs.PlateCarree(central_longitude=180)
 proj2 = ccrs.PlateCarree(central_longitude=0)
 
+tmask_noatl = xr.open_dataset('corrected_mask_noatl.nc')
+tmask_noatl = tmask_noatl['tmask'].values
+tmask_noatl = (tmask_noatl == tmask_noatl.min()).astype(int)
+plt.imshow(tmask_noatl)
+
+# +
+lont = mesh['glamt'].values
+latt = mesh['gphit'].values
+imask = np.nonzero(tmask_noatl == 1)
+lon1d = np.ravel(lont[imask])
+lat1d = np.ravel(latt[imask])
+
+output = proj.transform_points(proj2, lon1d, lat1d)
+lonout = output[..., 0]
+latout = output[..., 1]
+# -
+
 gridparams = {'crs': ccrs.PlateCarree(central_longitude=0), 'draw_labels':True, 'linewidth':0.5, 'color':'gray', 'alpha':0.5, 'linestyle':'--'}
 
 lontext = 120
@@ -133,14 +150,19 @@ def manage_axes(gl, cpt):
     gl.right_labels = False
     gl.bottom_labels = False
     gl.left_labels = False
-    if cpt in [0, 3, 6]:
+    if cpt in [0, 2, 4]:
         gl.left_labels = True
-    if cpt in [6, 7, 8]:
+    if cpt in [4, 5]:
         gl.bottom_labels = True
 
 
 # +
 plt.rcParams['font.size'] = 15
+textprops = {}
+textprops.update(ha='center', va='center', transform=proj, bbox=dicttext, zorder=2000)
+
+step = 0.5
+levels = np.arange(-1, 3 + step, step)
 
 fig = plt.figure(figsize=(16, 16))
 plt.subplots_adjust(top=0.95)
@@ -148,50 +170,60 @@ axes_class = (GeoAxes, dict(map_projection=proj))
 
 letters = list(string.ascii_lowercase)
 
-axgr = AxesGrid(fig, 111,  axes_class=axes_class, nrows_ncols=(3, 3), axes_pad=(0.5, 0.5), label_mode='', cbar_mode='each', cbar_size=0.1, cbar_pad=0.3, cbar_location="bottom")
+axgr = AxesGrid(fig, 111,  axes_class=axes_class, nrows_ncols=(3, 2), axes_pad=(0.5, 0.5), label_mode='', cbar_mode='each', cbar_size=0.1, cbar_pad=0.3, cbar_location="bottom")
 
-## Plotting the mean
-for l in range(3):
-    cpt = (l * 3)
-    ax = axgr[cpt]
-    
-    temp = varclim.isel(l=l)
-    ltemp = float(temp.l)
-    temp = np.log10(temp)
-    
-    cs = ax.pcolormesh(lonf, latf, temp[1:, 1:], transform=proj2, shading='auto', cmap=plt.cm.viridis)
-    #cs.set_clim(-1, 3)
-    ax.add_feature(cfeature.LAND, zorder=1000, color='lightgray')
-    ax.add_feature(cfeature.COASTLINE, zorder=1001)
+cptlet = 0
 
-    gl = ax.gridlines(**gridparams)
+# ## Plotting the mean
+# for l in range(3):
+#     cpt = (l * 3)
+#     ax = axgr[cpt]
+    
+#     temp = varclim.isel(l=l)
+#     ltemp = float(temp.l)
+#     temp = np.log10(temp)
+    
+#     cs = ax.pcolormesh(lonf, latf, temp[1:, 1:], transform=proj2, shading='auto', cmap=plt.cm.viridis)
+#     #cs.set_clim(-1, 3)
+#     ax.add_feature(cfeature.LAND, zorder=1000, color='lightgray')
+#     ax.add_feature(cfeature.COASTLINE, zorder=1001)
 
-    gl.xformatter = LONGITUDE_FORMATTER
-    gl.yformatter = LATITUDE_FORMATTER
-    gl.xlocator = mticker.FixedLocator([150, 180, -180, -150, -120, -90])
-    ax.set_ylim(-40, 40)
-    ax.set_xlim(-60, 130)
-    ax.text(lontext, lattext, letters[cpt] + ")", ha='center', va='center', transform=proj, bbox=dicttext)
-    ax.text(lontext2, lattext2, '%.f cm' %ltemp, ha='center', va='center', transform=proj, bbox=dicttext, zorder=2000)
+#     gl = ax.gridlines(**gridparams)
+
+#     gl.xformatter = LONGITUDE_FORMATTER
+#     gl.yformatter = LATITUDE_FORMATTER
+#     gl.xlocator = mticker.FixedLocator([150, 180, -180, -150, -120, -90])
+#     ax.set_ylim(-40, 40)
+#     ax.set_xlim(-60, 130)
+#     ax.text(lontext, lattext, letters[cpt] + ")", **textprops)
+#     ax.text(lontext2, lattext2, '%.f cm' %ltemp, **textprops, zorder=2000)
     
-    cbax = axgr.cbar_axes[cpt]
-    cb = cbax.colorbar(cs)
-    if(l == 0):
-        #cb.set_label('Mean biomass dens. (Log(J/m2))')
-        ax.set_title('Mean biomass dens.\nLog(J/m2)')
-    manage_axes(gl, cpt)
+#     cbax = axgr.cbar_axes[cpt]
+#     cb = cbax.colorbar(cs)
+#     if(l == 0):
+#         #cb.set_label('Mean biomass dens. (Log(J/m2))')
+#         ax.set_title('Mean biomass dens.\nLog(J/m2)')
+#     manage_axes(gl, cpt)
     
-    cpt += 1
+#     cpt += 1
     
 ## Plotting the anomalies
 for l in range(3):
     
-    cpt = (l * 3 + 1)
+    cpt = (l * 2)
     ax = axgr[cpt]
+    
+    temp = varclim.isel(l=l)
+    ltemp = float(temp.l)
+    tpclim = np.log10(temp.to_masked_array())
+    
+    cl = ax.tricontour(lonout, latout, tpclim[imask], colors='k', linewidths=1, levels=levels)
+    plt.clabel(cl)
     
     temp = varanom.isel(l=l)
     ltemp = float(temp.l)
     temp = temp.to_masked_array()
+    temp = np.ma.masked_where(tmask_noatl==0, temp)
     
     ccc = np.percentile(np.abs(np.ravel(temp[temp.mask == False])), 99)
     print('ccc = ', ccc)
@@ -210,8 +242,8 @@ for l in range(3):
     gl.xlocator = mticker.FixedLocator([150, 180, -180, -150, -120, -90])
     ax.set_ylim(-40, 40)
     ax.set_xlim(-60, 130)
-    ax.text(lontext, lattext, letters[cpt] + ")", ha='center', va='center', transform=proj, bbox=dicttext)
-    ax.text(lontext2, lattext2, '%.f cm' %ltemp, ha='center', va='center', transform=proj, bbox=dicttext, zorder=2000)
+    ax.text(lontext, lattext, letters[cptlet] + ")", **textprops)
+    ax.text(lontext2, lattext2, '%.f cm' %ltemp, **textprops)
     
     cbax = axgr.cbar_axes[cpt]
     cb = cbax.colorbar(cs)
@@ -221,12 +253,20 @@ for l in range(3):
     manage_axes(gl, cpt)
     
     cpt += 1
+    cptlet += 1
     
 ## Plotting the anomalies
 for l in range(3):
     
-    cpt = (l * 3 + 2)
+    cpt = (l * 2 + 1)
     ax = axgr[cpt]
+    
+    temp = varclim.isel(l=l)
+    ltemp = float(temp.l)
+    tpclim = np.log10(temp.to_masked_array())
+    
+    cl = ax.tricontour(lonout, latout, tpclim[imask], colors='k', linewidths=1, levels=levels)
+    plt.clabel(cl)
     
     temp = cov.isel(l=l)
     ltemp = float(temp.l)
@@ -246,8 +286,8 @@ for l in range(3):
     gl.xlocator = mticker.FixedLocator([150, 180, -180, -150, -120, -90])
     ax.set_ylim(-40, 40)
     ax.set_xlim(-60, 130)
-    ax.text(lontext, lattext, letters[cpt] + ")", ha='center', va='center', transform=proj, bbox=dicttext)
-    ax.text(lontext2, lattext2, '%.f cm' %ltemp, ha='center', va='center', transform=proj, bbox=dicttext, zorder=2000)
+    ax.text(lontext, lattext, letters[cptlet] + ")", **textprops)
+    ax.text(lontext2, lattext2, '%.f cm' %ltemp, **textprops)
     
     cbax = axgr.cbar_axes[cpt]
     cb = cbax.colorbar(cs)
@@ -256,11 +296,11 @@ for l in range(3):
         ax.set_title('Cov. ONI/biomass anoms\nJ/m2')
     manage_axes(gl, cpt)
     
+    cptlet += 1
     cpt += 1    
     
     
 plt.savefig('map_mean_anom_OND_97.png', bbox_inches='tight', facecolor='white')
 plt.show()
 # -
-
 
