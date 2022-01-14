@@ -1,13 +1,22 @@
-\usepackage{color}
+\usepackage{xcolor}
 \usepackage{subfig}
 \usepackage{gensymb}
 \usepackage{graphics}
 \usepackage{graphicx}
 \usepackage{textcomp}
-
-\usepackage[colorlinks=true]{hyperref}
+\usepackage{hyperref}
 \usepackage{lineno}
 \modulolinenumbers[5]
+
+\usepackage{hyperref}
+\hypersetup{
+	hidelinks,
+	%colorlinks=true, 
+    linkcolor=blue, 
+    filecolor=blue, 
+    citecolor = black,       
+    urlcolor=cyan, 
+}
 
 \journal{Journal of \LaTeX\ Templates}
 
@@ -36,12 +45,7 @@
 %% APA style
 \bibliographystyle{model5-names}\biboptions{authoryear}
 
-\hypersetup{
-  urlcolor     = black, %Colour for external hyperlinks
-  linkcolor    = black, %Colour of internal links
-  citecolor   =  black, % Colour of citations
-  %hidelinks
-}
+
 
 % Dossier des figures 
 %\graphicspath{{figs/}{../figs/}}

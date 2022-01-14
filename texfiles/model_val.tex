@@ -17,7 +17,7 @@ As a first evaluation of the simulated sea-surfate temperature, the simulated ON
 
 As a second evaluation, the spatial structure of simulated sea-surface temperature response to ENSO is now compared with the one obtained with the Hadley Sea-Surface Temperature dataset\footnote{\url{https://www.metoffice.gov.uk/hadobs/hadisst/data/download.html}} (HadISST1, \citealt{raynerGlobalAnalysesSea2003}). HadISST1 uses reduced space optimal interpolation applied to SSTs from the Marine Data Bank (mainly ship tracks) and ICOADS through 1981 and a blend of in-situ and adjusted satellite-derived SSTs for 1982-onwards. The resulting dataset is provided as monthly sea-surface temperature maps on a $1\times 1$ regular grid. The covariances obtained with the HadISST1 anomalies and the simulated ones are shown in Fig.\ref{fig:nemo-had-sst}b and Fig.\ref{fig:nemo-had-sst}c.
 
-\begin{figure}
+\begin{figure}[htp]
 	\centering
 	\includegraphics[scale=0.6]{figs/fig1.png}
 	\caption{Observed and simulated ONI indexes (a). Covariance between the ONI index and the Hadley (b) and simulated SST anomalies (c). Observed and simulated sea-level anomalies averaged over the Nino34 region (d). Covariances between the ONI index and the observed (e) and simulated (f) sea-level anomalies.}
@@ -38,7 +38,7 @@ Simulated chlorophyll has been compared with observation-based estimates extract
 
 Covariance maps between the surface chlorophyll and the monthly ONI index are shown in Fig \ref{fig:nemo-sat-chl}. The observations (upper panel) and the model (lower panel) show very similar covariance patterns: El Niño induces a decrease in chlorophyll concentration along the equator east of 150°E, consistent with a weaker equatorial upwelling induced by the equatorial trade winds reduction. However, the model overestimates the chlorophyll response to ENSO variability compared with observational based estimates. Note that the covariance for the simulated chlorophyll has also been computed over the entire simulated period (1958-2018), with no significant changes in the resulting pattern (not shown).
 
-\begin{figure}
+\begin{figure}[htp]
 	\centering
 	\includegraphics[scale=0.4]{figs/fig2.png}
 	\caption{Simulated (black) and observed (yellow) equatorial chlorophyll anomalies (a). Filtered anomalies are shown for the model in panel (b). Covariance between the observed and simulated chlorophyll anomalies with the ONI (c, d) and filtered TPI (e) index.}
@@ -51,12 +51,13 @@ Before analysing the mechanisms of fish biomass response to El Nino variability,
 
 Figure \ref{fig:apecosm_validation}a shows the Hovmoller diagram of the observed catches and fish biomass (log-scale) integrated between 10N and 10S for the 2008-2018 period. Although observed and model results cannot be directly compared, some features are well captured by the model. For instance, the easternmost $4.00$ simulated contour seems to closely follow the eastward extensions of catches that occur in 2010, 2012 and 2016. Figure \ref{fig:apecosm_validation}b shows, for a longer period (1985-2018), the longitudinal position of the catch and biomass barycenters. The observed barycenter shows an eastward trend, liley due to the increased power of fishing fleets, which allow them to navigate over greater distances from their fishing ports, mostly located in the western Pacific (\warn{ref}). This emphasizes the fact that the data used in this validation are catch data, which are not only dependent on fish biomass but also depend on fishing effort, and as such must be used with caution for the comparison with simulated fish biomass. Figures \ref{fig:apecosm_validation}c and \ref{fig:apecosm_validation}d show the difference between catch and simulated biomass composites for El Nino (OND2009-JFM2010, OND2014-JFM2015, OND-2015-JFM2016) and La Nina conditions (OND2007-JFM2008, OND2008-JFM2009, OND2010-JFM2011, OND2011-JFM2012). Observed catches increase in the central and eastern Pacific and decrease in the Western Pacific when switching from La Nina to El Nino conditions, which is consistent with an eastward displacement of the fish biomass. Simulated composite also shows an increase in the central Pacific and a decrease in the west, although the pattern seems westward shifted compared with the catch composite. 
 
-\begin{figure}
+\begin{figure}[htp]
 	\centering
-	\includegraphics[scale=0.5]{figs/plot_validation_apecosm.png}
+	\includegraphics[scale=0.35]{figs/plot_validation_apecosm.png}
 	\caption{Hovmoller diagram of observed catches (colors) and simulated fish biomass (contours) integrated between 10N and 10S (a, log-scale) and associated barycenters (b). Catch (c) and simulated fish-biomass (d) difference between El Nino and La Nina composites.}
 	\label{fig:apecosm_validation}
 \end{figure}
 
 In the following, the results for three size classes, 3cm, representing small fishes, 20cm, representing intermediate sizes, and 90 cm, representing large individuals, will be detailed. The latter are representative of the sizes of tuna target species within the region (\warn{REF}). \\
 
+%\clearpage
