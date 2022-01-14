@@ -64,8 +64,8 @@ fig = plt.figure(figsize=(16, 12))
 axgr = ImageGrid(fig, 111, nrows_ncols=(3, 2), ngrids=None, direction='row', axes_pad=(1.2, 0.2), share_all=True, aspect=False, label_mode='L', cbar_mode='each', cbar_location='right', cbar_pad='5%', cbar_size='5%', cbar_set_cax=True, axes_class=None)
 cbar_axes = axgr.cbar_axes
 
-plt.rcParams['lines.linewidth'] = 0.5
-plt.rcParams['font.size'] = 17
+plt.rcParams['lines.linewidth'] = 1
+plt.rcParams['font.size'] = 15
 plt.rcParams['image.cmap'] = 'RdBu_r'
 
 lontext = 260
@@ -95,6 +95,7 @@ cb.set_label('[C]')
 cs.set_clim(-8, 8)
 ax.text(lontext2, ztext, 'T', **dictext2)
 ax.text(lontext, ztext, 'a)', **dictext2)
+ax.set_ylabel('Depth (m)')
 
 # plotiing uo
 cpt = 2
@@ -136,7 +137,6 @@ for v in varlist:
 step = 0.05
 cl = ax.contour(lon0[iok], -depth[:-1], clim[:-1, iok], 21, colors='k')
 plt.clabel(cl)
-print(anom[0, iok])
 cs = ax.pcolormesh(lon0[iok], -depth[:-1], anom[:-1, iok], shading='auto')
 cb = plt.colorbar(cs, cbar_axes[cpt])
 cb.set_label('[mmol/m3]')
