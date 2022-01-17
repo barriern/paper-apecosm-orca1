@@ -11,6 +11,8 @@ from cartopy.mpl.geoaxes import GeoAxes
 import string
 import sys
 sys.path.append('../../nino')
+sys.path.append('../../')
+import significativity as signi
 from extract_nino import read_index
 import apecosm.ts as ts
 import scipy.signal as sig
@@ -136,35 +138,28 @@ gl.xlocator = mticker.FixedLocator([150, 180, -180, -150, -120, -90, -60])
 
 ########################################### plotting time-series
 
-dnino, nino = read_index('../../data/index/oni.data')
-iok = np.nonzero((dnino >= 195801) & (dnino <= 201812))[0]
-dnino = dnino[iok]
-nino = nino[iok]
+iclim= slice('1998-01-01', '2018-12-31')
 
 data = xr.open_dataset('data/simulated_equatorial_mean.nc')
 datemod = data['time_counter.year'] * 100 + data['time_counter.month'] 
 datemod = datemod.values
-mod = data['chl'].values
+mod = data['chl']
+mod = mod.groupby('time_counter.month') - mod.sel(time_counter=iclim).groupby('time_counter.month').mean(dim='time_counter')
+
 data = xr.open_dataset('data/obs_equatorial_mean.nc')
-obs = data['chl'].values
-date = data['time.year'] * 100 + data['time.month']
+obs = data['chl']
+obs = obs.groupby('time.month') - obs.sel(time=iclim).groupby('time.month').mean(dim='time')
+date = obs['time.year'] * 100 + obs['time.month']
 date = date.values
 otime = np.arange(len(mod))
 
+# imod = index of simulation time-steps common with data
 imod = np.nonzero(datemod >= date[0])[0]
+
+# iobs = index of data time-steps common with simulation
 iobs = np.nonzero(date <= datemod[-1])[0]
 
-toffset = imod[0]
-
-time = np.arange(len(obs))
 timemod = np.arange(len(mod))
-
-iclimobs = np.nonzero((date >= 199801) & (date <= 201812))[0]
-iclimmod = np.nonzero((datemod >= 199801) & (datemod <= 201812))[0]
-climmod, anom = ts.get_monthly_clim(mod[iclimmod])
-climobs, anom = ts.get_monthly_clim(obs[iclimobs])
-year  = date // 100
-month = date - 100 * year
 
 yearmod  = datemod // 100
 monthmod = datemod - 100 * yearmod
@@ -172,16 +167,12 @@ monthmod = datemod - 100 * yearmod
 labels = ['%.4d-%.2d' %(y, m) for y, m in zip(yearmod, monthmod)]
 labels = np.array(labels)
 
-for t in time:
-    m = month[t] - 1
-    obs[t] = obs[t] - climobs[m] 
-
-for t in timemod:
-    m = monthmod[t] - 1
-    mod[t] = mod[t] - climmod[m] 
-
 print('Correlation = ', np.corrcoef(obs[iobs], mod[imod])[0, 1])
-
+ts1 = obs[iobs]
+ts2 = mod[imod]
+test = signi.sig(ts1, ts2, dof=14)
+print('Test = ', test)
+    
 xticks = np.arange(2*12, len(timemod), 5*12)
 
 left = 0.07
@@ -195,14 +186,13 @@ alpha = 0.7
 
 ax = plt.axes(axes)
 l2 = plt.plot(timemod, mod, 'black', alpha=alpha)
-l1 = plt.plot(time + toffset, obs, color='orange', alpha=alpha)
-ax.set_xlim(toffset, timemod.max())
+l1 = plt.plot(timemod[imod], obs[iobs], color='orange', alpha=alpha)
+#ax.set_xlim(toffset, timemod.max())
 leg = plt.legend([l1[0], l2[0]], ['Obs.', 'Model'], loc=0, fontsize=8, ncol=2)
 ax.add_artist(leg)
 ax.set_title('Equatorial CHLA anomalies')
 ax.set_ylabel('[mg/m3]')
 
-#plt.legend(loc=0)
 ax.set_xticks(timemod[xticks])
 ax.set_xticklabels(labels[xticks], rotation=45, ha='right')
 ax.grid(True)
@@ -213,8 +203,6 @@ ax.text(timemod[-1] -20, -0.15, 'a' + ")", ha='center', va='center', bbox=dictte
 axbis = ax.twinx()
 ax.set_zorder(1)
 ax.patch.set_visible(False)
-# lll = axbis.fill_between(timemod, 0, nino, where=(nino > 0), color='firebrick', interpolate=True)
-# lll = axbis.fill_between(timemod, 0, nino, where=(nino < 0), color='steelblue', interpolate=True)
 mmm = 2.5
 axbis.set_ylim(-mmm, mmm)
 axbis.get_yaxis().set_visible(False)  # removes xlabels
@@ -224,31 +212,6 @@ left = 0.56
 axes = (left, bottom, width, height)
 
 alpha = 0.7
-
-# ax = plt.axes(axes)
-# ax.set_xlim(toffset, timemod.max())
-# leg = plt.legend([l2[0]], ['Model'], loc=0, fontsize=8, ncol=2)
-# ax.add_artist(leg)
-# ax.set_title('Equatorial CHLA anomalies')
-# ax.set_ylabel('[mg/m3]')
-
-# ax.set_xticks(timemod[xticks])
-# ax.set_xticklabels(labels[xticks], rotation=45, ha='right')
-# ax.grid(True)
-# ax.set_xlim(timemod.min(), timemod.max())
-# yyy = 0.028
-# ax.set_ylim(-yyy, yyy)
-# ax.text(timemod[-1] - 50, -0.0175, 'b' + ")", ha='center', va='center', bbox=dicttext)
-
-# axbis = ax.twinx()
-# ax.set_zorder(2)
-# ax.patch.set_visible(False)
-# lll = axbis.fill_between(timemod, 0, tpi, where=(tpi > 0), color='firebrick', interpolate=True)
-# lll = axbis.fill_between(timemod, 0, tpi, where=(tpi < 0), color='steelblue', interpolate=True)
-# axbis.set_ylim(-1, 1)
-# #axbis.set_ylabel('TPI')
-# #legend = plt.legend([lll[0]], ['TPI'], loc=2, fontsize=8)
-# axbis.get_yaxis().set_visible(False)  # removes xlabels
 
 plt.savefig('fig2', bbox_inches='tight')
 # -
