@@ -4,21 +4,21 @@ Before analysing the mechanisms driving marine ecosystem response to ENSO variab
 
 \subsection{Physical and biogeochemical model}
 
-Although successfully used in a variety of ENSO-related physical and biogeochemical studies in the tropical Pacific (e.g., \citealt{vialardModelStudyOceanic2001, lengaigneOceanResponseMarch2002, lengaigneInfluenceOceanicBiology2007, schneiderClimateinducedInterannualVariability2008, masottiLargescaleShiftsPhytoplankton2011, currieIndianOceanDipole2013}), the ability of our simulation to capture ENSO surface temperature, sea-level anomalies and chlorophyll signature is briefly evaluated. 
+Although successfully used in a variety of ENSO-related physical and biogeochemical studies in the tropical Pacific (e.g., \citealt{vialardModelStudyOceanic2001, lengaigneOceanResponseMarch2002, lengaigneInfluenceOceanicBiology2007, schneiderClimateinducedInterannualVariability2008, masottiLargescaleShiftsPhytoplankton2011, currieIndianOceanDipole2013}), the ability of our simulation to capture ENSO surface temperature, sea-level anomalies and chlorophyll signatures is briefly evaluated. 
 
-This ability is assessed by comparing observation-based and simulated covariance maps of detrended monthly anomalies with the Oceanic Nino Index\footnote{\url{https://www.cpc.ncep.noaa.gov/data/indices/oni.ascii.txt}} (hereafter ONI), which is the NOAA official ENSO indicator. It is based on a 3-month running mean of sea-surface tegeosmperature anomalies averaged over the Niño 3.4 region (5N-5S, 170W-120W).
+This ability is assessed by comparing observation-based and simulated covariance maps of detrended monthly anomalies with the Oceanic Nino Index\footnote{\url{https://www.cpc.ncep.noaa.gov/data/indices/oni.ascii.txt}} (hereafter ONI), which is the NOAA official ENSO indicator. It is based on a 3-month running mean of sea-surface tegeosmperature anomalies averaged over the Niño 3.4 region (5N-5S, 170W-120W). Spatial averages are also compared using correlations, whose significances are inferred using Student's t-test with an effective number of degrees of freedom that is corrected based on the 1-lag autocorrelation of each time-series, as discussed in \cite{brethertonEffectiveNumberSpatial1999}.
 
 \subsubsection{Sea-surface temperature}
 \label{sec:sst}
 
-As a first evaluation of the simulated sea-surfate temperature, the simulated ONI index is compared with the one provided by the NOAA (Fig\ref{fig:nemo-had-sst}a). The two time-series show a strong correlation of 0.92 over their common 1958-2018 period. In particular, the model is able to accurately capture the timing and amplitude of major El Niño events, like in 1972/73, 1982/83, 1997/98 and 2015/16 and of major La Niña events, like in 1988/89 and 1999/2000. 
+As a first evaluation of the simulated sea-surfate temperature, the simulated ONI index is compared with the one provided by the NOAA (Fig\ref{fig:nemo-had-sst}a). The two time-series show a strong correlation of 0.92 over their common 1958-2018 period (significant at the $95\%$ level of confidence). In particular, the model is able to accurately capture the timing and amplitude of major El Niño events, like in 1972/73, 1982/83, 1997/98 and 2015/16 and of major La Niña events, like in 1988/89 and 1999/2000. 
 
 As a second evaluation, the spatial structure of simulated sea-surface temperature response to ENSO is compared with the one obtained with the Hadley Sea-Surface Temperature dataset\footnote{\url{https://www.metoffice.gov.uk/hadobs/hadisst/data/download.html}} (HadISST1, \citealt{raynerGlobalAnalysesSea2003}). HadISST1 uses reduced space optimal interpolation applied to SSTs from the Marine Data Bank (mainly ship tracks) and ICOADS through 1981 and a blend of in-situ and adjusted satellite-derived SSTs for 1982-onwards. The resulting dataset is provided as monthly sea-surface temperature maps on a $1\times 1$ regular grid. The covariances obtained with the HadISST1 anomalies and the simulated ones are shown in Fig.\ref{fig:nemo-had-sst}b and Fig.\ref{fig:nemo-had-sst}c.
 
 \begin{figure}[htp]
 	\centering
 	\includegraphics[scale=0.6]{figs/fig1.png}
-	\caption{Observed and simulated ONI indexes (a). Covariance between the ONI index and the Hadley (b) and simulated SST anomalies (c). Observed and simulated sea-level anomalies averaged over the Nino34 region (d). Covariances between the ONI index and the observed (e) and simulated (f) sea-level anomalies. The dashed box represents the Nino34 region.}
+	\caption{Observed and simulated ONI indexes (a). Covariance between the ONI index and the Hadley (b) and simulated SST anomalies (c). Observed and simulated sea-level anomalies averaged over the Nino34 region (d). Covariances between the ONI index and the observed (e) and simulated (f) sea-level anomalies. The dashed box represents the Nino34 region used in the averaging.}
 	\label{fig:nemo-had-sst}
 \end{figure}
 
@@ -28,7 +28,7 @@ Simulated ENSO SST  pattern closely resembles the observed one. This pattern is 
 
 Simulated sea-level anomalies are compared with the reprocessed Global Ocean Gridded L4 Sea-Surface Heights\footnote{\url{https://doi.org/10.48670/moi-00148}} data, provided by the Copernicus Climate Service as monthly values on a regular $0.25 \times 0.25$ grid from 1993-01 to 2020-12. This product was built by the DUACS multimission altimeter data processing system, which processes data from all altimeter missions: Jason-3, Sentinel-3A, HY-2A, Saral/AltiKa, Cryosat-2, Jason-2, Jason-1, T/P, ENVISAT, GFO, ERS1/2. Using along-track altimeter data, gridded sea-level anomalies are extracted by using an Optimal Interpolation off all the flying satellites. 
 
-The simulated sea-level anomalies averaged over the Nino34 region compare well with the observed ones (Fig \ref{fig:nemo-had-sst}d), with a correlation coefficient of 0.94. In addition, the spatial patterns associated with ENSO variability are very similar for both the observations and the model (Fig \ref{fig:nemo-had-sst}e, Fig \ref{fig:nemo-had-sst}f). Sea-level anomalies are negative in the western Pacific and positive in the central and eastern Pacific. These anomalies are consistent with thermocline vertical displacements, which shoal in the west and deepens in the east (\warn{REF}).
+The simulated sea-level anomalies averaged over the Nino34 region compare well with the observed ones (Fig \ref{fig:nemo-had-sst}d), with a correlation coefficient of 0.94 (significant at the $95\%$ level of confidence). In addition, the spatial patterns associated with ENSO variability are very similar for both the observations and the model (Fig \ref{fig:nemo-had-sst}e, Fig \ref{fig:nemo-had-sst}f). Sea-level anomalies are negative in the western Pacific and positive in the central and eastern Pacific. These anomalies are consistent with thermocline vertical displacements, which shoal in the west and deepens in the east (\warn{REF}).
 
 \subsubsection{Chlorophyll}
 
@@ -36,7 +36,7 @@ Simulated chlorophyll has been compared with observation-based estimates extract
 
 Covariance maps between the surface chlorophyll and the monthly ONI index, computed over the common period, are shown in Fig \ref{fig:nemo-sat-chl}. The observations (upper panel) and the model (lower panel) show very similar covariance patterns: El Nino induces a decrease in chlorophyll concentration along the equator east of 150\degree{}E, consistent with a weaker equatorial upwelling induced by the equatorial trade winds reduction. However, the model overestimates the chlorophyll response to ENSO variability compared with observational based estimates. Note that the covariance for the simulated chlorophyll has also been computed over the entire simulated period (1958-2018), with no significant changes in the resulting pattern (not shown). 
 
-The observed and simulated chlorophyll anomalies, averaged along the equatorial band, have a correlation coefficient of $0.80$.
+The observed and simulated chlorophyll anomalies, averaged along the equatorial band, have a correlation coefficient of $0.80$ (significant at the $95\%$ level of significance).
 
 \begin{figure}[htp]
 	\centering
