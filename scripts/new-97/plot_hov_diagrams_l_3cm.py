@@ -6,11 +6,11 @@
 #       extension: .py
 #       format_name: light
 #       format_version: '1.5'
-#       jupytext_version: 1.11.3
+#       jupytext_version: 1.10.3
 #   kernelspec:
-#     display_name: Python [conda env:nbarrier] *
+#     display_name: Python 3 (ipykernel)
 #     language: python
-#     name: conda-env-nbarrier-py
+#     name: python3
 # ---
 
 # +
@@ -23,6 +23,7 @@ from cartopy.mpl.ticker import (LatitudeFormatter, LongitudeFormatter,
 import string
 import warnings
 letters = string.ascii_letters
+letters = [l + ')' for l in letters]
 warnings.filterwarnings("ignore", category=RuntimeWarning) 
 plt.rcParams['image.cmap'] = 'RdBu_r'
 plt.rcParams['font.size'] = 15
@@ -31,29 +32,37 @@ formatter0 = LongitudeFormatter(dateline_direction_label=True)
 l0 = 3
 # -
 
+mesh = xr.open_dataset('data/equatorial_mesh_mask.nc')
+mesh = mesh.rename({'z': 'olevel'})
+lon = mesh['x'].values
+ilon = np.nonzero((lon >= 150) & (lon <= -90 + 360))[0]
+mesh = mesh.isel(x=ilon)
+lon = mesh['x'].values
+depth = mesh['gdept_1d'].isel(x=0)
+depth
+mesh['olevel'] = depth
+mesh
+
 const = xr.open_dataset('../data/ORCA1_JRAC02_CORMSK_CYC3_FINAL_ConstantFields.nc')
 const = const.rename({'wpred': 'l'})
 const['l'] = const['length'] * 100
 const
 
-wstep = const['weight_step'].sel(l=l0, method='nearest')
-wstep = float(wstep)
+wstep = const['weight_step']
 wstep
 
 
 # +
 def read_variable(varname):
     
-    data = xr.open_dataset('data/nino_equatorial_composites_%s.nc' %varname)[varname]
+    data = xr.open_dataset('data/nino_equatorial_composites_%s.nc' %varname)[varname].isel(x=ilon)
     data['l'] = const['l']
-    data = data.sel(l=l0, method='nearest')
     return data
 
 oope = read_variable('OOPE')
 oope
 # -
 
-lon = oope['x'].values
 time = oope['time'].values
 
 pred = read_variable('predationTrend')
@@ -62,6 +71,13 @@ zadv = read_variable('zadv_trend')
 madv = read_variable('madv_trend')
 zdiff = read_variable('zdiff_trend')
 mdiff = read_variable('mdiff_trend')
+gamma1 = read_variable('gamma1')
+mort = read_variable('mort_day')
+u_act = read_variable('u_active')
+v_act = read_variable('v_active')
+u_pas = read_variable('u_passive')
+v_pas = read_variable('v_passive')
+repfonct = read_variable('repfonct_day')
 
 
 def get_clim(var):
@@ -71,8 +87,6 @@ def get_clim(var):
 
 
 def plot(ax, toplot, wstep, contour=True, levels=None, clim=None, trend=True):
-    ilon = np.nonzero((lon >= 150) & (lon <= -90 + 360))[0]
-    toplot = toplot[:, ilon]
     toplot = toplot * wstep
     if clim is None:
         cmin, cmax = get_clim(toplot)
@@ -83,11 +97,11 @@ def plot(ax, toplot, wstep, contour=True, levels=None, clim=None, trend=True):
 
     time = np.arange(toplot.shape[0]) + 1
 
-    cs = ax.pcolormesh(lon[ilon], time, toplot, shading='auto')
+    cs = ax.pcolormesh(lon, time, toplot, shading='auto')
     cs.set_clim(cmin, cmax)
     if contour:
-        cl = ax.contour(lon[ilon], time, toplot, levels=levels, colors='k', linewidths=0.5)
-        cl2 = ax.contour(lon[ilon], time, toplot, levels=0, linewidths=1, colors='k')
+        cl = ax.contour(lon, time, toplot, levels=levels, colors='k', linewidths=0.5)
+        cl2 = ax.contour(lon, time, toplot, levels=0, linewidths=1, colors='k')
     stride = 3
     ax.xaxis.set_major_formatter(formatter0)
     ax.grid(True, linewidth=0.5, color='gray', linestyle='--')
@@ -106,22 +120,30 @@ textprop = {}
 textprop['bbox'] = dicttext
 textprop['ha'] = 'center'
 textprop['va'] = 'center'
+textprop['zorder'] = 1000
 
 
-def compute_thetao(add_clim=True):
-   
-    data = xr.open_dataset('data/nino_equatorial_composites_thetao.nc')['thetao'].isel(olevel=0)
-    data
+def read_pisces_variable(varname, zmax=50, anom=False):
 
-    clim = xr.open_dataset('data/equatorial_full_thetao.nc')['thetao']
-    clim =  clim.sel(time_counter=slice('1971-01-01', '2000-12-31')).groupby('time_counter.month').mean(dim='time_counter').isel(olevel=0)
-    clim
-    
-    thetao = data.to_masked_array().copy()
-    nyears = thetao.shape[0] // 12
-    for y in range(nyears):
-        index = slice(0 + y * 12, 12 + y * 12)
-        thetao[index] += clim.to_masked_array()
+    e3t = mesh['e3t_0'] * mesh['tmask']
+    e3t = e3t.where(e3t['olevel'] <= zmax)
+
+    data = xr.open_dataset('data/equatorial_full_%s.nc' %varname)[varname]
+    data['olevel'] = mesh['olevel']
+    data = (data * e3t).sum(dim='olevel') / (e3t.sum(dim='olevel'))
+    if(anom):
+        clim = data.sel(time_counter=slice('1971-01-01', '2000-12-31')).groupby('time_counter.month').mean(dim='time_counter')
+        data = data.groupby('time_counter.month') - clim
+    ylist = [1982, 1997, 2015]
+    for year in ylist:
+        datestart = '%s-01-01' %(year)
+        dateend = '%s-12-31' %(year + 1)
+        temp = data.sel(time_counter=slice(datestart, dateend))
+        if year == 1982:
+            thetao = temp.values
+        else:
+            thetao += temp.values
+    thetao /= len(ylist)
     return thetao
 
 
@@ -129,12 +151,18 @@ def compute_thetao(add_clim=True):
 fig = plt.figure(figsize=(13, 14), facecolor='white')
 plt.rcParams['font.size'] = 15
 
-thetao = compute_thetao()
+thetao = read_pisces_variable('thetao', 50, True)
+anom = True
+phy2 = read_pisces_variable('PHY2', 50, anom)
+zoo2 = read_pisces_variable('ZOO2', 50, anom)
+zoo = read_pisces_variable('ZOO', 50, anom)
+goc = read_pisces_variable('GOC', 50, anom)
+plk = phy2 + zoo2 + zoo + goc
 
-ilon = np.nonzero((lon >= 150) & (lon <= -90 + 360))[0]
-
-time1 = 2
+time1 = 3
 lon1 = 255
+
+colorbis = 'gray'
 
 time2 = len(time) - 3
 lon2 = 255
@@ -144,57 +172,70 @@ axgr = ImageGrid(fig, 111, nrows_ncols=(3, 2), axes_pad=(1.1, 0.5), cbar_pad=0.1
 ccc = 150
 cpt = -1
 
-cpt += 1
-ax = axgr[cpt]
-toplot = oope.values
-toplot = toplot - toplot[0]
-cs, cl = plot(ax, toplot, wstep, clim=ccc)
-cb = plt.colorbar(cs, cax=axgr.cbar_axes[cpt])
-ax.text(lon2, time2, 'B', **textprop)
-cb.set_label('J/m2')
-#cl = ax.contour(lon[ilon], time + 1, thetao[:, ilon], levels=[28], colors='k')
-#plt.clabel(cl)
+wstep_l0 = float(wstep.sel(l=l0, method='nearest'))
 
 cpt += 1
-toplot = (zadv + madv + zdiff + mdiff + pred + growth).cumsum(dim='time')
+toplot = (growth).sel(l=l0, method='nearest').cumsum(dim='time').values
 ax = axgr[cpt]
-cs, cl = plot(ax, toplot, wstep, clim=ccc)
-cb = plt.colorbar(cs, cax=axgr.cbar_axes[cpt])
-ax.text(lon2, time2, 'T', **textprop)
-cb.set_label('J/m2')
-
-cpt += 1
-toplot = (growth).cumsum(dim='time').values
-ax = axgr[cpt]
-cs, cl = plot(ax, toplot, wstep, clim=500)
+cs, cl = plot(ax, toplot, wstep_l0, clim=500)
 cb = plt.colorbar(cs, cax=axgr.cbar_axes[cpt])
 ax.text(lon2, time2, 'G', **textprop)
 cb.set_label('J/m2')
+ax.text(lon1, time1, letters[cpt], **textprop)
 
 cpt += 1
-toplot = (pred).cumsum(dim='time').values
+toplot = (pred).sel(l=l0, method='nearest').cumsum(dim='time').values
 ax = axgr[cpt]
-cs, cl = plot(ax, toplot, wstep, clim=500)
+cs, cl = plot(ax, toplot, wstep_l0, clim=500)
 cb = plt.colorbar(cs, cax=axgr.cbar_axes[cpt])
 ax.text(lon2, time2, 'P', **textprop)
 cb.set_label('J/m2')
+ax.text(lon1, time1, letters[cpt], **textprop)
 
 cpt += 1
-toplot = (pred + growth).cumsum(dim='time').values
+toplot = (pred + growth).sel(l=l0, method='nearest').cumsum(dim='time').values
 ax = axgr[cpt]
-cs, cl = plot(ax, toplot, wstep, clim=ccc)
+cs, cl = plot(ax, toplot, wstep_l0, clim=ccc)
 cb = plt.colorbar(cs, cax=axgr.cbar_axes[cpt])
 ax.text(lon2, time2, 'P+G', **textprop)
 cb.set_label('J/m2')
+ax.text(lon1, time1, letters[cpt], **textprop)
+
+cont = False
 
 cpt += 1
-toplot = (zadv + madv + zdiff + mdiff).cumsum(dim='time').values
+toplot = (zadv + madv + zdiff + mdiff).sel(l=l0, method='nearest').cumsum(dim='time').values
+toplot = repfonct.sel(l=l0, method='nearest').values
 ax = axgr[cpt]
-cs, cl = plot(ax, toplot, wstep, clim=ccc)
+cs, cl = plot(ax, toplot, 1, clim=None, contour=cont)
 cb = plt.colorbar(cs, cax=axgr.cbar_axes[cpt])
-ax.text(lon2, time2, 'A+D', **textprop)
-cb.set_label('J/m2')
+ax.text(lon2, time2, '$F$', **textprop)
+cb.set_label('')
+cl = ax.contour(lon[:], time + 1, plk[:, :], 6, colors=colorbis)
+ax.text(lon1, time1, letters[cpt], **textprop)
+plt.clabel(cl)
+
+cpt += 1
+toplot = mort.sel(l=l0, method='nearest').values
+ax = axgr[cpt]
+cs, cl = plot(ax, toplot, 1, clim=None, contour=cont)
+cb = plt.colorbar(cs, cax=axgr.cbar_axes[cpt])
+ax.text(lon2, time2, '$M$', **textprop)
+cb.set_label('')
+toplot = (oope * wstep).sel(l=20, method='nearest').values
+cl = ax.contour(lon[:], time + 1, toplot[:, :], 6, colors=colorbis)
+ax.text(lon1, time1, letters[cpt], **textprop)
+plt.clabel(cl)
+
+cpt += 1
+toplot = gamma1.sel(l=l0, method='nearest').values
+ax = axgr[cpt]
+cs, cl = plot(ax, toplot, 1, clim=None, contour=cont)
+cb = plt.colorbar(cs, cax=axgr.cbar_axes[cpt])
+ax.text(lon2, time2, '$\gamma$', **textprop)
+ax.text(lon1, time1, letters[cpt], **textprop)
+cb.set_label('')
+cl = ax.contour(lon[:], time + 1, thetao[:, :], 6, colors=colorbis)
+plt.clabel(cl)
 
 plt.savefig('hov_compo_l_%d.png' %l0, bbox_inches='tight')
-# -
-

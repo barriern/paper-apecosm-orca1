@@ -1,6 +1,11 @@
-The marine ecosystem model used in this study is the Apex Predators Ecosystem Model (Apecosm, \citealt{mauryModelingEnvironmentalEffects2007, mauryOverviewAPECOSMSpatialized2010}), which simulates the energy transfer in marine ecosystems. The biological processes include size-based opportunistic trophic interactions, competition for food, allocation of energy between growth and reproduction, somatic and maturity maintenance, predatory and starvation mortality (see \citealt{mauryModelingEnvironmentalEffects2007} for a detailed description of the model). The physiological bases of the model are derived from the Dynamic Energy Budget theory (DEB, \citealt{kooijmanDynamicEnergyMass2000}). All the physiological rates are temperature-dependent. In addition to biological processes, energy density is also subjected to both passive (via ocean currents) and active (foraging behaviour) advection/diffusion, following \cite{faugerasAdvectiondiffusionreactionSizestructuredFish2005}.
+\subsection{Marine ecosystem model}
+\label{sec:apecosm}
 
-Changes in fish biomass is given by:
+The marine ecosystem model used in this study is the Apex Predators Ecosystem Model (Apecosm, \citealt{mauryModelingEnvironmentalEffects2007, mauryOverviewAPECOSMSpatialized2010}), which simulates the energy transfer in marine ecosystems. The biological processes include size-based opportunistic trophic interactions, competition for food, allocation of energy between growth and reproduction, somatic and maturity maintenance, predatory and starvation mortality (see \citealt{mauryModelingEnvironmentalEffects2007} for a detailed description of the model). 
+
+The physiological bases of the model are derived from the Dynamic Energy Budget theory (DEB, \citealt{kooijmanDynamicEnergyMass2000}). All the physiological rates are temperature-dependent. In addition to biological processes, energy density is also subjected to both passive (via ocean currents) and active (foraging behaviour) advection/diffusion, following \cite{faugerasAdvectiondiffusionreactionSizestructuredFish2005}.
+
+Changes in fish biomass are given by:
 
 \begin{equation}
 \partial_t \varepsilon = \underbrace{- \partial_w(\gamma \varepsilon) + \frac{\gamma}{w}\varepsilon}_{Growth} 
@@ -10,7 +15,7 @@ Changes in fish biomass is given by:
 \label{eq:apecosm_trend}
 \end{equation}
 
-where $\varepsilon$  is the fish biomass density, $w$ the weight, $\gamma$ is the growth rate, $M$ is the predation mortality rate (computed using equation 12 of \citealt{mauryIndividualsPopulationsCommunities2013}), $V$ and $D$ the sum of passive and active velocity and diffusivity coefficient (computed following \citealt{faugerasAdvectiondiffusionreactionSizestructuredFish2005}).
+where $\varepsilon$  is the fish biomass density, $w$ the weight, $\gamma$ is the growth rate, $M$ is the predation mortality rate (computed using equation 12 of \citealt{mauryIndividualsPopulationsCommunities2013}), $V$ and $D$ the sum of passive and active velocities and diffusivity coefficients (computed following \citealt{faugerasAdvectiondiffusionreactionSizestructuredFish2005}).
 
 The biological simulation used in this study is forced by the temperature, current velocity, oxygen, low-trophic level concentration (diatoms, mesozooplankton and microzooplankton, big particulate organic matter), photosynthetically active radiation (PAR) and layer thickness outputs of the NEMO-PISCES simulation (section \ref{sec:nemo}). It uses a daily time-step for biological processes, which is decomposed into a day/night cycle, whose duration depends on the latitude and on the day of year \citep{forsytheModelComparisonDaylength1995}. A sub time-stepping ($dt =0.8h$) is used for advective and diffusive processes in order to insure numerical stability.
 
@@ -35,10 +40,8 @@ Three generic communities are simulated:
 \item{The  mesopolagic community, which remains at depth during both night and day, and whose vertical distribution is only impacted by the light.}
 \end{itemize}
 
-For each community, 100 size classes are simulated, ranging from $0.123cm$ to $196cm$.
+For each community, 100 size classes are simulated, ranging from $0.123cm$ to $196cm$. In order to ensure that the size-spectrum is fully unfolded, the model has been integrated three times. First, the model has been initialized from rest and integrated from 1958 to 2018 (61 years). Then, the end of this first spin-up phase has been used to run another cycle, which was in turn used to run the simulation presented in the following.
 
 %Epilagic feed on other epilagic fish only during night daytime. Migrants feed on other migrants and epipelagics, only during night-time. While mesopelagics feed on migrant and mesopelagic during daytime, and only on other mesopelagic during night-time.
-
-In order to ensure that the size-spectrum is fully unfolded, the model has been integrated three times. First, the model has been initialized from rest and integrated from 1958 to 2018. Then, the end of this first spin-up phase has been used to run another cycle, which was in turn used to run the simulation presented in the following.
 
 %In the following, the focus will be put on the epipelagic community, since its near-surface location makes it more sensitive to ENSO variability \citep{lemezoNaturalVariabilityMarine2016}2016}.
