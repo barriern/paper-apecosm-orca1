@@ -24,8 +24,6 @@ from cartopy.mpl.ticker import LongitudeFormatter
 zmax = 50
 formatter0 = LongitudeFormatter(dateline_direction_label=True)
 
-plt.rcParams['text.usetex'] = False
-
 latmax = 5
 
 letters = list(string.ascii_lowercase)
@@ -85,6 +83,7 @@ grid = ImageGrid(fig, 111,  # similar to subplot(111)
                  cbar_mode='each', aspect=False, cbar_pad=0.1)
 cbar_axes = grid.cbar_axes
 stride = 3
+plt.rcParams['text.usetex'] = False
 plt.rcParams['font.size'] = 15
 
 y = np.arange(1, 25)
@@ -122,6 +121,7 @@ for v in ['thetao', 'PLK', 'uo']:
     cb = plt.colorbar(cs, cbar_axes[cpt])
     ax.grid(True)
     ax.set_xlabel('Longitude')
+    ax.set_ylabel('Months')
     ax.set_title(names[v])
     cb.set_label(units[v])
     ax.text(lontext, lattext, letters[cpt] + ")", ha='right', va='center', bbox=dicttext, fontsize=fs)
@@ -144,6 +144,7 @@ for l in range(nlength):
     cb.set_label(units['oope'])
     ax.grid(True)
     ax.set_xlabel('Longitude')
+    ax.set_ylabel('Months')
     ax.text(lontext, lattext, letters[cpt] + ")", ha='right', va='center', bbox=dicttext, fontsize=fs)
     ax.xaxis.set_major_formatter(formatter0)
     labels = ['180', '-150', '-120', '-90']
