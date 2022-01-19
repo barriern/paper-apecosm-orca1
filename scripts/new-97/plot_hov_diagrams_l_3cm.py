@@ -100,7 +100,7 @@ def plot(ax, toplot, wstep, contour=True, levels=None, clim=None, trend=True):
     cs = ax.pcolormesh(lon, time, toplot, shading='auto')
     cs.set_clim(cmin, cmax)
     if contour:
-        cl = ax.contour(lon, time, toplot, levels=levels, colors='k', linewidths=0.5)
+        cl = ax.contour(lon, time, toplot, levels=levels, colors='k', linewidths=1)
         cl2 = ax.contour(lon, time, toplot, levels=0, linewidths=1, colors='k')
     stride = 3
     ax.xaxis.set_major_formatter(formatter0)
@@ -162,8 +162,6 @@ plk = phy2 + zoo2 + zoo + goc
 time1 = 3
 lon1 = 255
 
-colorbis = 'gray'
-
 time2 = len(time) - 3
 lon2 = 255
 
@@ -173,6 +171,10 @@ ccc = 150
 cpt = -1
 
 wstep_l0 = float(wstep.sel(l=l0, method='nearest'))
+cprop = {}
+cprop['colors'] = 'k'
+cprop['linewidths']= 1
+
 
 cpt += 1
 toplot = (growth).sel(l=l0, method='nearest').cumsum(dim='time').values
@@ -211,7 +213,7 @@ cs, cl = plot(ax, toplot, 1, clim=None, contour=cont)
 cb = plt.colorbar(cs, cax=axgr.cbar_axes[cpt])
 ax.text(lon2, time2, '$F$', **textprop)
 cb.set_label('')
-cl = ax.contour(lon[:], time + 1, plk[:, :], 6, colors=colorbis)
+cl = ax.contour(lon[:], time + 1, plk[:, :], 6, **cprop)
 ax.text(lon1, time1, letters[cpt], **textprop)
 plt.clabel(cl)
 
@@ -223,7 +225,7 @@ cb = plt.colorbar(cs, cax=axgr.cbar_axes[cpt])
 ax.text(lon2, time2, '$M$', **textprop)
 cb.set_label('')
 toplot = (oope * wstep).sel(l=20, method='nearest').values
-cl = ax.contour(lon[:], time + 1, toplot[:, :], 6, colors=colorbis)
+cl = ax.contour(lon[:], time + 1, toplot[:, :], 6, **cprop)
 ax.text(lon1, time1, letters[cpt], **textprop)
 plt.clabel(cl)
 
@@ -235,7 +237,9 @@ cb = plt.colorbar(cs, cax=axgr.cbar_axes[cpt])
 ax.text(lon2, time2, '$\gamma$', **textprop)
 ax.text(lon1, time1, letters[cpt], **textprop)
 cb.set_label('')
-cl = ax.contour(lon[:], time + 1, thetao[:, :], 6, colors=colorbis)
+cl = ax.contour(lon[:], time + 1, thetao[:, :], 6, **cprop)
 plt.clabel(cl)
 
 plt.savefig('hov_compo_l_%d.png' %l0, bbox_inches='tight')
+# -
+
