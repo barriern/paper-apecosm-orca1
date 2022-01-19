@@ -160,6 +160,7 @@ def manage_axes(gl, cpt):
 plt.rcParams['font.size'] = 15
 textprops = {}
 textprops.update(ha='center', va='center', transform=proj, bbox=dicttext, zorder=2000)
+plt.rcParams['contour.negative_linestyle'] = 'solid'
 
 step = 0.5
 levels = np.arange(-1, 3 + step, step)
@@ -249,7 +250,7 @@ for l in range(3):
     cb = cbax.colorbar(cs)
     if l == 0:
         #cb.set_label('97-OND biomass anoms (J/m2)')
-        ax.set_title('NINO biomass anoms\nJ/m2')
+        ax.set_title('El Nino biomass anoms (J/m2)')
     manage_axes(gl, cpt)
     
     cpt += 1
@@ -271,6 +272,7 @@ for l in range(3):
     temp = cov.isel(l=l)
     ltemp = float(temp.l)
     temp = temp.to_masked_array()
+    temp = np.ma.masked_where(tmask_noatl==0, temp)
     
     ccc = np.percentile(np.abs(np.ravel(temp[temp.mask == False])), 98)
     print('ccc = ', ccc)
@@ -293,7 +295,7 @@ for l in range(3):
     cb = cbax.colorbar(cs)
     if(l == 0):
         #cb.set_label('Cov. ONI/biomass anoms (J/m2)')
-        ax.set_title('Cov. ONI/biomass anoms\nJ/m2')
+        ax.set_title('Cov. ONI/biomass anoms (J/m2)')
     manage_axes(gl, cpt)
     
     cptlet += 1
