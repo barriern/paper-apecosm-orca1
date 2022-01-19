@@ -161,7 +161,7 @@ cl = ax.contour(lon0[iok], -depth[:-1], clim[:, :, 0].T[:-1, iok], 11, colors='k
 plt.clabel(cl)
 cs = ax.pcolormesh(lon0[iok], -depth[:-1], anom[:, :, 0].T[:-1, iok], shading='auto')
 cb = plt.colorbar(cs, cbar_axes[cpt])
-cb.set_label('[J/m2]')
+cb.set_label('[J/m3]')
 cs.set_clim(-50, 50)
 ax.text(lontext2, ztext, '0-3cm', **dictext2)
 ax.text(lontext, ztext, 'd)', **dictext2)
@@ -174,7 +174,7 @@ cl = ax.contour(lon0[iok], -depth[:-1], clim[:, :, 1].T[:-1, iok], 11, colors='k
 plt.clabel(cl)
 cs = ax.pcolormesh(lon0[iok], -depth[:-1], anom[:, :, 1].T[:-1, iok], shading='auto')
 cb = plt.colorbar(cs, cbar_axes[cpt])
-cb.set_label('[J/m2]')
+cb.set_label('[J/m3]')
 cs.set_clim(-20, 20)
 ax.text(lontext2, ztext, '3-20cm', **dictext2)
 ax.text(lontext, ztext, 'e)', **dictext2)
@@ -187,7 +187,7 @@ cl = ax.contour(lon0[iok], -depth[:-1], clim[:, :, 2].T[:-1, iok], 11, colors='k
 plt.clabel(cl)
 cs = ax.pcolormesh(lon0[iok], -depth[:-1], anom[:, :, 2].T[:-1, iok], shading='auto')
 cb = plt.colorbar(cs, cbar_axes[cpt])
-cb.set_label('[J/m2]')
+cb.set_label('[J/m3]')
 cs.set_clim(-6, 6)
 ax.text(lontext2, ztext, '20-90cm', **dictext2)
 ax.text(lontext, ztext, 'f)', **dictext2)
@@ -200,7 +200,3 @@ ax.set_xticks(xticks)
 ax.xaxis.set_major_formatter(formatter0)
 
 plt.savefig('forage_mean_ond97.png', bbox_inches='tight', facecolor='white')
-# -
-
-
-
