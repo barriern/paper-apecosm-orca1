@@ -101,7 +101,7 @@ def plot(ax, toplot, wstep, contour=True, levels=None, clim=None, trend=True):
     cs.set_clim(cmin, cmax)
     if contour:
         cl = ax.contour(lon, time, toplot, levels=levels, colors='k', linewidths=1)
-        cl2 = ax.contour(lon, time, toplot, levels=0, linewidths=1, colors='k')
+        cl2 = ax.contour(lon, time, toplot, levels=0, linewidths=2, colors='k')
     stride = 3
     ax.xaxis.set_major_formatter(formatter0)
     ax.grid(True, linewidth=0.5, color='gray', linestyle='--')
@@ -214,6 +214,7 @@ cb = plt.colorbar(cs, cax=axgr.cbar_axes[cpt])
 ax.text(lon2, time2, '$F$', **textprop)
 cb.set_label('')
 cl = ax.contour(lon[:], time + 1, plk[:, :], 6, **cprop)
+cl2 = ax.contour(lon[:], time + 1, plk[:, :], levels=[0], linewidths=2, colors=cprop['colors'])
 ax.text(lon1, time1, letters[cpt], **textprop)
 plt.clabel(cl)
 
@@ -226,6 +227,7 @@ ax.text(lon2, time2, '$M$', **textprop)
 cb.set_label('')
 toplot = (oope * wstep).sel(l=20, method='nearest').values
 cl = ax.contour(lon[:], time + 1, toplot[:, :], 6, **cprop)
+cl2 = ax.contour(lon[:], time + 1, toplot[:, :], levels=[0], linewidths=2, colors=cprop['colors'])
 ax.text(lon1, time1, letters[cpt], **textprop)
 plt.clabel(cl)
 
@@ -238,8 +240,17 @@ ax.text(lon2, time2, '$\gamma$', **textprop)
 ax.text(lon1, time1, letters[cpt], **textprop)
 cb.set_label('')
 cl = ax.contour(lon[:], time + 1, thetao[:, :], 6, **cprop)
+cl2 = ax.contour(lon[:], time + 1, thetao[:, :], levels=[0], linewidths=2, colors=cprop['colors'])
 plt.clabel(cl)
 
 plt.savefig('hov_compo_l_%d.png' %l0, bbox_inches='tight')
 # -
+toplot = (zdiff + mdiff + zadv + madv).sel(l=l0, method='nearest').cumsum(dim='time').values
+ax = plt.axes()
+cs, cl = plot(ax, toplot, wstep_l0, clim=None)
+cb = plt.colorbar(cs)
+ax.text(lon2, time2, 'G', **textprop)
+cb.set_label('J/m2')
+ax.text(lon1, time1, letters[cpt], **textprop)
+
 
