@@ -6,9 +6,9 @@
 #       extension: .py
 #       format_name: light
 #       format_version: '1.5'
-#       jupytext_version: 1.10.3
+#       jupytext_version: 1.11.5
 #   kernelspec:
-#     display_name: Python 3 (ipykernel)
+#     display_name: Python 3
 #     language: python
 #     name: python3
 # ---
@@ -32,7 +32,7 @@ end = '%d-12-31' %yend
 lonmin = 120
 lonmax = 210
 lonmax = -120 + 360
-roll = True
+roll = False
 window = 5
 
 # +
@@ -246,38 +246,98 @@ plt.text(compo_sar['lon'].values[-10], compo_sar['lat'].values[-10], 'd)', bbox=
 
 plt.savefig('plot_validation_apecosm.png', bbox_inches='tight')
 # +
-# extraction of sardar bary to match apecosm time
-barysartemp = barysar.sel(time=slice(195801, 201812))
-barysartemp
+from scipy.ndimage import gaussian_filter1d
+filtparams = {}
+filtparams['sigma'] = 3.5
+filtparams['mode'] = 'constant'
+filtparams['cval'] = np.nan
+filtparams['truncate'] = 4
 
-# creation of time step array
-time = np.arange(barysartemp.shape[0])
-time
+ape = baryape.sel(time=slice(None, None))
+apedates = np.array([y * 100 + m for y, m in zip(ape['time.year'], ape['time.month'])])
+iokape = np.nonzero((apedates >= 198501) & (apedates <= 201812))[0]
 
-alpha = 1.09214162799967
+time = np.arange(ape.shape[0])
+apefilt = gaussian_filter1d(ape.values.copy(), **filtparams)
 
-# extraction of time-step for time-series "goot" sardar data
-iok = np.nonzero((barysartemp['time'].values >= 198301) & (barysartemp['time'].values <= 201812))[0]
+plt.figure()
+plt.plot(time[iokape], ape.values[iokape])
+plt.plot(time[iokape], apefilt[iokape])
 
-# extraction of ape barycenter for this sardara period
-baryapetemp = baryape.sel(time=slice('1983-01-01', '2018-12-31'))
-baryapetemp.shape, time[iok].shape
+# +
+sar = barysar.sel(time=slice(None, None))
 
-iii = time[iok]
-iii
-def func(time, alpha):
-    
-    output = barysartemp[iok].values[:-2] * (np.log(alpha * time[-1]) / np.log(alpha * time))
-    return output
+sardates = sar['time'].values
+ioksar = np.nonzero((sardates >= 198501) & (sardates <= 201812))[0]
 
-import scipy.optimize as opt
-popt, pcov = opt.curve_fit(func, time[iok][:-2], baryapetemp.values[:-2])
-popt
+time = np.arange(sar.shape[0])
+sarfilt = gaussian_filter1d(sar.values.copy(), **filtparams)
+
+plt.figure()
+plt.plot(time[ioksar], sar.values[ioksar])
+plt.plot(time[ioksar], sarfilt[ioksar])
 # -
 
-plt.plot(time[iok][:-2], baryapetemp.values[:-2])
-plt.plot(time[iok][:-2], barysartemp.values[iok][:-2])
-plt.plot(time[iok][:-2], func(time[iok][:-2], popt[0]))
-plt.plot(time[iok][:-2], func(time[iok][:-2], alpha))
+tempape = apefilt[iokape]
+tempsar = sarfilt[ioksar]
+timeape = np.arange(apefilt.shape[0])
+timeape = timeape[iokape]
+test = np.isnan(tempape) | np.isnan(tempsar)
+itest = np.nonzero(test == False)[0]
+tempape = tempape[itest]
+tempsar = tempsar[itest]
+timeape = timeape[itest]
+
+# +
+# parameters to be estimated
+alpha_init = 87.0
+beta_init = 1.0
+
+# constants for optimization
+x0 = np.array([alpha_init, beta_init])
+bnds = ((-1., 2.), (0.8, 1.2))
+
+def compute_series(param):
+    alpha = alpha_init * param[0]
+    beta = beta_init * param[1]
+    shift_max = np.log(alpha + 731) * beta
+    sardara_detrend = tempsar * shift_max / np.log(alpha + timeape)
+    return sardara_detrend
+
+def calc_detrend(param):
+    cost = 0.
+    sardara_detrend = compute_series(param)
+    cost = np.sum((sardara_detrend - tempape)**2)
+    return(cost)
 
 
+# -
+
+import scipy.optimize as optimize
+print('OPTIMIZATION differential evolution')
+res0 = optimize.differential_evolution(calc_detrend, bounds=bnds, tol=1.E-4)
+res0
+
+print('OPTIMIZATION gradient')
+res1 = optimize.minimize(calc_detrend, x0, bounds=bnds, tol=1.E-9, options={'disp': True})
+res1
+
+param0 = res0.x
+param1 = res1.x
+
+corr0 = compute_series(param0)
+corr1 = compute_series(param1)
+
+ioffset = np.nonzero(apedates == 198501)[0][0]
+ioffset
+
+corr0
+
+plt.figure(figsize=(12, 8))
+plt.plot(np.arange(apefilt.shape[0]), baryape, label='Apecosm', linewidth=0.5)
+plt.plot(np.arange(apefilt.shape[0]), apefilt, label='Filt. Apecosm')
+plt.plot(np.arange(sar.values[ioksar].shape[0]) + ioffset, sar[ioksar], label='Sardara', linewidth=0.5)
+plt.plot(np.arange(sar.values[ioksar].shape[0]) + ioffset, sarfilt[ioksar], label='Filt. Sardara')
+plt.plot(np.arange(sar.values[ioksar][itest].shape[0]) + ioffset, corr0, label='Det. Sardara')
+plt.ylim(140, 200)
+plt.legend()
