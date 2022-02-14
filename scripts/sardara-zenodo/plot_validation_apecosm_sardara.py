@@ -6,9 +6,9 @@
 #       extension: .py
 #       format_name: light
 #       format_version: '1.5'
-#       jupytext_version: 1.10.3
+#       jupytext_version: 1.11.5
 #   kernelspec:
-#     display_name: Python 3 (ipykernel)
+#     display_name: Python 3
 #     language: python
 #     name: python3
 # ---
@@ -29,7 +29,6 @@ filtparams['sigma'] = 3.5
 filtparams['mode'] = 'constant'
 filtparams['cval'] = np.nan
 filtparams['truncate'] = 4
-
 
 zenodo = False
 ystart = 2008
@@ -198,14 +197,24 @@ cb = plt.colorbar(cs)
 ax.set_xlim(140, -120+360)
 xlim = ax.get_xlim()
 ax.set_title('Catch (colors) \& sim. biomass (contours)')
-cb.set_label('Tons')
+cb.set_label('Tons (Log-scale)')
+ax.grid(True, zorder=10000, color='k')
 
 ############################################################ plotting barycenter time series
-
 pos1 = ax.get_position()
+
+ymax = 1985
+
+height1 = 2018 - 2008 + 1
+height2 = 2008 - ymax + 1
+heighttot = 2018 - ymax + 1
+
+newheight = pos1.height * heighttot / height1
+y0 = pos1.y0 + pos1.height - newheight
+
 offset = 0.4
 pos2 = [pos1.x0, pos1.y0 -offset,  pos1.width, pos1.height]
-pos2 = [pos1.x0 + offset, pos1.y0,  pos1.width, pos1.height]
+pos2 = [pos1.x0 + offset, y0,  pos1.width, newheight]
 
 ax = plt.axes(pos2)
 
@@ -215,19 +224,25 @@ datebaryape = np.array([d.year * 100 + d.month for d in datebaryape])
 yyy = datebaryape // 100
 mmm = datebaryape - 100 * yyy
 
+iape = np.nonzero(yyy >= ymax)[0]
+yyy = yyy[iape]
+mmm = mmm[iape]
+baryape = baryape[iape]
+apefilt = apefilt[iape]
+
 time = np.arange(len(baryape))
 datestr = np.array(['%.4d-%.2d' %(y, m) for y, m in zip(yyy, mmm)])
-stride = 4*12
+stride = 12
 ax.set_yticks(time[::stride])
 ax.set_yticklabels(datestr[::stride], va='top', rotation=-45)
 
 iline = np.nonzero(datestr=='2008-01')[0]
 
 plt.plot(baryape, np.arange(baryape.shape[0]), label='Apecosm', linewidth=0.5)
-plt.plot(apefilt,np.arange(apefilt.shape[0]), label='Filt. Apecosm')
-plt.plot(barysar[ioksar], np.arange(len(barysar[ioksar])) + ioffset, label='Sardara', linewidth=0.5)
-plt.plot(sarfilt[ioksar], np.arange(sarfilt[ioksar].shape[0]) + ioffset, label='Filt. Sardara')
-plt.plot(corr0, np.arange(corr0.shape[0]) + ioffset, label='Det. Sardara')
+plt.plot(apefilt, np.arange(apefilt.shape[0]), label='Filt. Apecosm')
+plt.plot(barysar[ioksar], np.arange(len(barysar[ioksar])), label='Sardara', linewidth=0.5)
+plt.plot(sarfilt[ioksar], np.arange(sarfilt[ioksar].shape[0]), label='Filt. Sardara')
+plt.plot(corr0, np.arange(corr0.shape[0]), label='Det. Sardara')
 
 plt.legend(ncol=1, fontsize=12, loc='lower right')
 plt.axhline(time[iline], color='k', linestyle='--')
@@ -237,16 +252,17 @@ ax.xaxis.set_major_formatter(formatter0)
 ax.set_xticks(np.arange(160, -120 + 360, 20))
 plt.setp(ax.get_xticklabels(), rotation=45, ha='right')
 
-ax.set_xlim(xlim)
+#ax.set_xlim(xlim)
 ax.set_title('Biomass and catch barycenters')
 plt.text(-140+360+10, time[-25], 'b)', bbox=dicttext, ha='center', va='center')
 ax.yaxis.tick_right()
+ax.grid(True)
 
-############################################################# plotting catch composites
+############################################################ plotting catch composites
 
-xxx0 = -0.05
-yyy0 = 0.23
-www0 = 0.9
+xxx0 = -0.0
+yyy0 = 0.2
+www0 = 0.4
 hhh0 = 0.2
 pos = np.array([xxx0, yyy0, www0, hhh0])
 
@@ -269,16 +285,14 @@ ccc = 3e-8
 cs.set_clim(-ccc, ccc)
 ax.add_feature(cfeature.LAND)
 ax.add_feature(cfeature.COASTLINE)
-cb = plt.colorbar(cs, shrink=0.7, location='right', pad=0.07)
-cb.set_label('Catch anoms. (Tons/m2)')
-ax.set_title('NINO - NINA composites')
+ax.set_title('NINO - NINA composites (Catches)')
 ax.set_extent([130, -60 + 360, -40, 40], crs=projin)
 
 plt.text(compo_sar['lon'].values[-10], compo_sar['lat'].values[-10], 'c)', bbox=dicttext, ha='center', va='center', transform=projin)
 
 #################################################################### Plot Apecosm composites
 
-yyy0 -= hhh0 + 0.03
+yyy0 -= hhh0 + 0.02
 pos = np.array([xxx0, yyy0, www0, hhh0])
 
 ax = plt.axes(pos, projection=ccrs.PlateCarree(central_longitude=180))
@@ -298,19 +312,21 @@ gl.yformatter = LATITUDE_FORMATTER
 cs = ax.pcolormesh(lonf, latf, compo_ape.values[1:, 1:], transform=projin)
 ax.add_feature(cfeature.LAND)
 ax.add_feature(cfeature.COASTLINE)
-cb = plt.colorbar(cs, shrink=0.7, location='right', pad=0.07)
 ccc = 3e-8
 cs.set_clim(-ccc, ccc)
-cb.add_lines(cl)
-cb.set_label('Biomass anoms. (Tons/m2)')
 ax.set_extent([130, -60 + 360, -40, 40], crs=projin)
 plt.text(compo_sar['lon'].values[-10], compo_sar['lat'].values[-10], 'd)', bbox=dicttext, ha='center', va='center', transform=projin)
+ax.set_title('NINO - NINA composites (Biomass)')
+
+
+pos = np.array([xxx0, yyy0 - 0.04 , www0, 0.02])
+cax = plt.axes(pos)
+cb = plt.colorbar(cs, cax=cax, orientation='horizontal')
+cb.set_label('Catch/Biomass anoms. (Tons/m2)')
 
 plt.savefig('plot_validation_apecosm.png', bbox_inches='tight')
 # -
-itest = np.nonzero(np.isnan(apefilt[iokape]) == False)[0]
-apefilt[iokape][itest].shape
-ts1 = apefilt[iokape][itest]
+ts1 = tempape
 ts2 = corr0
 np.corrcoef(ts1, ts2)[0, 1]
 ts1 = (ts1 - np.mean(ts1)) / np.std(ts1)
@@ -321,4 +337,9 @@ import sys
 sys.path.append('../')
 from significativity import sig
 sig(ts1, ts2, use_bres=False, dof=2)
+
 sig(ts1, ts2, use_bres=True, dof=2)
+
+
+
+
