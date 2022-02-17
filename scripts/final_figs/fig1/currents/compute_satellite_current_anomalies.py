@@ -20,7 +20,7 @@ import matplotlib.pyplot as plt
 import cartopy.crs as ccrs
 import cartopy.feature as cfeature
 
-varname = 'vo'
+varname = 'uo'
 
 data = xr.open_dataset('data/dataset-%s-rep-monthly.nc' %varname).isel(depth=0)
 data = data[varname].chunk({'longitude' : 400})
@@ -45,13 +45,13 @@ output.isel(time=0).plot()
 
 nino34 = (abs(output['latitude']) <= 5) & (output['longitude'] >= 190) & (output['longitude'] <= 240)
 ts = output.where(nino34).mean(dim=['longitude', 'latitude'])
-delayed = ts.to_netcdf('satellite_nino_34_%s.nc' %varname, compute=False)
+delayed = ts.to_netcdf('data/satellite_nino_34_%s.nc' %varname, compute=False)
 with ProgressBar():
     delayed.compute()
 
 output_clim = output.groupby('time.month').mean(dim='time')
 output_anom = output.groupby('time.month') - output_clim
-delayed = output.to_netcdf('satellite_anoms_%s.nc' %varname, compute=False)
+delayed = output.to_netcdf('data/satellite_anoms_%s.nc' %varname, compute=False)
 with ProgressBar():
     delayed.compute()
 

@@ -43,12 +43,12 @@ data = data[varname]
 data
 
 ts = (data.where(nino34) * surf).sum(dim=['x', 'y']) / surf.sum(dim=['x', 'y'])
-delayed = ts.to_netcdf('model_nino_34_%s.nc' %varname, compute=False)
+delayed = ts.to_netcdf('data/model_nino_34_%s.nc' %varname, compute=False)
 with ProgressBar():
     delayed.compute()
 
 data_clim = data.groupby('time_counter.month').mean(dim='time_counter')
 data_anom = data.groupby('time_counter.month') - data_clim
-delayed = data.to_netcdf('model_anoms_%s.nc' %varname, compute=False)
+delayed = data.to_netcdf('data/model_anoms_%s.nc' %varname, compute=False)
 with ProgressBar():
     delayed.compute()
