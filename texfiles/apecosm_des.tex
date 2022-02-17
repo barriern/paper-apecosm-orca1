@@ -1,7 +1,7 @@
 \subsection{Marine ecosystem model}
 \label{sec:apecosm}
 
-The marine ecosystem model used in this study is the Apex Predators Ecosystem Model (Apecosm, \citealt{mauryModelingEnvironmentalEffects2007, mauryOverviewAPECOSMSpatialized2010}), which simulates the energy transfer in marine ecosystems. The biological processes include size-based opportunistic trophic interactions, competition for food, allocation of energy between growth and reproduction, somatic and maturity maintenance, predatory and starvation mortality (see \citealt{mauryModelingEnvironmentalEffects2007} for a detailed description of the model). 
+The marine ecosystem model used is the Apex Predators Ecosystem Model (Apecosm, \citealt{mauryModelingEnvironmentalEffects2007, mauryOverviewAPECOSMSpatialized2010}), which simulates the energy transfer in marine ecosystems. The biological processes include size-based opportunistic trophic interactions, competition for food, allocation of energy between growth and reproduction, somatic and maturity maintenance, predatory and starvation mortality (see \citealt{mauryModelingEnvironmentalEffects2007} for a detailed description of the model). 
 
 The physiological bases of the model are derived from the Dynamic Energy Budget theory (DEB, \citealt{kooijmanDynamicEnergyMass2000}). All the physiological rates are temperature-dependent. In addition to biological processes, energy density is also subjected to both passive (via ocean currents) and active (foraging behaviour) advection/diffusion, following \cite{faugerasAdvectiondiffusionreactionSizestructuredFish2005}.
 
@@ -33,11 +33,11 @@ The biological simulation used in this study is forced by the temperature, curre
 %
 %with $\varepsilon(x,y,s,T=0)$ the fish biomass at the beginning of the simulation and $T_{pred}$, $T_{growth}$, $T_{adv}$ and $T_{diff}$ the respective biomass increments due to predation, growth, advection and diffusion, given by equations \ref{eq:pred}, \ref{eq:growth} and \ref{eq:move}, respectively.
 
-Three generic communities are simulated:
+The model simulates three generic communities:
 \begin{itemize}
-\item{The epipelagic community, which remains close to the surface and whose vertical distribution is influenced by temperature and oxygen, and whose functional response is influenced by light.}
-\item{The migrant community, which is influenced by light through vertical habitat and functional response and whose distribution varies between day and night (at depth during daytime and close to the surface at night).}
-\item{The  mesopolagic community, which remains at depth during both night and day, and whose vertical distribution is only impacted by the light.}
+\item{The epipelagic community, located near the surface. Its vertical distribution is influenced by temperature and oxygen while its functional response is influenced by light.}
+\item{The migrant community, which migrate from the surface layers at night to deeper layer during daytime: it is influenced by light through vertical habitat and functional response.}
+\item{The  mesopolagic community, which remains at depth during both night and day: its vertical distribution is only impacted by the light.}
 \end{itemize}
 
 For each community, 100 size classes are simulated, ranging from $0.123cm$ to $196cm$. In order to ensure that the size-spectrum is fully unfolded, the model has been integrated three times. First, the model has been initialized from rest and integrated from 1958 to 2018 (61 years). Then, the end of this first spin-up phase has been used to run another cycle, which was in turn used to run the simulation presented in the following.

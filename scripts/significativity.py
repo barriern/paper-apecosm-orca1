@@ -6,7 +6,7 @@
 #       extension: .py
 #       format_name: light
 #       format_version: '1.5'
-#       jupytext_version: 1.11.3
+#       jupytext_version: 1.10.3
 #   kernelspec:
 #     display_name: Python 3 (ipykernel)
 #     language: python
@@ -37,14 +37,19 @@ def autocorr(ts1):
 '''
 Returns the correlation above which significance is true.
 '''
-def sig(ts1, ts2, dof=12, proba=0.95):
+def sig(ts1, ts2, use_bres=True, dof=12, proba=0.95):
     x1 = autocorr(ts1)
     x2 = autocorr(ts2)
     print('x1', x1)
     print('x2', x2)
     bres = bretherthon(x1, x2)
     print('bres', bres)
-    dl = (len(ts1) - dof) * bres
+    if(use_bres):
+        print('apply breth')
+        dl = (len(ts1) - dof) * bres
+    else:
+        print('no bres')
+        dl = (len(ts1) - dof)
     print('n = ', len(ts1))
     print('dl', dl)
     tlim = student.interval(proba, dl)[-1]

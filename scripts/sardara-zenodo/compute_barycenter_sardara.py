@@ -6,9 +6,9 @@
 #       extension: .py
 #       format_name: light
 #       format_version: '1.5'
-#       jupytext_version: 1.10.3
+#       jupytext_version: 1.11.5
 #   kernelspec:
-#     display_name: Python 3 (ipykernel)
+#     display_name: Python 3
 #     language: python
 #     name: python3
 # ---
@@ -44,6 +44,25 @@ import matplotlib.pyplot as plt
 import numpy as np
 time = barycenter['time'].values
 iok = np.nonzero((time >= 199001) & (time <= 201612))[0]
-plt.plot(barycenter.values[iok])
+barycenter = barycenter.isel(time=iok)
+
+test = xr.open_dataset('barycenter_old_sardara.nc')
+time = test['time'].values
+iok = np.nonzero((time >= 199001) & (time <= 201612))[0]
+test = test['catch'].isel(time=iok)
+
+
+# +
+plt.figure(figsize=(12, 8))
+
+
+plt.plot(test.values, label='new')
+plt.plot(barycenter.values, label='zeno')
+plt.legend(fontsize=15)
+# -
+
+boolean = np.isnan(test.values) | np.isnan(barycenter.values)
+itest = np.nonzero(boolean == False)
+print(np.corrcoef(test.values[itest], barycenter.values[itest]))
 
 

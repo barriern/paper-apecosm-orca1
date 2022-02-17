@@ -6,9 +6,9 @@
 #       extension: .py
 #       format_name: light
 #       format_version: '1.5'
-#       jupytext_version: 1.10.3
+#       jupytext_version: 1.11.5
 #   kernelspec:
-#     display_name: Python 3 (ipykernel)
+#     display_name: Python 3
 #     language: python
 #     name: python3
 # ---
@@ -22,10 +22,10 @@ catch = data1['catch'] + data2['catch']
 catch
 # -
 
-catch = catch.where(abs(data['lat']) <= 10, drop=True)
+catch = catch.where(abs(data1['lat']) <= 10, drop=True)
 catch
 
-catch = catch.where((data['lon'] >= 120) & (data['lon'] <= -120+360))
+catch = catch.where((data1['lon'] >= 120) & (data1['lon'] <= -120+360))
 
 barycenter = (catch['lon'] * catch).sum(dim=['lon', 'lat']) / catch.sum(dim=['lon', 'lat'])
 barycenter.name = 'catch'
