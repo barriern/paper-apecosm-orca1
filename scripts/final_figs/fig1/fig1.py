@@ -156,7 +156,7 @@ latvec = modmesh['gphit'].values
 quivargs = {}
 # quivargs['regrid_shape'] = (30, 20)
 quivargs['scale'] = 1 
-quivargs['width'] = 0.005
+quivargs['width'] = 0.004
     
 iiii = 3
 ax = axgr[iiii]
