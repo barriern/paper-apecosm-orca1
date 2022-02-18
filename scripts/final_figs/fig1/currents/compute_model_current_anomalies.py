@@ -20,8 +20,8 @@ import matplotlib.pyplot as plt
 import cartopy.crs as ccrs
 import cartopy.feature as cfeature
 
-pattern = 'speed_V'
-varname = 'vo'
+pattern = 'speed_U'
+varname = 'uo'
 
 dirin = 'data/'
 mesh = xr.open_dataset('%s/pacific_mesh_mask.nc' %dirin).isel(z=0)
@@ -42,7 +42,7 @@ data = xr.open_mfdataset('%s/*%s*nc' %(dirin, pattern)).isel(olevel=0)
 data = data[varname]
 data
 
-ts = (data.where(nino34) * surf).sum(dim=['x', 'y']) / surf.sum(dim=['x', 'y'])
+ts = (data.where(nino34) * surf).sum(dim=['x', 'y']) / surf.where(nino34).sum(dim=['x', 'y'])
 delayed = ts.to_netcdf('data/model_nino_34_%s.nc' %varname, compute=False)
 with ProgressBar():
     delayed.compute()
@@ -52,3 +52,5 @@ data_anom = data.groupby('time_counter.month') - data_clim
 delayed = data.to_netcdf('data/model_anoms_%s.nc' %varname, compute=False)
 with ProgressBar():
     delayed.compute()
+
+

@@ -26,7 +26,7 @@ letters = letters[1:]
 proj = ccrs.PlateCarree(central_longitude=180)
 proj2 = ccrs.PlateCarree(central_longitude=0)
 
-dictpbox = {'transform': proj2, 'linestyle': '--', 'linewidth': 1}
+dictpbox = {'transform': proj2, 'linestyle': '--', 'linewidth': 1, 'color':'k'}
 
 gridparams = {'crs': ccrs.PlateCarree(central_longitude=0), 'draw_labels':True, 'linewidth':0.5, 'color':'gray', 'alpha':0.5, 'linestyle':'--'}
 
@@ -141,11 +141,28 @@ except:
 ax.set_title('Model SST / ONI')
 
 ################################################################### Plotting covariances SSH MOD
+ilat = slice(None, -3)
+modcovv = xr.open_dataset('data/model_covariance_nino34_vo.nc').isel(y=ilat)
+modcovv = modcovv['__xarray_dataarray_variable__']
+
+modcovu = xr.open_dataset('data/model_covariance_nino34_uo.nc').isel(y=ilat)
+modcovu = modcovu['__xarray_dataarray_variable__']
+modcovu
+
+modmesh = xr.open_dataset('data/pacific_mesh_mask.nc').isel(z=0, y=ilat)
+lonvec = modmesh['glamt'].values
+latvec = modmesh['gphit'].values
+
+quivargs = {}
+# quivargs['regrid_shape'] = (30, 20)
+quivargs['scale'] = 1 
+quivargs['width'] = 0.005
     
 iiii = 3
 ax = axgr[iiii]
 
 cs = ax.pcolormesh(lonf, latf, modsshoni[1:, 1:].T, transform=proj2)
+ax.quiver(lonvec, latvec, modcovu.values, modcovv.values, transform=ccrs.PlateCarree(), **quivargs, regrid_shape=(30, 30))
 #cs.set_clim(-ccc, ccc)
 ax.add_feature(cfeature.LAND, zorder=1000, color='lightgray')
 ax.add_feature(cfeature.COASTLINE, zorder=1001)
@@ -174,11 +191,23 @@ except:
 ax.set_title('Model SSH / ONI')
 
 ################################################################### Plotting covariances SSH OBS
+
+satcovu = xr.open_dataset('data/sat_covariance_nino34_uo.nc')
+satcovu = satcovu['__xarray_dataarray_variable__']
+satcovu
+
+satcovv = xr.open_dataset('data/sat_covariance_nino34_vo.nc')
+satcovv = satcovv['__xarray_dataarray_variable__']
+satcovv
+
+lonobs = satcovu['longitude'].values
+latobs = satcovu['latitude'].values
     
 iiii = 1
 ax = axgr[iiii]
 
 cs = ax.pcolormesh(lonsat, latsat, obssshoni[:, :].T, transform=proj2, shading='auto')
+ax.quiver(lonobs, latobs, satcovu.values, satcovv.values, transform=ccrs.PlateCarree(), **quivargs, regrid_shape=(20, 20))
 #cs.set_clim(-ccc, ccc)
 ax.add_feature(cfeature.LAND, zorder=1000, color='lightgray')
 ax.add_feature(cfeature.COASTLINE, zorder=1001)
@@ -222,7 +251,6 @@ data = xr.open_dataset("data/simulated_enso_index.nc")
 years = data['time_counter.year'].values 
 months = data['time_counter.month'].values
 enso = data['enso'].rolling(time_counter=3, center=True).mean()
-#enso = data['enso'].values
 nmod = len(time)
 
 istart = np.nonzero(dnino == 195802)[0][0]
@@ -263,16 +291,40 @@ ax.text(time[-1] - 50, -3, 'a' + ")", ha='center', va='center', bbox=dicttext)
 
 ####################################### Plotting SSH time-series
 
-sshobs = xr.open_dataset('data/ssh_obs_equatorial_mean.nc').sel(time=slice('1993-01-01', '2018-12-31'))
-sshmod = xr.open_dataset('data/ssh_simulated_equatorial_mean.nc')
+curobs = xr.open_dataset('data/satellite_nino_34_uo.nc')
+uobs = curobs['uo']
+uobs_clim = uobs.groupby('time.month').mean('time')
+uobs = uobs.groupby('time.month') - uobs_clim
 
-sshobs = sshobs.groupby('time.month') - sshobs.groupby('time.month').mean(dim='time')
-sshmod = sshmod.groupby('time_counter.month') - sshmod.sel(time_counter=slice('1993-01-01', '2018-12-31')).groupby('time_counter.month').mean(dim='time_counter')
+curobs = xr.open_dataset('data/satellite_nino_34_vo.nc')
+vobs = curobs['vo']
+vobs_clim = uobs.groupby('time.month').mean('time')
+vobs = uobs.groupby('time.month') - vobs_clim
 
-datemod = sshmod['time_counter.year'].values * 100 + sshmod['time_counter.month'].values
-iii = np.nonzero((datemod >= 199301) & (datemod <= 201812))[0]
+curmod = xr.open_dataset('data/model_nino_34_uo.nc')
+umod = curmod['__xarray_dataarray_variable__']  
+umod_clim = umod.groupby('time_counter.month').mean('time_counter')
+umod = umod.groupby('time_counter.month') - umod_clim
 
-print('Correlation SSH', np.corrcoef(sshobs['ssh'].values, sshmod['ssh'].values[iii])[0, 1])
+curmod = xr.open_dataset('data/model_nino_34_vo.nc')
+vmod = curmod['__xarray_dataarray_variable__']
+vmod_clim = umod.groupby('time_counter.month').mean('time_counter')
+vmod = umod.groupby('time_counter.month') - vmod_clim
+
+dateobs = np.array([(y * 100 + m) for y, m in zip(uobs['time.year'].values, uobs['time.month'].values)])
+datemod = np.array([(y * 100 + m) for y, m in zip(umod['time_counter.year'].values, umod['time_counter.month'].values)])
+tmod = np.arange(len(umod))
+
+offset = np.nonzero(datemod == 199301)[0][0]
+tobs = np.arange(len(uobs)) + offset
+
+corrumod = umod.sel(time_counter=slice('1993-01-01', '2018-12-31'))
+corrumod
+
+corruobs = uobs.sel(time=slice('1993-01-01', '2018-12-31'))
+corruobs
+
+print('Correlation U', np.corrcoef(corruobs.values, corrumod.values)[0, 1])
 
 left = 0.55
 
@@ -281,19 +333,20 @@ axes = (left, bottom, width, height)
 alpha = 0.7
 
 ax = plt.axes(axes)
-l3 = plt.plot(time, sshmod['ssh'].values * 100, 'k', label='Sim.', alpha=alpha)
-l1 = plt.plot(time[iii], sshobs['ssh'].values * 100, label='Sim.', alpha=alpha, color='orange')
+l3 = plt.plot(tmod, umod, 'k', label='Sim.', alpha=alpha)
+l1 = plt.plot(tobs, uobs, label='Sim.', alpha=alpha, color='orange')
 plt.legend([l1[0], l3[0]], ['Obs.', 'Model'], loc=0, fontsize=8, ncol=2)
-plt.ylabel('[cm]')
-plt.title('SSH Nino34')
+plt.ylabel('[m/s]')
+plt.title('U Nino34')
 
 #plt.legend(loc=0)
 ax.set_xticks(time[xticks])
 ax.set_xticklabels(labels[xticks], rotation=45, ha='right')
 ax.grid(True)
 ax.set_xlim(time.min(), time.max())
-ax.set_ylim(-20, 20)
-ax.text(time[-1] - 50, -15, 'd' + ")", ha='center', va='center', bbox=dicttext)
+ccc = 0.7
+ax.set_ylim(-ccc, ccc)
+ax.text(time[-1] - 50, -0.5, 'd' + ")", ha='center', va='center', bbox=dicttext)
 
 plt.savefig('fig1', bbox_inches='tight')
 # -
