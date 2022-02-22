@@ -156,14 +156,16 @@ latvec = modmesh['gphit'].values
 quivargs = {}
 quivargs['scale'] = 1 
 quivargs['width'] = 0.004
-    
+xkey = 0.92
+ykey = 0.32
+
 iiii = 3
 ax = axgr[iiii]
 
 cs = ax.pcolormesh(lonf, latf, modsshoni[1:, 1:].T, transform=proj2)
 q = ax.quiver(lonvec, latvec, modcovu.values, modcovv.values, transform=ccrs.PlateCarree(), **quivargs, regrid_shape=(30, 30))
 ref = 0.05
-ax.quiverkey(q, 0.92, 0.4, ref , '%dcm/s' %(ref * 100) , color='k')
+plt.quiverkey(q, xkey, ykey , ref, '%dcm/s' %(ref * 100) , color='k')
 
 #cs.set_clim(-ccc, ccc)
 ax.add_feature(cfeature.LAND, zorder=1000, color='lightgray')
@@ -209,9 +211,9 @@ iiii = 1
 ax = axgr[iiii]
 
 cs = ax.pcolormesh(lonsat, latsat, obssshoni[:, :].T, transform=proj2, shading='auto')
-ax.quiver(lonobs, latobs, satcovu.values, satcovv.values, transform=ccrs.PlateCarree(), **quivargs, regrid_shape=(20, 20))
+q = ax.quiver(lonobs, latobs, satcovu.values, satcovv.values, transform=ccrs.PlateCarree(), **quivargs, regrid_shape=(20, 20))
 ref = 0.05
-ax.quiverkey(q, 0.92, 0.4, ref , '%d cm/s' %(ref * 100) , color='k')
+plt.quiverkey(q, xkey, ykey , ref, '%dcm/s' %(ref * 100) , color='k')
 
 ax.add_feature(cfeature.LAND, zorder=1000, color='lightgray')
 ax.add_feature(cfeature.COASTLINE, zorder=1001)
