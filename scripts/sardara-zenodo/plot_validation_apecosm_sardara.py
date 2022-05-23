@@ -6,9 +6,9 @@
 #       extension: .py
 #       format_name: light
 #       format_version: '1.5'
-#       jupytext_version: 1.11.5
+#       jupytext_version: 1.10.3
 #   kernelspec:
-#     display_name: Python 3
+#     display_name: Python 3 (ipykernel)
 #     language: python
 #     name: python3
 # ---
@@ -254,7 +254,7 @@ plt.setp(ax.get_xticklabels(), rotation=45, ha='right')
 
 #ax.set_xlim(xlim)
 ax.set_title('Biomass and catch barycenters')
-plt.text(-140+360+10, time[-25], 'b)', bbox=dicttext, ha='center', va='center')
+plt.text(-140+360+10-20, time[-10], 'b)', bbox=dicttext, ha='center', va='center')
 ax.yaxis.tick_right()
 ax.grid(True)
 
