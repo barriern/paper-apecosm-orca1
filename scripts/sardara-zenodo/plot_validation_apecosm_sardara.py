@@ -254,7 +254,7 @@ plt.setp(ax.get_xticklabels(), rotation=45, ha='right')
 
 #ax.set_xlim(xlim)
 ax.set_title('Biomass and catch barycenters')
-plt.text(-140+360+10-20, time[-10], 'b)', bbox=dicttext, ha='center', va='center')
+plt.text(-140+360+10-20, time[-10], 'd)', bbox=dicttext, ha='center', va='center')
 ax.yaxis.tick_right()
 ax.grid(True)
 
@@ -288,7 +288,7 @@ ax.add_feature(cfeature.COASTLINE)
 ax.set_title('NINO - NINA composites (Catches)')
 ax.set_extent([130, -60 + 360, -40, 40], crs=projin)
 
-plt.text(compo_sar['lon'].values[-10], compo_sar['lat'].values[-10], 'c)', bbox=dicttext, ha='center', va='center', transform=projin)
+plt.text(compo_sar['lon'].values[-10], compo_sar['lat'].values[-10], 'b)', bbox=dicttext, ha='center', va='center', transform=projin)
 
 #################################################################### Plot Apecosm composites
 
@@ -315,7 +315,7 @@ ax.add_feature(cfeature.COASTLINE)
 ccc = 3e-8
 cs.set_clim(-ccc, ccc)
 ax.set_extent([130, -60 + 360, -40, 40], crs=projin)
-plt.text(compo_sar['lon'].values[-10], compo_sar['lat'].values[-10], 'd)', bbox=dicttext, ha='center', va='center', transform=projin)
+plt.text(compo_sar['lon'].values[-10], compo_sar['lat'].values[-10], 'c)', bbox=dicttext, ha='center', va='center', transform=projin)
 ax.set_title('NINO - NINA composites (Biomass)')
 
 
