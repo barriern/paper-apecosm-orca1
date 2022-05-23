@@ -1,23 +1,26 @@
 \subsection{Marine ecosystem model}
 \label{sec:apecosm}
 
-The marine ecosystem model used is the Apex Predators Ecosystem Model (Apecosm, \citealt{mauryModelingEnvironmentalEffects2007, mauryOverviewAPECOSMSpatialized2010}), which simulates the energy transfer in marine ecosystems. The biological processes include size-based opportunistic trophic interactions, competition for food, allocation of energy between growth and reproduction, somatic and maturity maintenance, predatory and starvation mortality (see \citealt{mauryModelingEnvironmentalEffects2007} for a detailed description of the model). 
+We use the Apex Predators Ecosystem Model (Apecosm, \citealt{mauryModelingEnvironmentalEffects2007, mauryOverviewAPECOSMSpatialized2010}) to simulate the energy transfer through marine ecosystems. 
+APECOSM is a eulerian ecosystem model that represents mechanistically the 3D dynamics of size-structured pelagic populations and communities. It integrates individual, population and community levels and includes the effects of life-history diversity with a trait-based approach (Maury and Poggiale, 2013). In APECOSM, the uptake and use of energy for individual growth, development, reproduction, somatic and maturity maintenance are modelled according to the DEB theory (Kooijman, 2010). The model considers important ecological processes such as opportunistic size-structured trophic interactions and competition for food, predatory, disease, ageing and starvation mortality, key physiological aspects such as vision and respiration, as well as essential behaviours such as 3D passive transport by marine currents and active habitat-based movements (\cite{faugerasAdvectiondiffusionreactionSizestructuredFish2005}), schooling and swarming (see \citealt{mauryModelingEnvironmentalEffects2007}, Maury, 2017 and Maury and Poggiale, 2013 for a detailed description of the model). APECOSM is driven by 3D outputs from the physics-biogeochemistry coupled model NEMO-PISCES (3D fields of temperature and horizontal currents, vertical mixing, small and large phytoplankton, small and large zooplankton, detritus, light and oxygen) that constrain the biological and ecological dynamics at various levels.
+The bio-energetic bases of the model are based on the Dynamic Energy Budget theory (DEB, \citealt{kooijmanDynamicEnergyMass2000}). All the metabolic rates are temperature-dependent and corrected by an Arrhenius factor (Maury, 2007; Maury and Poggiale, 2013). In the model configuration used here, we do not prescribe a limited temperature range any of the simulated communities.
 
-The physiological bases of the model are derived from the Dynamic Energy Budget theory (DEB, \citealt{kooijmanDynamicEnergyMass2000}). All the physiological rates are temperature-dependent. In addition to biological processes, energy density is also subjected to both passive (via ocean currents) and active (foraging behaviour) advection/diffusion, following \cite{faugerasAdvectiondiffusionreactionSizestructuredFish2005}.
-
-Changes in fish biomass are given by:
+The dynamics of communities is determined by integrating the core state equation below:
 
 \begin{equation}
 \partial_t \varepsilon = \underbrace{- \partial_w(\gamma \varepsilon) + \frac{\gamma}{w}\varepsilon}_{Growth} 
-\underbrace{- M \varepsilon \vphantom{\frac{\gamma}{w}\varepsilon}}_{Predation}
-\underbrace{-\overrightarrow{\nabla}.(\overrightarrow{V} \varepsilon) \vphantom{\frac{\gamma}{w}\varepsilon}}_{Adv} 
-\underbrace{+ \overrightarrow{\nabla} . (D \overrightarrow{\nabla} \varepsilon) \vphantom{\frac{\gamma}{w}\varepsilon}}_{Diff.}
+\underbrace{- M \varepsilon \vphantom{\frac{\gamma}{w}\varepsilon}}_{Mortalities}
+\underbrace{-\overrightarrow{\nabla}.(\overrightarrow{V} \varepsilon) \vphantom{\frac{\gamma}{w}\varepsilon}}_{3D Adv} 
+\underbrace{+ \overrightarrow{\nabla} . (D \overrightarrow{\nabla} \varepsilon) \vphantom{\frac{\gamma}{w}\varepsilon}}_{3D Diff.}
 \label{eq:apecosm_trend}
 \end{equation}
 
-where $\varepsilon$  is the fish biomass density, $w$ the weight, $\gamma$ is the growth rate, $M$ is the predation mortality rate (computed using equation 12 of \citealt{mauryIndividualsPopulationsCommunities2013}), $V$ and $D$ the sum of passive and active velocities and diffusivity coefficients (computed following \citealt{faugerasAdvectiondiffusionreactionSizestructuredFish2005}).
+where $\varepsilon$  is the fish biomass density, $w$ the weight, $\gamma$ is the growth rate, $M$ represent the different mortality rates (computed using equation 12 of \citealt{mauryIndividualsPopulationsCommunities2013}), $V$ and $D$ the sum of passive and active velocities and diffusivity coefficients (computed following \citealt{faugerasAdvectiondiffusionreactionSizestructuredFish2005}). Reproduction is considered through a Dirichlet boundary condition in w0 that accounts for by the reproductive output from all mature organisms.
 
-The biological simulation used in this study is forced by the temperature, current velocity, oxygen, low-trophic level concentration (diatoms, mesozooplankton and microzooplankton, big particulate organic matter), photosynthetically active radiation (PAR) and layer thickness outputs of the NEMO-PISCES simulation (section \ref{sec:nemo}). It uses a daily time-step for biological processes, which is decomposed into a day/night cycle, whose duration depends on the latitude and on the day of year \citep{forsytheModelComparisonDaylength1995}. A sub time-stepping ($dt =0.8h$) is used for advective and diffusive processes in order to insure numerical stability.
+In APECOSM, the energy ingested by organisms fuels individual metabolism according to the DEB theory. Ingestion is proportional to a functional Holing type II response function that depends on the visibility of prey, their aggregation in schools and temperature. This functional response can be written in a simplified way as follows:
+
+
+The APECOSM simulation used in this study is forced by temperature, horizontal current velocity, dissolved oxygen concentration, low-trophic level concentration (diatoms, mesozooplankton and microzooplankton, big particulate organic matter), photosynthetically active radiation (PAR) and dynamical layer thickness outputed from the NEMO-PISCES simulation (section \ref{sec:nemo}). It uses a daily time-step for biological processes, which is decomposed into a day/night cycle, whose duration depends on the latitude and on the day of the year \citep{forsytheModelComparisonDaylength1995}. A sub time-stepping ($dt =0.8h$) is used for horizontal advection and diffusion in order to insure numerical stability.
 
 %In order to assess the mechanisms of fish biomass response to ENSO variability, biomass changes induced by growth, predation, advection and diffusion are stored for the entire simulation. Therefore, the biomass for a given size class, at a given location and for a specific time can be reconstructed by using the following equation:
 %
@@ -33,15 +36,15 @@ The biological simulation used in this study is forced by the temperature, curre
 %
 %with $\varepsilon(x,y,s,T=0)$ the fish biomass at the beginning of the simulation and $T_{pred}$, $T_{growth}$, $T_{adv}$ and $T_{diff}$ the respective biomass increments due to predation, growth, advection and diffusion, given by equations \ref{eq:pred}, \ref{eq:growth} and \ref{eq:move}, respectively.
 
-The model simulates three generic communities:
+Three interactive communities are simulated in the present study:
 \begin{itemize}
-\item{The epipelagic community, located near the surface. Its vertical distribution is influenced by temperature and oxygen while its functional response is influenced by light.}
-\item{The migrant community, which migrate from the surface layers at night to deeper layer during daytime: it is influenced by light through vertical habitat and functional response.}
-\item{The  mesopolagic community, which remains at depth during both night and day: its vertical distribution is only impacted by the light.}
+\item{The epipelagic community, which includes organisms feeding during the day near the surface such as yellowfin or skipjack tunas for instance. Its vertical distribution is influenced by light, visible food, temperature and oxygen while its functional response is influenced by light.}
+\item{The migratory mesopelagic community, which feeds in the surface layer at night and migrate to deeper waters during daytime. Its vertical distribution is influenced by light and visible food during the night.}
+\item{The resident mesopelagic community, which remains at depth during both night and day. Its vertical distribution is influenced by light and visible food during the day.}
 \end{itemize}
 
-For each community, 100 size classes are simulated, ranging from $0.123cm$ to $196cm$. In order to ensure that the size-spectrum is fully unfolded, the model has been integrated three times. First, the model has been initialized from rest and integrated from 1958 to 2018 (61 years). Then, the end of this first spin-up phase has been used to run another cycle, which was in turn used to run the simulation presented in the following.
+For each community, equation (1) is integrated over 100 size classes, ranging from $0.123cm$ to $196cm$. In order to ensure that the size-spectrum is fully unfolded and a pseudo stationary regime is reached, the model has been integrated three times. First, it has been initialized with an arbitrary small biomass value in every size-class and integrated from 1958 to 2018 (61 years). Then, the end of this first spin-up phase has been used to run another cycle, which was in turn used to initialize the simulation presented in the following.
 
 %Epilagic feed on other epilagic fish only during night daytime. Migrants feed on other migrants and epipelagics, only during night-time. While mesopelagics feed on migrant and mesopelagic during daytime, and only on other mesopelagic during night-time.
 
-%In the following, the focus will be put on the epipelagic community, since its near-surface location makes it more sensitive to ENSO variability \citep{lemezoNaturalVariabilityMarine2016}2016}.
+In the following, the focus is put on the epipelagic community only , since its near-surface location makes it more sensitive to ENSO variability \citep{lemezoNaturalVariabilityMarine2016} and since it corresponds to organisms such as skipjack and yellowfin that are targeted by industrial purse seine fleet that represent the bulk of tuna catches in the region and that have been reported to respond to ENSO (Lehodey, 1997).
