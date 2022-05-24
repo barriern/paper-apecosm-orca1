@@ -16,15 +16,16 @@ The dynamics of communities is determined by integrating the core state equation
 \label{eq:apecosm_trend}
 \end{equation}
 
-where $\varepsilon$  is the fish biomass density, $w$ the weight, $\gamma$ is the growth rate, $M$ represent the different mortality rates (computed using equation 12 of \citealt{mauryIndividualsPopulationsCommunities2013}), $V$ and $D$ the sum of passive and active velocities and diffusivity coefficients (computed following \citealt{faugerasAdvectiondiffusionreactionSizestructuredFish2005}). The growth contribution is made of an advection term (i.e. biomass transfer along the size-spectrum, left-hand side) and of a source term (i.e. biomass creation, right-hand side). Reproduction is considered through a Dirichlet boundary condition in $w_0$ that is accounted for by the reproductive output from all mature organisms.
+where $\varepsilon$  is the fish biomass density, $w$ the weight, $\gamma$ is the growth rate, $M$ represents the different mortality rates (computed using equation 12 of \citealt{mauryIndividualsPopulationsCommunities2013}), $V$ and $D$ the sum of passive and active velocities and diffusivity coefficients (computed following \citealt{faugerasAdvectiondiffusionreactionSizestructuredFish2005}). The growth contribution is made of an advection (i.e. biomass transfer along the size-spectrum, left-hand side) and a source term (i.e. biomass creation, right-hand side). Reproduction is considered through a Dirichlet boundary condition in $w_0$ that is accounted for by the reproductive outputs from all mature organisms.
 
 In APECOSM, the energy ingested by organisms fuels individual metabolism according to the DEB theory. Ingestion is proportional to a functional Holing type II response function that depends on the visibility of prey, their aggregation in schools and temperature. This functional response can be written in a simplified way as follows:
 
 \begin{displaymath}
-f_{c, w} = \frac{p_{c, w}}{C_{c, w} + p_{c, w}}
+f_{w} = \frac{P_{w}}{C_{w} + P_{w}}
 \end{displaymath}
 
-with $p_{c, w}$ the available preys for community $c$ and size-class $w$ and $C_{c, w}$ the half-saturation constant, which depends on light and temperature.
+with $P_{w}$ the available preys size-class $w$ and $C_{w}$ the half-saturation constant.
+%, which depends on weight, light and temperature.
 
 % \begin{displaymath}
 % p_{c, u} = \sum_{k=1}^{N_{com}} \left[\int_{v=w_{egg}}^{w_{max}} P^{sch}_{k, v}\ s_{u, v}\ \xi_{k, v}\ dv\right] + \sum_{p=1}^{N_{ltl}} \left[ P^{sch}_{p}\ s_{u, p}\ \xi_{p}\right]
@@ -34,7 +35,7 @@ with $p_{c, w}$ the available preys for community $c$ and size-class $w$ and $C_
 % C_{c, w} = \frac{C_{REF}}{T_{ahr}\times h_c^{light}\times h_c^{tlim}\times W_{w}^{\chi}}
 % \end{displaymath}
 
-The APECOSM simulation used in this study is forced by temperature, horizontal current velocity, dissolved oxygen concentration, low-trophic level concentration (diatoms, mesozooplankton and microzooplankton, big particulate organic matter), photosynthetically active radiation (PAR) and dynamical layer thickness outputs from the NEMO-PISCES simulation (section \ref{sec:nemo}). It uses a daily time-step for biological processes, which is decomposed into a day/night cycle, whose duration depends on the latitude and on the day of the year \citep{forsytheModelComparisonDaylength1995}. A sub time-stepping ($dt =0.8h$) is used for horizontal advection and diffusion in order to insure numerical stability.
+The APECOSM simulation used in this study is forced by 3D temperature, horizontal current velocity, dissolved oxygen concentration, low-trophic level concentration (diatoms, mesozooplankton and microzooplankton, big particulate organic matter), photosynthetically active radiation (PAR) and dynamical layer thickness outputs from the NEMO-PISCES simulation (section \ref{sec:nemo}). It uses a daily time-step for biological processes, which is decomposed into a day/night cycle, whose duration depends on the latitude and on the day of the year \citep{forsytheModelComparisonDaylength1995}. A sub time-stepping ($dt =0.8h$) is used for horizontal advection and diffusion in order to insure numerical stability.
 
 %In order to assess the mechanisms of fish biomass response to ENSO variability, biomass changes induced by growth, predation, advection and diffusion are stored for the entire simulation. Therefore, the biomass for a given size class, at a given location and for a specific time can be reconstructed by using the following equation:
 %
@@ -50,14 +51,14 @@ The APECOSM simulation used in this study is forced by temperature, horizontal c
 %
 %with $\varepsilon(x,y,s,T=0)$ the fish biomass at the beginning of the simulation and $T_{pred}$, $T_{growth}$, $T_{adv}$ and $T_{diff}$ the respective biomass increments due to predation, growth, advection and diffusion, given by equations \ref{eq:pred}, \ref{eq:growth} and \ref{eq:move}, respectively.
 
-Three interactive communities are simulated in the present study:
+Three interactive communities are simulated:
 \begin{itemize}
 \item{The epipelagic community, which includes organisms feeding during the day near the surface such as yellowfin or skipjack tunas for instance. Its vertical distribution is influenced by light, visible food, temperature and oxygen while its functional response is influenced by light.}
 \item{The migratory mesopelagic community, which feeds in the surface layer at night and migrates to deeper waters during daytime. Its vertical distribution is influenced by light and visible food during the night.}
 \item{The resident mesopelagic community, which remains at depth during both night and day. Its vertical distribution is influenced by light and visible food during the day.}
 \end{itemize}
 
-For each community, equation (1) is integrated over 100 size classes, ranging from $0.123cm$ to $196cm$. In order to ensure that the size-spectrum is fully unfolded and a pseudo stationary regime is reached, the model has been integrated three times. First, it has been initialized with an arbitrary small biomass value in every size-class and integrated from 1958 to 2018 (61 years). Then, the end of this first spin-up phase has been used to run another cycle, which was in turn used to initialize the simulation presented in the following.
+For each community, equation \ref{eq:apecosm_trend} is integrated over 100 size classes, ranging from $0.123cm$ to $196cm$. In order to ensure that the size-spectrum is fully unfolded and a pseudo stationary regime is reached, the model has been integrated three times. First, it has been initialized with an arbitrary small biomass value in every size-class and community and integrated from 1958 to 2018 (61 years). Then, the end of this first spin-up phase has been used to run another cycle, which was in turn used to initialize the simulation presented in this study.
 
 %Epilagic feed on other epilagic fish only during night daytime. Migrants feed on other migrants and epipelagics, only during night-time. While mesopelagics feed on migrant and mesopelagic during daytime, and only on other mesopelagic during night-time.
 
