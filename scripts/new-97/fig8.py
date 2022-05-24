@@ -334,6 +334,19 @@ set_ticks(ax, cpt)
 
 cpt += 1
 ax = plt.subplot(2, 3, cpt)
+toplot = (repfonct).sel(l=l, method='nearest')
+cs, cl = plot(ax, toplot.values, 1, clim=None, contour=False)
+cb = plt.colorbar(cs, )
+ax.text(lon1, time1, letters[cpt - 1], **textprop)
+ax.set_title('Func. response')
+toplot = plk
+cl = ax.contour(lon, time + 1, toplot, 6, colors='k', linewidths=1)
+ax.contour(lon, time + 1, toplot, colors='k', levels=[0], linewidths=2)
+plt.clabel(cl)
+set_ticks(ax, cpt)
+
+cpt += 1
+ax = plt.subplot(2, 3, cpt)
 toplot = (gamma1).sel(l=l, method='nearest')
 cs, cl = plot(ax, toplot.values, 1, clim=None, contour=False)
 cb = plt.colorbar(cs, )
@@ -353,19 +366,6 @@ cb = plt.colorbar(cs, )
 ax.text(lon1, time1, letters[cpt - 1], **textprop)
 ax.set_title('Pred. mort. rate')
 toplot = (oope * wstep).sel(l=20, method='nearest')
-cl = ax.contour(lon, time + 1, toplot, 6, colors='k', linewidths=1)
-ax.contour(lon, time + 1, toplot, colors='k', levels=[0], linewidths=2)
-plt.clabel(cl)
-set_ticks(ax, cpt)
-
-cpt += 1
-ax = plt.subplot(2, 3, cpt)
-toplot = (repfonct).sel(l=l, method='nearest')
-cs, cl = plot(ax, toplot.values, 1, clim=None, contour=False)
-cb = plt.colorbar(cs, )
-ax.text(lon1, time1, letters[cpt - 1], **textprop)
-ax.set_title('Func. response')
-toplot = plk
 cl = ax.contour(lon, time + 1, toplot, 6, colors='k', linewidths=1)
 ax.contour(lon, time + 1, toplot, colors='k', levels=[0], linewidths=2)
 plt.clabel(cl)
