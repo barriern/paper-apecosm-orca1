@@ -116,6 +116,7 @@ dicttext = dict(boxstyle='round', facecolor='lightgray', alpha=1)
 textprop = {}
 textprop['bbox'] = dicttext
 textprop['ha'] = 'center'
+textprop['fontsize'] = 20
 textprop['va'] = 'center'
 textprop['zorder'] = 1000
 
@@ -145,8 +146,9 @@ def read_pisces_variable(varname, zmax=50, anom=False):
 
 
 # +
-fig = plt.figure(figsize=(13, 14), facecolor='white')
+fig = plt.figure(figsize=(18, 13), facecolor='white')
 plt.rcParams['font.size'] = 15
+plt.subplots_adjust(wspace=0.1, hspace=0.08)
 
 thetao = read_pisces_variable('thetao', 50, True)
 anom = True
@@ -161,112 +163,6 @@ lon1 = 255
 
 time2 = len(time) - 2
 lon2 = 255
-
-axgr = ImageGrid(fig, 111, nrows_ncols=(3, 2), axes_pad=(0.7, 0.4), cbar_pad=0.1, direction='row', aspect=False, cbar_mode="each", share_all=True, label_mode='L')
-
-ccc = 150
-cpt = -1
-
-cprop = {}
-cprop['colors'] = 'k'
-cprop['linewidths']= 1
-
-clist = [150, 15, 5]
-cont = True
-iii = 0
-
-l = 3
-
-ccc = None
-
-ccc = 60
-cpt += 1 
-ax = axgr[cpt]
-toplot = (wstep * (growth)).sel(l=l, method='nearest')
-cs, cl = plot(ax, toplot.values, 1, clim=ccc, contour=0)
-cb = plt.colorbar(cs, cax=axgr.cbar_axes[cpt])
-#cb.set_label('J/m2')
-ax.text(lon1, time1, letters[cpt], **textprop)
-ax.text(lon2, time2, '%scm' %l, **textprop)
-ax.set_title('Growth (J/m2/s)')
-cl = ax.contour(lon, time + 1, toplot.cumsum(dim='time'), colors='k', levels=np.linspace(-400, 400, 11), linewidths=1)
-ax.contour(lon, time + 1, toplot.cumsum(dim='time'), colors='k', levels=[0], linewidths=2)
-plt.clabel(cl)
-
-
-cpt += 1
-ax = axgr[cpt]
-toplot = (wstep * (pred)).sel(l=l, method='nearest')
-cs, cl = plot(ax, toplot.values, 1, clim=ccc, contour=False)
-cb = plt.colorbar(cs, cax=axgr.cbar_axes[cpt])
-ax.text(lon1, time1, letters[cpt], **textprop)
-ax.text(lon2, time2, '%scm' %l, **textprop)
-ax.set_title('Pred (J/m2/s)')
-cl = ax.contour(lon, time + 1, toplot.cumsum(dim='time'), colors='k', levels=np.linspace(-400, 400, 11), linewidths=1)
-ax.contour(lon, time + 1, toplot.cumsum(dim='time'), colors='k', levels=[0], linewidths=2)
-plt.clabel(cl)
-
-cpt += 1
-ax = axgr[cpt]
-toplot = (gamma1).sel(l=l, method='nearest')
-cs, cl = plot(ax, toplot.values, 1, clim=None, contour=False)
-cb = plt.colorbar(cs, cax=axgr.cbar_axes[cpt])
-ax.text(lon1, time1, letters[cpt], **textprop)
-ax.text(lon2, time2, '%scm' %l, **textprop)
-ax.set_title('Pred')
-toplot = thetao
-cl = ax.contour(lon, time + 1, toplot, 6, colors='k', linewidths=1)
-ax.contour(lon, time + 1, toplot, colors='k', levels=[0], linewidths=2)
-plt.clabel(cl)
-
-cpt += 1
-ax = axgr[cpt]
-toplot = (mort).sel(l=l, method='nearest')
-cs, cl = plot(ax, toplot.values, 1, clim=None, contour=False)
-cb = plt.colorbar(cs, cax=axgr.cbar_axes[cpt])
-ax.text(lon1, time1, letters[cpt], **textprop)
-ax.text(lon2, time2, '%scm' %l, **textprop)
-ax.set_title('Pred. mort.')
-toplot = (oope * wstep).sel(l=20, method='nearest')
-cl = ax.contour(lon, time + 1, toplot, 6, colors='k', linewidths=1)
-ax.contour(lon, time + 1, toplot, colors='k', levels=[0], linewidths=2)
-plt.clabel(cl)
-
-cpt += 1
-ax = axgr[cpt]
-toplot = (repfonct).sel(l=l, method='nearest')
-cs, cl = plot(ax, toplot.values, 1, clim=None, contour=False)
-cb = plt.colorbar(cs, cax=axgr.cbar_axes[cpt])
-ax.text(lon1, time1, letters[cpt], **textprop)
-ax.text(lon2, time2, '%scm' %l, **textprop)
-ax.set_title('Func. response')
-toplot = plk
-cl = ax.contour(lon, time + 1, toplot, 6, colors='k', linewidths=1)
-ax.contour(lon, time + 1, toplot, colors='k', levels=[0], linewidths=2)
-plt.clabel(cl)
-
-# plt.savefig('fig8.png', bbox_inches='tight')
-
-# +
-fig = plt.figure(figsize=(13, 14), facecolor='white')
-plt.rcParams['font.size'] = 15
-plt.subplots_adjust(wspace=0.1)
-
-thetao = read_pisces_variable('thetao', 50, True)
-anom = True
-phy2 = read_pisces_variable('PHY2', 50, anom)
-zoo2 = read_pisces_variable('ZOO2', 50, anom)
-zoo = read_pisces_variable('ZOO', 50, anom)
-goc = read_pisces_variable('GOC', 50, anom)
-plk = phy2 + zoo2 + zoo + goc
-
-time1 = 3
-lon1 = 255
-
-time2 = len(time) - 2
-lon2 = 255
-
-#axgr = ImageGrid(fig, 111, ngrids=5, nrows_ncols=(3, 2), axes_pad=(0.7, 0.4), cbar_pad=0.1, direction='row', aspect=False, cbar_mode="each", share_all=True, label_mode='L')
 
 ccc = 150
 cpt = 0
@@ -284,20 +180,32 @@ l = 20
 ccc = None
 
 def set_ticks(ax, cpt):
-    if cpt not in [1, 3, 5]:
-        print('top')
+    if cpt not in [1, 4]:
         plt.setp(ax.get_yticklabels(), visible=False)
         plt.ylabel('')
     else:
         plt.ylabel('Month')
         
-    if cpt not in [4, 5]:
-        print('top')
+    if cpt not in [4, 5, 6]:
         plt.setp(ax.get_xticklabels(), visible=False)
+        
+
+ccc = 3
+cpt += 1 
+ax = plt.subplot(2, 3, cpt)
+toplot = (wstep * (growth + pred)).sel(l=l, method='nearest')
+cs, cl = plot(ax, toplot.values, 1, clim=ccc, contour=0)
+cb = plt.colorbar(cs, )
+ax.text(lon1, time1, letters[cpt], **textprop)
+ax.set_title('Pred. + Growth (J/m2/s)')
+cl = ax.contour(lon, time + 1, toplot.cumsum(dim='time'), colors='k', levels=np.linspace(-15, 15, 11), linewidths=1)
+ax.contour(lon, time + 1, toplot.cumsum(dim='time'), colors='k', levels=[0], linewidths=2)
+plt.clabel(cl)
+set_ticks(ax, cpt)
         
 ccc = 3
 cpt += 1 
-ax = plt.subplot(3, 2, cpt)
+ax = plt.subplot(2, 3, cpt)
 toplot = (wstep * (growth)).sel(l=l, method='nearest')
 cs, cl = plot(ax, toplot.values, 1, clim=ccc, contour=0)
 cb = plt.colorbar(cs, )
@@ -309,7 +217,7 @@ plt.clabel(cl)
 set_ticks(ax, cpt)
 
 cpt += 1
-ax = plt.subplot(3, 2, cpt)
+ax = plt.subplot(2, 3, cpt)
 toplot = (wstep * (pred)).sel(l=l, method='nearest')
 cs, cl = plot(ax, toplot.values, 1, clim=ccc, contour=False)
 cb = plt.colorbar(cs, )
@@ -321,7 +229,20 @@ plt.clabel(cl)
 set_ticks(ax, cpt)
 
 cpt += 1
-ax = plt.subplot(3, 2, cpt)
+ax = plt.subplot(2, 3, cpt)
+toplot = (repfonct).sel(l=l, method='nearest')
+cs, cl = plot(ax, toplot.values, 1, clim=None, contour=False)
+cb = plt.colorbar(cs, )
+ax.text(lon1, time1, letters[cpt], **textprop)
+ax.set_title('Func. response')
+toplot = (oope * wstep).sel(l=3, method='nearest')
+cl = ax.contour(lon, time + 1, toplot, 6, colors='k', linewidths=1)
+ax.contour(lon, time + 1, toplot, colors='k', levels=[0], linewidths=2)
+plt.clabel(cl)
+set_ticks(ax, cpt)
+
+cpt += 1
+ax = plt.subplot(2, 3, cpt)
 toplot = (gamma1).sel(l=l, method='nearest')
 cs, cl = plot(ax, toplot.values, 1, clim=None, contour=False)
 cb = plt.colorbar(cs, )
@@ -334,26 +255,13 @@ plt.clabel(cl)
 set_ticks(ax, cpt)
 
 cpt += 1
-ax = plt.subplot(3, 2, cpt)
+ax = plt.subplot(2, 3, cpt)
 toplot = (mort).sel(l=l, method='nearest')
 cs, cl = plot(ax, toplot.values, 1, clim=None, contour=False)
 cb = plt.colorbar(cs, )
 ax.text(lon1, time1, letters[cpt], **textprop)
 ax.set_title('Pred. mort. rate')
 toplot = (oope * wstep).sel(l=90, method='nearest')
-cl = ax.contour(lon, time + 1, toplot, 6, colors='k', linewidths=1)
-ax.contour(lon, time + 1, toplot, colors='k', levels=[0], linewidths=2)
-plt.clabel(cl)
-set_ticks(ax, cpt)
-
-cpt += 1
-ax = plt.subplot(3, 2, cpt)
-toplot = (repfonct).sel(l=l, method='nearest')
-cs, cl = plot(ax, toplot.values, 1, clim=None, contour=False)
-cb = plt.colorbar(cs, )
-ax.text(lon1, time1, letters[cpt], **textprop)
-ax.set_title('Func. response')
-toplot = (oope * wstep).sel(l=3, method='nearest')
 cl = ax.contour(lon, time + 1, toplot, 6, colors='k', linewidths=1)
 ax.contour(lon, time + 1, toplot, colors='k', levels=[0], linewidths=2)
 plt.clabel(cl)
