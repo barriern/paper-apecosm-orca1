@@ -115,6 +115,7 @@ def plot(ax, toplot, wstep, contour=True, levels=None, clim=None, trend=True):
 dicttext = dict(boxstyle='round', facecolor='lightgray', alpha=1)
 textprop = {}
 textprop['bbox'] = dicttext
+textprop['fontsize'] = 20
 textprop['ha'] = 'center'
 textprop['va'] = 'center'
 textprop['zorder'] = 1000
@@ -248,9 +249,9 @@ plt.clabel(cl)
 # plt.savefig('fig8.png', bbox_inches='tight')
 
 # +
-fig = plt.figure(figsize=(13, 14), facecolor='white')
+fig = plt.figure(figsize=(18, 13), facecolor='white')
 plt.rcParams['font.size'] = 15
-plt.subplots_adjust(wspace=0.1)
+plt.subplots_adjust(wspace=0.1, hspace=0.08)
 
 thetao = read_pisces_variable('thetao', 50, True)
 anom = True
@@ -266,7 +267,7 @@ lon1 = 255
 time2 = len(time) - 2
 lon2 = 255
 
-#axgr = ImageGrid(fig, 111, ngrids=5, nrows_ncols=(3, 2), axes_pad=(0.7, 0.4), cbar_pad=0.1, direction='row', aspect=False, cbar_mode="each", share_all=True, label_mode='L')
+#axgr = ImageGrid(fig, 111, ngrids=5, nrows_ncols=(2, 3), axes_pad=(0.7, 0.4), cbar_pad=0.1, direction='row', aspect=False, cbar_mode="each", share_all=True, label_mode='L')
 
 ccc = 150
 cpt = 0
@@ -281,34 +282,38 @@ iii = 0
 
 l = 3
 
-pos = [[0.125, 0.125, 0.775, 0.755],
- [0.125, 0.125, 0.775, 0.755],
- [0.125, 0.125, 0.775, 0.755],
- [0.125, 0.125, 0.775, 0.755],
- [0.125, 0.125, 0.775, 0.755],
- [0.125, 0.125, 0.775, 0.755]]
-
 ccc = None
 
 def set_ticks(ax, cpt):
-    if cpt not in [1, 3, 5]:
-        print('top')
+    if cpt not in [1, 4]:
         plt.setp(ax.get_yticklabels(), visible=False)
         plt.ylabel('')
     else:
         plt.ylabel('Month')
         
-    if cpt not in [4, 5]:
-        print('top')
+    if cpt not in [4, 5, 6]:
         plt.setp(ax.get_xticklabels(), visible=False)
-        
+
+ccc = 40
+cpt += 1 
+ax = plt.subplot(2, 3, cpt)
+toplot = (wstep * (growth + pred)).sel(l=l, method='nearest')
+cs, cl = plot(ax, toplot.values, 1, clim=ccc, contour=0)
+cb = plt.colorbar(cs, )
+ax.text(lon1, time1, letters[cpt - 1], **textprop)
+ax.set_title('Pred. + Growth (J/m2/s)')
+cl = ax.contour(lon, time + 1, toplot.cumsum(dim='time'), colors='k', levels=np.linspace(-150, 150, 11), linewidths=1)
+ax.contour(lon, time + 1, toplot.cumsum(dim='time'), colors='k', levels=[0], linewidths=2)
+plt.clabel(cl)
+set_ticks(ax, cpt)    
+
 ccc = 60
 cpt += 1 
-ax = plt.subplot(3, 2, cpt)
+ax = plt.subplot(2, 3, cpt)
 toplot = (wstep * (growth)).sel(l=l, method='nearest')
 cs, cl = plot(ax, toplot.values, 1, clim=ccc, contour=0)
 cb = plt.colorbar(cs, )
-ax.text(lon1, time1, letters[cpt], **textprop)
+ax.text(lon1, time1, letters[cpt - 1], **textprop)
 ax.set_title('Growth (J/m2/s)')
 cl = ax.contour(lon, time + 1, toplot.cumsum(dim='time'), colors='k', levels=np.linspace(-400, 400, 11), linewidths=1)
 ax.contour(lon, time + 1, toplot.cumsum(dim='time'), colors='k', levels=[0], linewidths=2)
@@ -316,11 +321,11 @@ plt.clabel(cl)
 set_ticks(ax, cpt)
 
 cpt += 1
-ax = plt.subplot(3, 2, cpt)
+ax = plt.subplot(2, 3, cpt)
 toplot = (wstep * (pred)).sel(l=l, method='nearest')
 cs, cl = plot(ax, toplot.values, 1, clim=ccc, contour=False)
 cb = plt.colorbar(cs, )
-ax.text(lon1, time1, letters[cpt], **textprop)
+ax.text(lon1, time1, letters[cpt - 1], **textprop)
 ax.set_title('Pred (J/m2/s)')
 cl = ax.contour(lon, time + 1, toplot.cumsum(dim='time'), colors='k', levels=np.linspace(-400, 400, 11), linewidths=1)
 ax.contour(lon, time + 1, toplot.cumsum(dim='time'), colors='k', levels=[0], linewidths=2)
@@ -328,11 +333,11 @@ plt.clabel(cl)
 set_ticks(ax, cpt)
 
 cpt += 1
-ax = plt.subplot(3, 2, cpt)
+ax = plt.subplot(2, 3, cpt)
 toplot = (gamma1).sel(l=l, method='nearest')
 cs, cl = plot(ax, toplot.values, 1, clim=None, contour=False)
 cb = plt.colorbar(cs, )
-ax.text(lon1, time1, letters[cpt], **textprop)
+ax.text(lon1, time1, letters[cpt - 1], **textprop)
 ax.set_title('Growth rate')
 toplot = thetao
 cl = ax.contour(lon, time + 1, toplot, 6, colors='k', linewidths=1)
@@ -341,11 +346,11 @@ plt.clabel(cl)
 set_ticks(ax, cpt)
 
 cpt += 1
-ax = plt.subplot(3, 2, cpt)
+ax = plt.subplot(2, 3, cpt)
 toplot = (mort).sel(l=l, method='nearest')
 cs, cl = plot(ax, toplot.values, 1, clim=None, contour=False)
 cb = plt.colorbar(cs, )
-ax.text(lon1, time1, letters[cpt], **textprop)
+ax.text(lon1, time1, letters[cpt - 1], **textprop)
 ax.set_title('Pred. mort. rate')
 toplot = (oope * wstep).sel(l=20, method='nearest')
 cl = ax.contour(lon, time + 1, toplot, 6, colors='k', linewidths=1)
@@ -354,11 +359,11 @@ plt.clabel(cl)
 set_ticks(ax, cpt)
 
 cpt += 1
-ax = plt.subplot(3, 2, cpt)
+ax = plt.subplot(2, 3, cpt)
 toplot = (repfonct).sel(l=l, method='nearest')
 cs, cl = plot(ax, toplot.values, 1, clim=None, contour=False)
 cb = plt.colorbar(cs, )
-ax.text(lon1, time1, letters[cpt], **textprop)
+ax.text(lon1, time1, letters[cpt - 1], **textprop)
 ax.set_title('Func. response')
 toplot = plk
 cl = ax.contour(lon, time + 1, toplot, 6, colors='k', linewidths=1)
