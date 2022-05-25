@@ -109,6 +109,11 @@ def plot(ax, toplot, wstep, contour=True, levels=None, clim=None, trend=True):
     plt.setp(ax.get_xticklabels(), ha='right', rotation=45)
     ax.set_ylim(time.min(), time.max())
 #     ax.set_ylabel('Month')
+    months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+    tlabels = ['%s-%d' %(m, y) for y in [0, 1] for m in months]
+    tlabels
+    ax.set_yticks(time[::3])
+    ax.set_yticklabels(tlabels[::3], va='top', rotation=45)
     return cs, None
 
 
