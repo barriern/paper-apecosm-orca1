@@ -143,14 +143,14 @@ for v in ['thetao', 'PLK', 'uo']:
     cb = plt.colorbar(cs, cbar_axes[cpt])
     ax.grid(True)
     ax.set_xlabel('Longitude')
-    ax.set_ylabel('Months')
+    #ax.set_ylabel('Months')
     ax.set_title(names[v])
     cb.set_label(units[v])
     ax.text(lontext, lattext, letters[cpt] + ")", ha='right', va='center', bbox=dicttext, fontsize=fs)
     ax.xaxis.set_major_formatter(formatter0)
     ax.set_ylim(y.min(), y.max())
     ax.set_yticks(y[::3])
-    ax.set_yticklabels(tlabels[::3])
+    ax.set_yticklabels(tlabels[::3], va='top', rotation=45)
     cpt += 1
 
 
@@ -168,7 +168,7 @@ for l in range(nlength):
     cb.set_label(units['oope'])
     ax.grid(True)
     ax.set_xlabel('Longitude')
-    ax.set_ylabel('Months')
+    #ax.set_ylabel('Months')
     ax.text(lontext, lattext, letters[cpt] + ")", ha='right', va='center', bbox=dicttext, fontsize=fs)
     ax.xaxis.set_major_formatter(formatter0)
     labels = ['180', '-150', '-120', '-90']
@@ -178,7 +178,9 @@ for l in range(nlength):
     plt.setp(ax.get_xticklabels(), ha='right', rotation=45)
     ax.set_ylim(y.min(), y.max())
     ax.set_yticks(y[::3])
-    ax.set_yticklabels(tlabels[::3])
+    ax.set_yticklabels(tlabels[::3], va='top', rotation=45)
     cpt += 1
 
 plt.savefig('plot_all_hovmoller_phys_oope.png', bbox_inches='tight')
+# -
+
