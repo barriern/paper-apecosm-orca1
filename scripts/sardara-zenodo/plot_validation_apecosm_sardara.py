@@ -244,7 +244,7 @@ ax.yaxis.set_major_formatter(formatter0)
 ax.set_yticks(np.arange(160, -120 + 360, 20))
 #ax.set_xticks(np.arange(140, -120 + 360, 20))
 plt.setp(ax.get_yticklabels(), rotation=45, ha='right')
-plt.text(time[-10], apecosm['x'].values[-10], 'a)', bbox=dicttext, ha='center', va='center', zorder=3000, )
+plt.text(time[-10], apecosm['x'].values[-10], 'c)', bbox=dicttext, ha='center', va='center', zorder=3000, )
 
 cb = plt.colorbar(cs, orientation='horizontal', pad=0.17)
 ax.set_ylim(140, -120+360)
@@ -284,7 +284,7 @@ ax.add_feature(cfeature.COASTLINE)
 ax.set_title('NINO - NINA composites')
 ax.set_extent([130, -60 + 360, -40, 40], crs=projin)
 
-plt.text(compo_sar['lon'].values[-10], compo_sar['lat'].values[-10], 'b)', bbox=dicttext, ha='center', zorder=3000, va='center', transform=projin)
+plt.text(compo_sar['lon'].values[-10], compo_sar['lat'].values[-10], 'a)', bbox=dicttext, ha='center', zorder=3000, va='center', transform=projin)
 plt.text(compo_sar['lon'].values[30], compo_sar['lat'].values[10], 'Catches', bbox=dicttext, ha='center', va='center', transform=projin, zorder=3000)
 
 #################################################################### Plot Apecosm composites
@@ -313,12 +313,12 @@ ax.add_feature(cfeature.COASTLINE)
 ccc = 3e-8
 cs.set_clim(-ccc, ccc)
 ax.set_extent([130, -60 + 360, -40, 40], crs=projin)
-plt.text(compo_sar['lon'].values[-10], compo_sar['lat'].values[-10], 'c)', bbox=dicttext, ha='center', va='center', transform=projin, zorder=3000)
+plt.text(compo_sar['lon'].values[-10], compo_sar['lat'].values[-10], 'b)', bbox=dicttext, ha='center', va='center', transform=projin, zorder=3000)
 #ax.set_title('NINO - NINA composites (Biomass)')
 plt.text(compo_sar['lon'].values[30], compo_sar['lat'].values[10], 'Biomass', bbox=dicttext, ha='center', va='center', transform=projin, zorder=3000)
 
 
-pos = np.array([xxx0 + www0 + 0.05, yyy0 + 0.025, 0.02, hhh0 + 0.12])
+pos = np.array([xxx0 + www0 + 0.05, yyy0 + 0.025, 0.02, hhh0 + 0.14])
 cax = plt.axes(pos)
 cb = plt.colorbar(cs, cax=cax, orientation='vertical', shrink=0.5)
 cb.set_label('Tons/m2')
