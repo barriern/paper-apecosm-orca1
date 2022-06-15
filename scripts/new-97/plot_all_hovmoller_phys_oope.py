@@ -129,7 +129,7 @@ names['PLK'] = 'Plankton conc.'
 names['uo'] = 'Zonal vel.'
 
 cpt = 0
-for v in ['thetao', 'PLK', 'uo']:
+for v in ['thetao', 'uo', 'PLK']:
     ax = grid[cpt]
     temp = (data[v] * e3t).sum(dim='olevel') / e3t.sum(dim='olevel')
     if(v == 'thetao'):
