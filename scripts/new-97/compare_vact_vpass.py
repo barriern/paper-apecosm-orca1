@@ -34,15 +34,12 @@ dicttext = dict(boxstyle='round', facecolor='lightgray', alpha=1)
 const = xr.open_dataset('../data/ORCA1_JRAC02_CORMSK_CYC3_FINAL_ConstantFields.nc')
 const = const.rename({'wpred': 'l'})
 const['l'] = const['length'] * 100
-
-# ## Loading mesh file
+const
 
 mesh = xr.open_dataset('data/pacific_mesh_mask.nc').isel(y=61)
 mesh = mesh.rename({'z': 'olevel'})
 mesh['olevel'] = mesh['gdept_1d'].isel(x=0)
 mesh = mesh.where(mesh['olevel'] <= zmax)
-
-e3t = mesh['e3t_0']
 
 lon0 = mesh['glamt'].isel(olevel=0)
 lon0 = (lon0 + 360) % 360
@@ -50,40 +47,13 @@ lon0
 
 boolean = ((lon0 >= 150) & (lon0 <= 270))
 lon0 = lon0.where(boolean, drop=True)
-e3t = e3t.where(boolean, drop=True)
-
-# ## Loading the NEMO/Pisces anomalies
-
-data = xr.open_mfdataset('data/nino_equatorial_composites_*.nc', compat='override').where(boolean, drop=True)
-data
-
-data['PLK'] = data['GOC'] + data['PHY2'] + data['ZOO'] + data['ZOO2']
-data
-
-oope = data['OOPE']
-oope['l'] = const['l']
-oope = oope * const['weight_step']
 
 lengths = [3, 20, 90]
-oope = oope.sel(l=lengths, method='nearest')
-oope
+lengths
 
-e3t['olevel'] = data['olevel']
-
-# ## Computing warm pool displacement
-
-# First, computing the climatology.
-
-varname = 'thetao'
-datatemp = xr.open_dataset('data/equatorial_full_%s.nc' %varname)[varname].where(boolean==True, drop=True)
-temp = (datatemp * e3t).sum(dim='olevel') / e3t.sum(dim='olevel')
-tempclim = temp.sel(time_counter=slice('1971-01-01', '2000-12-31')).groupby('time_counter.month').mean(dim='time_counter')
-tempclim
-
-tempanom = (data['thetao'] * e3t).sum(dim='olevel') / e3t.sum(dim='olevel')
-warm_pool = tempanom.values
-warm_pool[:12] = warm_pool[:12] + tempclim.values
-warm_pool[12:] = warm_pool[12:] + tempclim.values
+data = xr.open_mfdataset('data/nino_equatorial_composites_*.nc', compat='override').where(boolean, drop=True)
+data['l'] = const['l']
+data
 
 # ## Plotting the hovmoller
 
@@ -95,92 +65,43 @@ tlabels = ['%s-%d' %(m, y) for y in [0, 1] for m in months]
 tlabels
 
 # +
-fig = plt.figure(facecolor='white', figsize=(14, 10))
-grid = ImageGrid(fig, 111,  # similar to subplot(111)
-                 nrows_ncols=(2, 3),  # creates 2x2 grid of axes
-                 axes_pad=[1.2, 0.6],  # pad between axes in inch.
-                 cbar_mode='each', aspect=False, cbar_pad=0.1)
-cbar_axes = grid.cbar_axes
-stride = 3
-plt.rcParams['text.usetex'] = False
-plt.rcParams['font.size'] = 15
+max_vpass = abs(data['v_passive']).max(dim=['time', 'x'])
+max_vpass
 
-y = np.arange(1, 25)
+max_upass = abs(data['u_passive']).max(dim=['time', 'x'])
+max_upass
 
-quant = 0.99
+u_pass = xr.concat([max_upass, max_vpass], dim='d')
+u_pass = u_pass.max(dim='d')
+u_pass.plot()
 
-lontext = 260
-lattext = y[-3]
-fs = 15
-plt.rcParams['font.size'] = 15
-plt.rcParams['image.cmap'] = 'RdBu_r'
+# +
+max_vact = abs(data['v_active']).max(dim=['time', 'x'])
+max_vact
 
-units = {}
-units['thetao'] = 'C'
-units['PLK'] = 'mmol/m3'
-units['uo'] = 'm/s'
-units['oope'] = 'J/m2'
+max_uact = abs(data['u_active']).max(dim=['time', 'x'])
+max_uact
 
-
-
-names = {}
-names['thetao'] = 'Temperature'
-names['PLK'] = 'Plankton conc.'
-names['uo'] = 'Zonal vel.'
-
-cpt = 0
-for v in ['thetao', 'uo', 'PLK']:
-    ax = grid[cpt]
-    temp = (data[v] * e3t).sum(dim='olevel') / e3t.sum(dim='olevel')
-    if(v == 'thetao'):
-        print('lala')
-        ax.contour(x, y, warm_pool, levels=[28], colors='r', zorder=1000)
-    cmax = float(abs(temp).quantile(quant))
-    cs = ax.pcolormesh(x, y, temp, shading='auto')
-    cl = ax.contour(x, y, temp, levels=np.linspace(-cmax, cmax, 11), colors='k', linewidths=0.5)
-    cl0 = ax.contour(x, y, temp, levels=0, colors='k', linewidths=1)
-    cs.set_clim(-cmax, cmax)
-    cb = plt.colorbar(cs, cbar_axes[cpt])
-    ax.grid(True)
-    ax.set_xlabel('Longitude')
-    #ax.set_ylabel('Months')
-    ax.set_title(names[v])
-    cb.set_label(units[v])
-    ax.text(lontext, lattext, letters[cpt] + ")", ha='right', va='center', bbox=dicttext, fontsize=fs)
-    ax.xaxis.set_major_formatter(formatter0)
-    ax.set_ylim(y.min(), y.max())
-    ax.set_yticks(y[::3])
-    ax.set_yticklabels(tlabels[::3], va='top', rotation=45)
-    cpt += 1
-
-
-nlength = len(lengths)
-for l in range(nlength):
-    ax = grid[cpt]
-    temp = oope.isel(l=l)
-    cmax = float(abs(temp).quantile(quant))
-    cs = ax.pcolormesh(x, y, temp, shading='auto')
-    cl = ax.contour(x, y, temp, levels=np.linspace(-cmax, cmax, 11), colors='k', linewidths=0.5)
-    cl0 = ax.contour(x, y, temp, levels=0, colors='k', linewidths=1)
-    cs.set_clim(-cmax, cmax)
-    cb = plt.colorbar(cs, cbar_axes[cpt])
-    ax.set_title('Biomass dens., L=%.f cm' %lengths[l])
-    cb.set_label(units['oope'])
-    ax.grid(True)
-    ax.set_xlabel('Longitude')
-    #ax.set_ylabel('Months')
-    ax.text(lontext, lattext, letters[cpt] + ")", ha='right', va='center', bbox=dicttext, fontsize=fs)
-    ax.xaxis.set_major_formatter(formatter0)
-    labels = ['180', '-150', '-120', '-90']
-    xticks = np.array([float(l) for l in labels])
-    xticks[xticks < 0] += 360
-    ax.set_xticks(xticks)
-    plt.setp(ax.get_xticklabels(), ha='right', rotation=45)
-    ax.set_ylim(y.min(), y.max())
-    ax.set_yticks(y[::3])
-    ax.set_yticklabels(tlabels[::3], va='top', rotation=45)
-    cpt += 1
-
-plt.savefig('plot_all_hovmoller_phys_oope.png', bbox_inches='tight')
+u_act = xr.concat([max_uact, max_vact], dim='d')
+u_act = u_act.max(dim='d')
+u_act.plot()
 # -
+
+factor = (u_pass / u_act)
+ax = plt.gca()
+factor.plot(ax=ax)
+ax.set_yscale('log')
+factor.sel(l=lengths, method='nearest').values
+
+i = 2
+plt.figure(figsize=(18,18))
+plt.subplot(221)
+data['u_active'].sel(l=lengths[i], method='nearest').plot()
+plt.subplot(222)
+data['v_active'].sel(l=lengths[i], method='nearest').plot()
+plt.subplot(223)
+data['u_passive'].sel(l=lengths[i], method='nearest').plot()
+plt.subplot(224)
+data['v_passive'].sel(l=lengths[i], method='nearest').plot()
+
 
