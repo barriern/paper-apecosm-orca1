@@ -6,7 +6,7 @@
 #       extension: .py
 #       format_name: light
 #       format_version: '1.5'
-#       jupytext_version: 1.10.3
+#       jupytext_version: 1.13.7
 #   kernelspec:
 #     display_name: Python 3 (ipykernel)
 #     language: python
@@ -245,7 +245,7 @@ ax.yaxis.set_major_formatter(formatter0)
 ax.set_yticks(np.arange(160, -120 + 360, 20))
 #ax.set_xticks(np.arange(140, -120 + 360, 20))
 plt.setp(ax.get_yticklabels(), rotation=45, ha='right')
-plt.text(time[-10], apecosm['x'].values[-10], 'c)', bbox=dicttext, ha='center', va='center', zorder=3000, )
+plt.text(time[-10], apecosm['x'].values[-10], 'a)', bbox=dicttext, ha='center', va='center', zorder=3000, )
 
 cb = plt.colorbar(cs, orientation='horizontal', pad=0.17)
 ax.set_ylim(140, -120+360)
@@ -284,7 +284,7 @@ ax.add_feature(cfeature.LAND, color='lightgray')
 ax.add_feature(cfeature.COASTLINE)
 ax.set_title('NINO - NINA composites (Catches)')
 ax.set_extent([130, -60 + 360, -20, 20], crs=projin)
-plt.text(compo_sar['lon'].values[-10], 0, 'a)', bbox=dicttext, ha='center', zorder=3000, va='center', transform=projin)
+plt.text(compo_sar['lon'].values[-10], 0, 'b)', bbox=dicttext, ha='center', zorder=3000, va='center', transform=projin)
 #plt.text(compo_sar['lon'].values[30], compo_sar['lat'].values[10], 'Catches', bbox=dicttext, ha='center', va='center', transform=projin, zorder=3000)
 
 #################################################################### Plot Apecosm composites
@@ -313,7 +313,7 @@ ax.add_feature(cfeature.COASTLINE)
 ccc = 3e-8
 cs.set_clim(-ccc, ccc)
 ax.set_extent([130, -60 + 360, -20, 20], crs=projin)
-plt.text(compo_sar['lon'].values[-10], 0, 'b)', bbox=dicttext, ha='center', va='center', transform=projin, zorder=3000)
+plt.text(compo_sar['lon'].values[-10], 0, 'c)', bbox=dicttext, ha='center', va='center', transform=projin, zorder=3000)
 ax.set_title('NINO - NINA composites (Biomass)')
 #plt.text(compo_sar['lon'].values[30], compo_sar['lat'].values[10], 'Biomass', bbox=dicttext, ha='center', va='center', transform=projin, zorder=3000)
 
