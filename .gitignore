@@ -23,3 +23,10 @@ doc
 **/data
 **/*.ipynb
 **/*.csv
+_region_.tex
+\#article-enso.tex#
+\#article-enso.tex#
+article-enso.fdb_latexmk
+article-enso.fls
+clean.sh
+scripts/97/profile.html
