@@ -197,6 +197,7 @@ def set_ticks(ax, cpt):
 step = 5
 lmax = 15
 levels = np.arange(-lmax, lmax + step, step)
+levels = np.linspace(-lmax, lmax, 7)
 lwc = 2
 
 ccc = 3
