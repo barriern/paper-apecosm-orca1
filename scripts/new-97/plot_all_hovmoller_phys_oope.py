@@ -6,7 +6,7 @@
 #       extension: .py
 #       format_name: light
 #       format_version: '1.5'
-#       jupytext_version: 1.11.3
+#       jupytext_version: 1.10.3
 #   kernelspec:
 #     display_name: Python 3 (ipykernel)
 #     language: python
@@ -70,10 +70,29 @@ oope
 
 e3t['olevel'] = data['olevel']
 
+# ## Computing warm pool displacement
+
+# First, computing the climatology.
+
+varname = 'thetao'
+datatemp = xr.open_dataset('data/equatorial_full_%s.nc' %varname)[varname].where(boolean==True, drop=True)
+temp = (datatemp * e3t).sum(dim='olevel') / e3t.sum(dim='olevel')
+tempclim = temp.sel(time_counter=slice('1971-01-01', '2000-12-31')).groupby('time_counter.month').mean(dim='time_counter')
+tempclim
+
+tempanom = (data['thetao'] * e3t).sum(dim='olevel') / e3t.sum(dim='olevel')
+warm_pool = tempanom.values
+warm_pool[:12] = warm_pool[:12] + tempclim.values
+warm_pool[12:] = warm_pool[12:] + tempclim.values
+
 # ## Plotting the hovmoller
 
 x = lon0.values
 x
+
+months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+tlabels = ['%s-%d' %(m, y) for y in [0, 1] for m in months]
+tlabels
 
 # +
 fig = plt.figure(facecolor='white', figsize=(14, 10))
@@ -110,9 +129,12 @@ names['PLK'] = 'Plankton conc.'
 names['uo'] = 'Zonal vel.'
 
 cpt = 0
-for v in ['thetao', 'PLK', 'uo']:
+for v in ['thetao', 'uo', 'PLK']:
     ax = grid[cpt]
     temp = (data[v] * e3t).sum(dim='olevel') / e3t.sum(dim='olevel')
+    if(v == 'thetao'):
+        print('lala')
+        ax.contour(x, y, warm_pool, levels=[28], colors='r', zorder=1000)
     cmax = float(abs(temp).quantile(quant))
     cs = ax.pcolormesh(x, y, temp, shading='auto')
     cl = ax.contour(x, y, temp, levels=np.linspace(-cmax, cmax, 11), colors='k', linewidths=0.5)
@@ -121,12 +143,14 @@ for v in ['thetao', 'PLK', 'uo']:
     cb = plt.colorbar(cs, cbar_axes[cpt])
     ax.grid(True)
     ax.set_xlabel('Longitude')
-    ax.set_ylabel('Months')
+    #ax.set_ylabel('Months')
     ax.set_title(names[v])
     cb.set_label(units[v])
     ax.text(lontext, lattext, letters[cpt] + ")", ha='right', va='center', bbox=dicttext, fontsize=fs)
     ax.xaxis.set_major_formatter(formatter0)
     ax.set_ylim(y.min(), y.max())
+    ax.set_yticks(y[::3])
+    ax.set_yticklabels(tlabels[::3], va='top', rotation=45)
     cpt += 1
 
 
@@ -144,7 +168,7 @@ for l in range(nlength):
     cb.set_label(units['oope'])
     ax.grid(True)
     ax.set_xlabel('Longitude')
-    ax.set_ylabel('Months')
+    #ax.set_ylabel('Months')
     ax.text(lontext, lattext, letters[cpt] + ")", ha='right', va='center', bbox=dicttext, fontsize=fs)
     ax.xaxis.set_major_formatter(formatter0)
     labels = ['180', '-150', '-120', '-90']
@@ -153,9 +177,10 @@ for l in range(nlength):
     ax.set_xticks(xticks)
     plt.setp(ax.get_xticklabels(), ha='right', rotation=45)
     ax.set_ylim(y.min(), y.max())
+    ax.set_yticks(y[::3])
+    ax.set_yticklabels(tlabels[::3], va='top', rotation=45)
     cpt += 1
 
 plt.savefig('plot_all_hovmoller_phys_oope.png', bbox_inches='tight')
 # -
-
 

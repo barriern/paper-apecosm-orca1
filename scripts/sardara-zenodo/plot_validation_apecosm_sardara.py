@@ -6,9 +6,9 @@
 #       extension: .py
 #       format_name: light
 #       format_version: '1.5'
-#       jupytext_version: 1.11.5
+#       jupytext_version: 1.13.7
 #   kernelspec:
-#     display_name: Python 3
+#     display_name: Python 3 (ipykernel)
 #     language: python
 #     name: python3
 # ---
@@ -162,61 +162,14 @@ formatter0 = LongitudeFormatter(dateline_direction_label=True)
 plt.rcParams['image.cmap'] = 'RdBu_r'
 dicttext = dict(boxstyle='round', facecolor='lightgray', alpha=1)
 
-plt.figure(figsize = (12, 14), facecolor='white')
-
-############################################################ Plotting Hovmoller diagram
-
-ax = plt.axes([0.05, 0.5, 0.35, 0.4])
-
-apeyears = apecosm['time.year'].values
-apemonths = apecosm['time.month'].values
-apedates = apeyears * 100 + apemonths
-time = np.arange(len(apedates))
-
-toplot = np.log10(apecosm.values)
-cl = plt.contour(apecosm['x'].values, time, toplot, 6, linewidths=1, colors='k')
-plt.clabel(cl)
-
-toplot = np.log10(catch.values, where=catch>0, out=np.zeros(catch.values.shape))
-toplot = np.ma.masked_where(toplot == 0, toplot)
-cs = plt.pcolormesh(catch['lon'].values, time, toplot, shading='auto', cmap=plt.cm.Spectral_r)
-cs.set_clim(0, 4.5)
-
-datestr = ['%.4d-%.2d' %(y, m) for y, m in zip(apeyears, apemonths)]
-stride = 12
-ax.set_yticks(time[::stride])
-ax.set_yticklabels(datestr[::stride], va='top', rotation=45)
-
-ax.xaxis.set_major_formatter(formatter0)
-ax.set_xticks(np.arange(160, -120 + 360, 20))
-#ax.set_xticks(np.arange(140, -120 + 360, 20))
-plt.setp(ax.get_xticklabels(), rotation=45, ha='right')
-plt.text(apecosm['x'].values[-10], time[-10], 'a)', bbox=dicttext, ha='center', va='center')
-
-cb = plt.colorbar(cs)
-ax.set_xlim(140, -120+360)
-xlim = ax.get_xlim()
-ax.set_title('Catch (colors) \& sim. biomass (contours)')
-cb.set_label('Tons (Log-scale)')
-ax.grid(True, zorder=10000, color='k')
-
-############################################################ plotting barycenter time series
-pos1 = ax.get_position()
-
 ymax = 1985
 
-height1 = 2018 - 2008 + 1
-height2 = 2008 - ymax + 1
-heighttot = 2018 - ymax + 1
+plt.figure(figsize = (12, 14), facecolor='white')
 
-newheight = pos1.height * heighttot / height1
-y0 = pos1.y0 + pos1.height - newheight
+############################################################ plotting barycenter time series
 
-offset = 0.4
-pos2 = [pos1.x0, pos1.y0 -offset,  pos1.width, pos1.height]
-pos2 = [pos1.x0 + offset, y0,  pos1.width, newheight]
-
-ax = plt.axes(pos2)
+xxx0 = 0.02
+ax = plt.axes([xxx0, 0.2, 1 - 2 * xxx0, 0.2])
 
 datebaryape = baryape['time'].values
 datebaryape = np.array([d.year * 100 + d.month for d in datebaryape])
@@ -232,37 +185,80 @@ apefilt = apefilt[iape]
 
 time = np.arange(len(baryape))
 datestr = np.array(['%.4d-%.2d' %(y, m) for y, m in zip(yyy, mmm)])
-stride = 12
-ax.set_yticks(time[::stride])
-ax.set_yticklabels(datestr[::stride], va='top', rotation=-45)
+stride = 24
+ax.set_xticks(time[::stride])
+ax.set_xticklabels(datestr[::stride], ha='right', rotation=45)
 
 iline = np.nonzero(datestr=='2008-01')[0]
+lw = 3
 
-plt.plot(baryape, np.arange(baryape.shape[0]), label='Apecosm', linewidth=0.5)
-plt.plot(apefilt, np.arange(apefilt.shape[0]), label='Filt. Apecosm')
-plt.plot(barysar[ioksar], np.arange(len(barysar[ioksar])), label='Sardara', linewidth=0.5)
-plt.plot(sarfilt[ioksar], np.arange(sarfilt[ioksar].shape[0]), label='Filt. Sardara')
-plt.plot(corr0, np.arange(corr0.shape[0]), label='Det. Sardara')
+#plt.plot(np.arange(baryape.shape[0]), baryape, label='Apecosm', linewidth=0.5)
+plt.plot(np.arange(apefilt.shape[0]), apefilt, label='Apecosm', linewidth=lw)
+#plt.plot(np.arange(len(barysar[ioksar])), barysar[ioksar], label='Sardara', linewidth=0.5)
+plt.plot(np.arange(sarfilt[ioksar].shape[0]), sarfilt[ioksar], label='Sardara', linewidth=lw)
+plt.plot(np.arange(corr0.shape[0]), corr0, label='Det. Sardara', linewidth=lw)
 
-plt.legend(ncol=1, fontsize=12, loc='lower right')
-plt.axhline(time[iline], color='k', linestyle='--')
-plt.ylim(time.min(), time.max())
+plt.legend(ncol=3, fontsize=15, loc='lower right')
+plt.axvline(time[iline], color='k', linestyle='--')
+plt.xlim(time.min(), time.max())
 
-ax.xaxis.set_major_formatter(formatter0)
-ax.set_xticks(np.arange(160, -120 + 360, 20))
-plt.setp(ax.get_xticklabels(), rotation=45, ha='right')
+ax.yaxis.set_major_formatter(formatter0)
+ax.set_yticks(np.arange(160, -170 + 360, 10))
+plt.setp(ax.get_yticklabels(), rotation=45, ha='right')
 
 #ax.set_xlim(xlim)
 ax.set_title('Biomass and catch barycenters')
-plt.text(-140+360+10, time[-25], 'b)', bbox=dicttext, ha='center', va='center')
-ax.yaxis.tick_right()
+plt.text(time[-10], 180, 'd)', bbox=dicttext, ha='center', va='center')
+#ax.yaxis.tick_right()
 ax.grid(True)
+
+########################################################### Plotting Hovmoller diagram
+
+pos1 = ax.get_position()
+
+xcoord = lambda year : pos1.x0 + (year - 1985) * (pos1.width) / (2019 - 1985) 
+
+xxx = xcoord(2008)
+ax = plt.axes([xxx, 0.43, pos1.x0 + pos1.width - xxx, 0.3])
+pos2 = ax.get_position()
+
+apeyears = apecosm['time.year'].values
+apemonths = apecosm['time.month'].values
+apedates = apeyears * 100 + apemonths
+time = np.arange(len(apedates))
+
+toplot = np.log10(apecosm.values)
+cl = plt.contour(time, apecosm['x'].values, toplot.T, 6, linewidths=1, colors='k')
+plt.clabel(cl)
+
+toplot = np.log10(catch.values, where=catch>0, out=np.zeros(catch.values.shape))
+toplot = np.ma.masked_where(toplot == 0, toplot)
+cs = plt.pcolormesh(time, catch['lon'].values, toplot.T, shading='auto', cmap=plt.cm.Spectral_r)
+cs.set_clim(0, 4.5)
+
+datestr = ['%.4d-%.2d' %(y, m) for y, m in zip(apeyears, apemonths)]
+stride = 12
+ax.set_xticks(time[::stride])
+ax.set_xticklabels(datestr[::stride], va='top', rotation=45)
+
+ax.yaxis.set_major_formatter(formatter0)
+ax.set_yticks(np.arange(160, -120 + 360, 20))
+#ax.set_xticks(np.arange(140, -120 + 360, 20))
+plt.setp(ax.get_yticklabels(), rotation=45, ha='right')
+plt.text(time[-10], apecosm['x'].values[-10], 'a)', bbox=dicttext, ha='center', va='center', zorder=3000, )
+
+cb = plt.colorbar(cs, orientation='horizontal', pad=0.17)
+ax.set_ylim(140, -120+360)
+xlim = ax.get_ylim()
+ax.set_title('Catch (colors) \& sim. biomass (contours)')
+cb.set_label('Tons (Log-scale)')
+ax.grid(True, zorder=10000, color='k')
 
 ############################################################ plotting catch composites
 
-xxx0 = -0.0
-yyy0 = 0.2
-www0 = 0.4
+xxx0 = -0.0 + 0.03
+yyy0 = 0.2 + 0.37
+www0 = 0.45
 hhh0 = 0.2
 pos = np.array([xxx0, yyy0, www0, hhh0])
 
@@ -275,6 +271,7 @@ gridparams = {'crs': ccrs.PlateCarree(central_longitude=0),
 gl = ax.gridlines(**gridparams, zorder=10)
 gl.top_labels = False
 gl.right_labels = False
+gl.bottom_labels = False
 gl.xlocator = mticker.FixedLocator(np.arange(-180, 180 + 40, 40))
 gl.ylocator = mticker.FixedLocator(np.arange(-90, 90 + 20, 20))
 gl.xformatter = LONGITUDE_FORMATTER
@@ -283,16 +280,17 @@ gl.yformatter = LATITUDE_FORMATTER
 cs = ax.pcolormesh(compo_sar['lon'], compo_sar['lat'], compo_sar.values, shading='auto', transform=projin)
 ccc = 3e-8
 cs.set_clim(-ccc, ccc)
-ax.add_feature(cfeature.LAND)
+ax.add_feature(cfeature.LAND, color='lightgray')
 ax.add_feature(cfeature.COASTLINE)
 ax.set_title('NINO - NINA composites (Catches)')
-ax.set_extent([130, -60 + 360, -40, 40], crs=projin)
-
-plt.text(compo_sar['lon'].values[-10], compo_sar['lat'].values[-10], 'c)', bbox=dicttext, ha='center', va='center', transform=projin)
+ax.set_extent([130, -60 + 360, -20, 20], crs=projin)
+plt.text(compo_sar['lon'].values[-10], 0, 'b)', bbox=dicttext, ha='center', zorder=3000, va='center', transform=projin)
+#plt.text(compo_sar['lon'].values[30], compo_sar['lat'].values[10], 'Catches', bbox=dicttext, ha='center', va='center', transform=projin, zorder=3000)
 
 #################################################################### Plot Apecosm composites
 
-yyy0 -= hhh0 + 0.02
+yyy0 -= 0.15 - 0.0
+#xxx0 += 0.1
 pos = np.array([xxx0, yyy0, www0, hhh0])
 
 ax = plt.axes(pos, projection=ccrs.PlateCarree(central_longitude=180))
@@ -310,19 +308,20 @@ gl.xformatter = LONGITUDE_FORMATTER
 gl.yformatter = LATITUDE_FORMATTER
 
 cs = ax.pcolormesh(lonf, latf, compo_ape.values[1:, 1:], transform=projin)
-ax.add_feature(cfeature.LAND)
+ax.add_feature(cfeature.LAND, color='lightgray')
 ax.add_feature(cfeature.COASTLINE)
 ccc = 3e-8
 cs.set_clim(-ccc, ccc)
-ax.set_extent([130, -60 + 360, -40, 40], crs=projin)
-plt.text(compo_sar['lon'].values[-10], compo_sar['lat'].values[-10], 'd)', bbox=dicttext, ha='center', va='center', transform=projin)
+ax.set_extent([130, -60 + 360, -20, 20], crs=projin)
+plt.text(compo_sar['lon'].values[-10], 0, 'c)', bbox=dicttext, ha='center', va='center', transform=projin, zorder=3000)
 ax.set_title('NINO - NINA composites (Biomass)')
+#plt.text(compo_sar['lon'].values[30], compo_sar['lat'].values[10], 'Biomass', bbox=dicttext, ha='center', va='center', transform=projin, zorder=3000)
 
 
-pos = np.array([xxx0, yyy0 - 0.04 , www0, 0.02])
+pos = np.array([xxx0 + www0 + 0.05, yyy0 + 0.05, 0.02, hhh0 + 0.05])
 cax = plt.axes(pos)
-cb = plt.colorbar(cs, cax=cax, orientation='horizontal')
-cb.set_label('Catch/Biomass anoms. (Tons/m2)')
+cb = plt.colorbar(cs, cax=cax, orientation='vertical', shrink=0.5)
+cb.set_label('Tons/m2')
 
 plt.savefig('plot_validation_apecosm.png', bbox_inches='tight')
 # -

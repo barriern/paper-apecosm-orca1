@@ -108,7 +108,8 @@ def plot(ax, toplot, wstep, contour=True, levels=None, clim=None, trend=True):
     ax.set_xticks(xticks)
     plt.setp(ax.get_xticklabels(), ha='right', rotation=45)
     ax.set_ylim(time.min(), time.max())
-    ax.set_ylabel('Month')
+    ax.set_yticks(time[::3])
+    ax.set_yticklabels(tlabels[::3], va='top', rotation=45)
     return cs, None
 
 
@@ -144,6 +145,10 @@ def read_pisces_variable(varname, zmax=50, anom=False):
     return thetao
 
 
+months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+tlabels = ['%s-%d' %(m, y) for y in [0, 1] for m in months]
+tlabels
+
 # +
 fig = plt.figure(figsize=(13, 14), facecolor='white')
 plt.rcParams['font.size'] = 15
@@ -167,7 +172,7 @@ axgr = ImageGrid(fig, 111, nrows_ncols=(3, 3), axes_pad=(0.7, 0.3), cbar_pad=0.1
 ccc = 150
 cpt = -1
 
-wstep_l0 = float(wstep.sel(l=l0, method='nearest'))
+#wstep_l0 = float(wstep.sel(l=l0, method='nearest'))
 cprop = {}
 cprop['colors'] = 'k'
 cprop['linewidths']= 1
