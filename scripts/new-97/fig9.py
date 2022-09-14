@@ -6,7 +6,7 @@
 #       extension: .py
 #       format_name: light
 #       format_version: '1.5'
-#       jupytext_version: 1.10.3
+#       jupytext_version: 1.13.7
 #   kernelspec:
 #     display_name: Python 3 (ipykernel)
 #     language: python
@@ -39,7 +39,7 @@ depth
 mesh['olevel'] = depth
 mesh
 
-const = xr.open_dataset('../data/ORCA1_JRAC02_CORMSK_CYC3_FINAL_ConstantFields.nc')
+const = xr.open_dataset('data/ORCA1_JRAC02_CORMSK_CYC3_FINAL_ConstantFields.nc')
 const = const.rename({'wpred': 'l'})
 const['l'] = const['length'] * 100
 const
@@ -150,11 +150,6 @@ def read_pisces_variable(varname, zmax=50, anom=False):
     return thetao
 
 
-# +
-fig = plt.figure(figsize=(18, 13), facecolor='white')
-plt.rcParams['font.size'] = 15
-plt.subplots_adjust(wspace=0.1, hspace=0.08)
-
 thetao = read_pisces_variable('thetao', 50, True)
 anom = True
 phy2 = read_pisces_variable('PHY2', 50, anom)
@@ -162,6 +157,11 @@ zoo2 = read_pisces_variable('ZOO2', 50, anom)
 zoo = read_pisces_variable('ZOO', 50, anom)
 goc = read_pisces_variable('GOC', 50, anom)
 plk = phy2 + zoo2 + zoo + goc
+
+# +
+fig = plt.figure(figsize=(18, 13), facecolor='white')
+plt.rcParams['font.size'] = 15
+plt.subplots_adjust(wspace=0.1, hspace=0.08)
 
 time1 = 3
 lon1 = 255
@@ -193,7 +193,11 @@ def set_ticks(ax, cpt):
         
     if cpt not in [4, 5, 6]:
         plt.setp(ax.get_xticklabels(), visible=False)
-        
+    
+step = 5
+lmax = 15
+levels = np.arange(-lmax, lmax + step, step)
+lwc = 2
 
 ccc = 3
 cpt += 1 
@@ -203,8 +207,8 @@ cs, cl = plot(ax, toplot.values, 1, clim=ccc, contour=0)
 cb = plt.colorbar(cs, )
 ax.text(lon1, time1, letters[cpt], **textprop)
 ax.set_title('Pred. + Growth ($J.m^{-2}.s^{-1}$)')
-cl = ax.contour(lon, time + 1, toplot.cumsum(dim='time'), colors='k', levels=np.linspace(-15, 15, 11), linewidths=1)
-ax.contour(lon, time + 1, toplot.cumsum(dim='time'), colors='k', levels=[0], linewidths=2)
+cl = ax.contour(lon, time + 1, toplot.cumsum(dim='time'), colors='k', levels=levels, linewidths=lwc)
+#ax.contour(lon, time + 1, toplot.cumsum(dim='time'), colors='k', levels=[0], linewidths=2)
 plt.clabel(cl)
 set_ticks(ax, cpt)
         
@@ -216,8 +220,8 @@ cs, cl = plot(ax, toplot.values, 1, clim=ccc, contour=0)
 cb = plt.colorbar(cs, )
 ax.text(lon1, time1, letters[cpt], **textprop)
 ax.set_title('Growth ($J.m^{-2}.s^{-1}$)')
-cl = ax.contour(lon, time + 1, toplot.cumsum(dim='time'), colors='k', levels=np.linspace(-15, 15, 11), linewidths=1)
-ax.contour(lon, time + 1, toplot.cumsum(dim='time'), colors='k', levels=[0], linewidths=2)
+cl = ax.contour(lon, time + 1, toplot.cumsum(dim='time'), colors='k', levels=levels, linewidths=lwc)
+#ax.contour(lon, time + 1, toplot.cumsum(dim='time'), colors='k', levels=[0], linewidths=2)
 plt.clabel(cl)
 set_ticks(ax, cpt)
 
@@ -228,7 +232,7 @@ cs, cl = plot(ax, toplot.values, 1, clim=ccc, contour=False)
 cb = plt.colorbar(cs, )
 ax.text(lon1, time1, letters[cpt], **textprop)
 ax.set_title('Pred ($J.m^{-2}.s^{-1}$)')
-cl = ax.contour(lon, time + 1, toplot.cumsum(dim='time'), colors='k', levels=np.linspace(-15, 15, 11), linewidths=1)
+cl = ax.contour(lon, time + 1, toplot.cumsum(dim='time'), colors='k', levels=levels, linewidths=lwc)
 ax.contour(lon, time + 1, toplot.cumsum(dim='time'), colors='k', levels=[0], linewidths=2)
 plt.clabel(cl)
 set_ticks(ax, cpt)
@@ -241,8 +245,8 @@ cb = plt.colorbar(cs, )
 ax.text(lon1, time1, letters[cpt], **textprop)
 ax.set_title('Func. response')
 toplot = (oope * wstep).sel(l=3, method='nearest')
-cl = ax.contour(lon, time + 1, toplot, 6, colors='k', linewidths=1)
-ax.contour(lon, time + 1, toplot, colors='k', levels=[0], linewidths=2)
+cl = ax.contour(lon, time + 1, toplot, 6, colors='k', linewidths=lwc)
+#ax.contour(lon, time + 1, toplot, colors='k', levels=[0], linewidths=2)
 plt.clabel(cl)
 set_ticks(ax, cpt)
 
@@ -254,8 +258,8 @@ cb = plt.colorbar(cs, )
 ax.text(lon1, time1, letters[cpt], **textprop)
 ax.set_title('Growth rate ($kg.day^{-1}$)')
 toplot = thetao
-cl = ax.contour(lon, time + 1, toplot, 6, colors='k', linewidths=1)
-ax.contour(lon, time + 1, toplot, colors='k', levels=[0], linewidths=2)
+cl = ax.contour(lon, time + 1, toplot, 6, colors='k', linewidths=lwc)
+#ax.contour(lon, time + 1, toplot, colors='k', levels=[0], linewidths=2)
 plt.clabel(cl)
 set_ticks(ax, cpt)
 
@@ -267,8 +271,8 @@ cb = plt.colorbar(cs, )
 ax.text(lon1, time1, letters[cpt], **textprop)
 ax.set_title('Pred. mort. rate ($day^{-1}$)')
 toplot = (oope * wstep).sel(l=90, method='nearest')
-cl = ax.contour(lon, time + 1, toplot, 6, colors='k', linewidths=1)
-ax.contour(lon, time + 1, toplot, colors='k', levels=[0], linewidths=2)
+cl = ax.contour(lon, time + 1, toplot, 6, colors='k', linewidths=lwc)
+#ax.contour(lon, time + 1, toplot, colors='k', levels=[0], linewidths=2)
 plt.clabel(cl)
 set_ticks(ax, cpt)
 
