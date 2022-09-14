@@ -6,9 +6,9 @@
 #       extension: .py
 #       format_name: light
 #       format_version: '1.5'
-#       jupytext_version: 1.11.3
+#       jupytext_version: 1.13.7
 #   kernelspec:
-#     display_name: Python [conda env:nbarrier] *
+#     display_name: Python [conda env:nbarrier]
 #     language: python
 #     name: conda-env-nbarrier-py
 # ---
@@ -18,16 +18,21 @@ import xarray as xr
 from glob import glob
 import numpy as np
 
-filelist = []
-for y in [1982, 1997, 2015]:
-    temp = glob('/home1/scratch/nbarrier/*OOPE_Y%.4d*nc' %y)[0]
-    filelist.append(temp)
+varname = 'growthTrend'
 # -
 
-data = xr.open_mfdataset(filelist)['OOPE']
+filelist = []
+for y in [1982, 1997, 2015]:
+    pattern = '/home1/scratch/nbarrier/*%s_Y%.4d*nc' %(varname, y)
+    print(pattern)
+    temp = glob(pattern)[0]
+    filelist.append(temp)
+filelist
+
+data = xr.open_mfdataset(filelist)[varname]
 data
 
-clim = xr.open_dataset('data/pacific_clim_OOPE.nc')['OOPE']
+clim = xr.open_dataset('data/pacific_clim_%s.nc' %varname)[varname]
 clim
 
 anom = data.groupby('time.month') - clim
@@ -43,4 +48,8 @@ anom['time']
 compo = anom.mean(dim='time')
 compo
 
-compo.to_netcdf('data/composite_OOPE_map.nc')
+fileout = 'data/composite_%s_map.nc' %varname
+fileout
+
+
+compo.to_netcdf(fileout)

@@ -6,9 +6,9 @@
 #       extension: .py
 #       format_name: light
 #       format_version: '1.5'
-#       jupytext_version: 1.11.3
+#       jupytext_version: 1.13.7
 #   kernelspec:
-#     display_name: Python [conda env:nbarrier] *
+#     display_name: Python [conda env:nbarrier]
 #     language: python
 #     name: conda-env-nbarrier-py
 # ---
@@ -25,7 +25,7 @@ lonwest = 110
 loneast = -60
 zmax = 250
 
-grid = '*passive*'
+grid = '*trend*'
 # -
 
 dirmd = '/home/datawork-marbec-pmod/forcings/APECOSM/ORCA1_HINDCAST/'
@@ -45,9 +45,11 @@ z1d = mesh['gdept_1d']
 depth = (z1d <= zmax)
 depth
 
-dirin = '/home/datawork-marbec-pmod/outputs/APECOSM/ORCA1/final-runs/output'
-#dirin = '/home/datawork-marbec-pmod/outputs/APECOSM/ORCA1/trends/output'
-filelist = glob('%s/*%s*nc' %(dirin, grid))
+#dirin = '/home/datawork-marbec-pmod/outputs/APECOSM/ORCA1/final-runs/output'
+dirin = '/home/datawork-marbec-pmod/outputs/APECOSM/ORCA1/trends/output'
+pattern = '%s/*%s*nc' %(dirin, grid)
+print(pattern)
+filelist = glob(pattern)
 filelist.sort()
 filelist
 
