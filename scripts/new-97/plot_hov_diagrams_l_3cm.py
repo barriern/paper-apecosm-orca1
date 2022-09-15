@@ -216,13 +216,12 @@ cb.set_label('J/m2')
 
 plt.savefig('hov_compo_l_%d.png' %l0, bbox_inches='tight')
 
-
 # +
 fig = plt.figure(figsize=(13, 14), facecolor='white')
 plt.rcParams['font.size'] = 15
 
 thetao = read_pisces_variable('thetao', 50, True)
-anom = False
+anom = True
 phy2 = read_pisces_variable('PHY2', 50, anom)
 zoo2 = read_pisces_variable('ZOO2', 50, anom)
 zoo = read_pisces_variable('ZOO', 50, anom)
