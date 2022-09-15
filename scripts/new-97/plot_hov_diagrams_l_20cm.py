@@ -237,7 +237,7 @@ lon2 = 255
 
 cont = False
 
-axgr = ImageGrid(fig, 111, nrows_ncols=(2, 2), axes_pad=(1.1, 0.5), cbar_pad=0.1, direction='row', aspect=False, cbar_mode="each", share_all=True)
+axgr = ImageGrid(fig, 111, nrows_ncols=(3, 2), axes_pad=(1.1, 0.5), cbar_pad=0.1, direction='row', aspect=False, cbar_mode="each", share_all=True)
 
 ccc = 15
 cpt = -1
@@ -248,42 +248,83 @@ cprop['colors'] = 'k'
 cprop['linewidths']= 1
 
 ccc = -0.6
+ccc = 15
 
 cpt += 1
-toplot = (u_act).sel(l=l0, method='nearest').values
+toplot = (growth).sel(l=l0, method='nearest').cumsum(dim='time').values
 ax = axgr[cpt]
-cs, cl = plot(ax, toplot, 1, clim=ccc, contour=cont)
+cs, cl = plot(ax, toplot, wstep_l0, clim=ccc)
 cb = plt.colorbar(cs, cax=axgr.cbar_axes[cpt])
-ax.text(lon2, time2, 'U act', **textprop)
-cb.set_label('m/s')
+ax.text(lon2, time2, 'G', **textprop)
+cb.set_label('J/m2')
 ax.text(lon1, time1, letters[cpt], **textprop)
 
 cpt += 1
-toplot = (u_pas).sel(l=l0, method='nearest').values
+toplot = (pred).sel(l=l0, method='nearest').cumsum(dim='time').values
 ax = axgr[cpt]
-cs, cl = plot(ax, toplot, 1, clim=ccc, contour=cont)
+cs, cl = plot(ax, toplot, wstep_l0, clim=ccc)
 cb = plt.colorbar(cs, cax=axgr.cbar_axes[cpt])
-ax.text(lon2, time2, 'U pas', **textprop)
-cb.set_label('m/s')
+ax.text(lon2, time2, 'P', **textprop)
+cb.set_label('J/m2')
 ax.text(lon1, time1, letters[cpt], **textprop)
 
 cpt += 1
-toplot = (v_act).sel(l=l0, method='nearest').values
+toplot = (pred + growth).sel(l=l0, method='nearest').cumsum(dim='time').values
 ax = axgr[cpt]
-cs, cl = plot(ax, toplot, 1, clim=ccc, contour=cont)
+cs, cl = plot(ax, toplot, wstep_l0, clim=ccc)
 cb = plt.colorbar(cs, cax=axgr.cbar_axes[cpt])
-ax.text(lon2, time2, 'V act', **textprop)
-cb.set_label('m/s')
+ax.text(lon2, time2, 'P+G', **textprop)
+cb.set_label('J/m2')
 ax.text(lon1, time1, letters[cpt], **textprop)
 
+ccc = None
 cpt += 1
-toplot = (v_pas).sel(l=l0, method='nearest').values
+toplot = (repfonct).sel(l=l0, method='nearest').values
 ax = axgr[cpt]
 cs, cl = plot(ax, toplot, 1, clim=ccc, contour=cont)
 cb = plt.colorbar(cs, cax=axgr.cbar_axes[cpt])
-ax.text(lon2, time2, 'V pas', **textprop)
-cb.set_label('m/s')
+ax.text(lon2, time2, 'repfonct', **textprop)
+cb.set_label('')
 ax.text(lon1, time1, letters[cpt], **textprop)
+toplot = (oope * wstep).sel(l=3, method='nearest').values
+cl = ax.contour(lon[:], time + 1, toplot[:, :], 6, **cprop)
+cl2 = ax.contour(lon[:], time + 1, toplot[:, :], levels=[0], linewidths=2, colors=cprop['colors'])
+plt.clabel(cl)
+
+cpt += 1
+toplot = (gamma1).sel(l=l0, method='nearest').values
+ax = axgr[cpt]
+cs, cl = plot(ax, toplot, 1, clim=ccc, contour=cont)
+cb = plt.colorbar(cs, cax=axgr.cbar_axes[cpt])
+ax.text(lon2, time2, 'Gamma', **textprop)
+cb.set_label('')
+ax.text(lon1, time1, letters[cpt], **textprop)
+toplot = thetao
+cl = ax.contour(lon[:], time + 1, toplot[:, :], 6, **cprop)
+cl2 = ax.contour(lon[:], time + 1, toplot[:, :], levels=[0], linewidths=2, colors=cprop['colors'])
+plt.clabel(cl)
+
+cpt += 1
+toplot = (mort).sel(l=l0, method='nearest').values
+ax = axgr[cpt]
+cs, cl = plot(ax, toplot, 1, clim=ccc, contour=cont)
+cb = plt.colorbar(cs, cax=axgr.cbar_axes[cpt])
+ax.text(lon2, time2, 'Mort', **textprop)
+cb.set_label('')
+ax.text(lon1, time1, letters[cpt], **textprop)
+toplot = (oope * wstep).sel(l=90, method='nearest').values
+cl = ax.contour(lon[:], time + 1, toplot[:, :], 6, **cprop)
+cl2 = ax.contour(lon[:], time + 1, toplot[:, :], levels=[0], linewidths=2, colors=cprop['colors'])
+plt.clabel(cl)
+
+# cpt += 1
+# toplot = (v_pas).sel(l=l0, method='nearest').values
+# ax = axgr[cpt]
+# cs, cl = plot(ax, toplot, 1, clim=ccc, contour=cont)
+# cb = plt.colorbar(cs, cax=axgr.cbar_axes[cpt])
+# ax.text(lon2, time2, 'V pas', **textprop)
+# cb.set_label('m/s')
+# ax.text(lon1, time1, letters[cpt], **textprop)
 
 # -
 

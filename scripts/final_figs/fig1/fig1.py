@@ -356,4 +356,10 @@ ax.text(time[-1] - 50, -0.5, 'd' + ")", ha='center', va='center', bbox=dicttext)
 
 plt.savefig('fig1', bbox_inches='tight')
 # -
+print('Correlation U', np.corrcoef(corruobs.values, corrumod.values)[0, 1])
+
+plt.plot(corrumod)
+plt.plot(corruobs)
+
+
 
