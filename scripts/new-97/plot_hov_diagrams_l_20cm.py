@@ -6,7 +6,7 @@
 #       extension: .py
 #       format_name: light
 #       format_version: '1.5'
-#       jupytext_version: 1.10.3
+#       jupytext_version: 1.11.3
 #   kernelspec:
 #     display_name: Python 3 (ipykernel)
 #     language: python
@@ -247,7 +247,7 @@ cprop = {}
 cprop['colors'] = 'k'
 cprop['linewidths']= 1
 
-ccc = -0.6
+ccc = None
 
 cpt += 1
 toplot = (u_act).sel(l=l0, method='nearest').values
@@ -284,15 +284,137 @@ cb = plt.colorbar(cs, cax=axgr.cbar_axes[cpt])
 ax.text(lon2, time2, 'V pas', **textprop)
 cb.set_label('m/s')
 ax.text(lon1, time1, letters[cpt], **textprop)
-
 # -
 
 vpas_max = abs(v_pas).max(dim=['time', 'x'])
-vact_max = abs(v_act).max(dim=['time', 'x'])
-(vpas_max / vact_max).sel(l=l0, method='nearest')
-
 upas_max = abs(u_pas).max(dim=['time', 'x'])
+pas_max = np.max(np.array([vpas_max, upas_max]), axis=0)
+dist = (vpas_max['l'].values - l0)**2
+iok = np.nonzero(dist == dist.min())[0][0]
+pas_max[iok]
+
+vact_max = abs(v_act).max(dim=['time', 'x'])
 uact_max = abs(u_act).max(dim=['time', 'x'])
-(upas_max / uact_max).sel(l=l0, method='nearest')
+act_max = np.max(np.array([vact_max, uact_max]), axis=0)
+act_max[iok]
+
+pas_max[iok] / act_max[iok]
+
+# +
+fig = plt.figure(figsize=(13, 14), facecolor='white')
+plt.rcParams['font.size'] = 15
+
+thetao = read_pisces_variable('thetao', 50, True)
+anom = False
+phy2 = read_pisces_variable('PHY2', 50, anom)
+zoo2 = read_pisces_variable('ZOO2', 50, anom)
+zoo = read_pisces_variable('ZOO', 50, anom)
+goc = read_pisces_variable('GOC', 50, anom)
+plk = phy2 + zoo2 + zoo + goc
+
+cont = True
+
+time1 = 3
+lon1 = 255
+
+time2 = len(time) - 3
+lon2 = 255
+
+cont = False
+
+axgr = ImageGrid(fig, 111, nrows_ncols=(2, 2), axes_pad=(1.1, 0.5), cbar_pad=0.1, direction='row', aspect=False, cbar_mode="each", share_all=True)
+
+ccc = 15
+cpt = -1
+
+wstep_l0 = float(wstep.sel(l=l0, method='nearest'))
+cprop = {}
+cprop['colors'] = 'k'
+cprop['linewidths']= 1
+
+ccc = None
+cont = 0
+
+cpt += 1
+toplot = (growth).sel(l=l0, method='nearest').cumsum(dim='time').values
+toplot = (repfonct).sel(l=l0, method='nearest').values
+ax = axgr[cpt]
+cs, cl = plot(ax, toplot, 1, clim=ccc, contour=cont)
+cb = plt.colorbar(cs, cax=axgr.cbar_axes[cpt])
+ax.text(lon2, time2, 'F', **textprop)
+cb.set_label('J/m2')
+ax.text(lon1, time1, letters[cpt], **textprop)
+toplot = oope.sel(l=3, method='nearest').values
+cl = ax.contour(lon[:], time + 1, toplot[:, :], 6, **cprop)
+cl2 = ax.contour(lon[:], time + 1, toplot[:, :], levels=[0], linewidths=2, colors=cprop['colors'])
+toplot = thetao
+cl = ax.contour(lon[:], time + 1, toplot[:, :], 6, colors='red')
+cl2 = ax.contour(lon[:], time + 1, toplot[:, :], levels=[0], linewidths=2, colors='r')
+
+cpt += 1
+toplot = (pred).sel(l=l0, method='nearest').cumsum(dim='time').values
+toplot = (gamma1).sel(l=l0, method='nearest').values
+ax = axgr[cpt]
+cs, cl = plot(ax, toplot, 1, clim=ccc, contour=cont)
+cb = plt.colorbar(cs, cax=axgr.cbar_axes[cpt])
+ax.text(lon2, time2, '$\gamma$', **textprop)
+cb.set_label('J/m2')
+ax.text(lon1, time1, letters[cpt], **textprop)
+
+cpt += 1
+toplot = (pred + growth).sel(l=l0, method='nearest').cumsum(dim='time').values
+toplot = (mort).sel(l=l0, method='nearest').values
+ax = axgr[cpt]
+cs, cl = plot(ax, toplot, 1, clim=ccc, contour=cont)
+cb = plt.colorbar(cs, cax=axgr.cbar_axes[cpt])
+ax.text(lon2, time2, 'M', **textprop)
+cb.set_label('m/s')
+ax.text(lon1, time1, letters[cpt], **textprop)
+toplot = oope.sel(l=90, method='nearest').values
+cl = ax.contour(lon[:], time + 1, toplot[:, :], 6, **cprop)
+cl2 = ax.contour(lon[:], time + 1, toplot[:, :], levels=[0], linewidths=2, colors=cprop['colors'])
+
+cpt += 1
+toplot = (mdiff + zdiff + madv + zadv).sel(l=l0, method='nearest').cumsum(dim='time').values
+ax = axgr[cpt]
+cs, cl = plot(ax, toplot, 1, clim=ccc, contour=cont)
+cb = plt.colorbar(cs, cax=axgr.cbar_axes[cpt])
+ax.text(lon2, time2, 'A+D', **textprop)
+cb.set_label('J/m2')
+ax.text(lon1, time1, letters[cpt], **textprop)
+# -
+toplot = (mdiff + zdiff + madv + zadv + pred + growth).sel(l=l0, method='nearest').cumsum(dim='time').values
+ax = plt.axes()
+cs, cl = plot(ax, toplot, 1, clim=None, contour=cont)
+cb = plt.colorbar(cs)
+ax.text(lon2, time2, 'A+D', **textprop)
+cb.set_label('J/m2')
+ax.text(lon1, time1, letters[cpt], **textprop)
+
+
+toplot = oope.sel(l=l0, method='nearest').values
+toplot -= toplot[0]
+ax = plt.axes()
+cs, cl = plot(ax, toplot, 1, clim=None, contour=cont)
+cb = plt.colorbar(cs)
+ax.text(lon2, time2, 'A+D', **textprop)
+cb.set_label('J/m2')
+ax.text(lon1, time1, letters[cpt], **textprop)
+
+toplot = growth.sel(l=l0, method='nearest').values
+ax = plt.axes()
+cs, cl = plot(ax, toplot, 1, clim=None, contour=cont)
+cb = plt.colorbar(cs)
+ax.text(lon2, time2, 'A+D', **textprop)
+cb.set_label('J/m2')
+ax.text(lon1, time1, letters[cpt], **textprop)
+
+toplot = pred.sel(l=l0, method='nearest').values
+ax = plt.axes()
+cs, cl = plot(ax, toplot, 1, clim=None, contour=cont)
+cb = plt.colorbar(cs)
+ax.text(lon2, time2, 'A+D', **textprop)
+cb.set_label('J/m2')
+ax.text(lon1, time1, letters[cpt], **textprop)
 
 

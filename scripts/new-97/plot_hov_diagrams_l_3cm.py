@@ -6,7 +6,7 @@
 #       extension: .py
 #       format_name: light
 #       format_version: '1.5'
-#       jupytext_version: 1.10.3
+#       jupytext_version: 1.11.3
 #   kernelspec:
 #     display_name: Python 3 (ipykernel)
 #     language: python
@@ -167,7 +167,7 @@ lon2 = 255
 
 axgr = ImageGrid(fig, 111, nrows_ncols=(2, 2), axes_pad=(1.1, 0.5), cbar_pad=0.1, direction='row', aspect=False, cbar_mode="each", share_all=True)
 
-ccc = 150
+ccc = 200
 cpt = -1
 
 wstep_l0 = float(wstep.sel(l=l0, method='nearest'))
@@ -181,7 +181,7 @@ cont = True
 cpt += 1
 toplot = (growth).sel(l=l0, method='nearest').cumsum(dim='time').values
 ax = axgr[cpt]
-cs, cl = plot(ax, toplot, wstep_l0, clim=500)
+cs, cl = plot(ax, toplot, wstep_l0, clim=ccc)
 cb = plt.colorbar(cs, cax=axgr.cbar_axes[cpt])
 ax.text(lon2, time2, 'G', **textprop)
 cb.set_label('J/m2')
@@ -190,7 +190,7 @@ ax.text(lon1, time1, letters[cpt], **textprop)
 cpt += 1
 toplot = (pred).sel(l=l0, method='nearest').cumsum(dim='time').values
 ax = axgr[cpt]
-cs, cl = plot(ax, toplot, wstep_l0, clim=500)
+cs, cl = plot(ax, toplot, wstep_l0, clim=ccc)
 cb = plt.colorbar(cs, cax=axgr.cbar_axes[cpt])
 ax.text(lon2, time2, 'P', **textprop)
 cb.set_label('J/m2')
@@ -212,51 +212,9 @@ cs, cl = plot(ax, toplot, wstep_l0, clim=ccc, contour=cont)
 cb = plt.colorbar(cs, cax=axgr.cbar_axes[cpt])
 ax.text(lon2, time2, 'A+D', **textprop)
 ax.text(lon1, time1, letters[cpt], **textprop)
-
 cb.set_label('J/m2')
 
-# cont = True
-
-# cpt += 1
-# toplot = (zadv + madv + zdiff + mdiff).sel(l=l0, method='nearest').cumsum(dim='time').values
-# toplot = repfonct.sel(l=l0, method='nearest').values
-# ax = axgr[cpt]
-# cs, cl = plot(ax, toplot, 1, clim=None, contour=cont)
-# cb = plt.colorbar(cs, cax=axgr.cbar_axes[cpt])
-# ax.text(lon2, time2, '$F$', **textprop)
-# cb.set_label('')
-# cl = ax.contour(lon[:], time + 1, plk[:, :], 6, **cprop)
-# cl2 = ax.contour(lon[:], time + 1, plk[:, :], levels=[0], linewidths=2, colors=cprop['colors'])
-# ax.text(lon1, time1, letters[cpt], **textprop)
-# plt.clabel(cl)
-
-# cpt += 1
-# toplot = mort.sel(l=l0, method='nearest').values
-# ax = axgr[cpt]
-# cs, cl = plot(ax, toplot, 1, clim=None, contour=cont)
-# cb = plt.colorbar(cs, cax=axgr.cbar_axes[cpt])
-# ax.text(lon2, time2, '$M$', **textprop)
-# cb.set_label('')
-# toplot = (oope * wstep).sel(l=20, method='nearest').values
-# cl = ax.contour(lon[:], time + 1, toplot[:, :], 6, **cprop)
-# cl2 = ax.contour(lon[:], time + 1, toplot[:, :], levels=[0], linewidths=2, colors=cprop['colors'])
-# ax.text(lon1, time1, letters[cpt], **textprop)
-# plt.clabel(cl)
-
-# cpt += 1
-# toplot = gamma1.sel(l=l0, method='nearest').values
-# ax = axgr[cpt]
-# cs, cl = plot(ax, toplot, 1, clim=None, contour=cont)
-# cb = plt.colorbar(cs, cax=axgr.cbar_axes[cpt])
-# ax.text(lon2, time2, '$\gamma$', **textprop)
-# ax.text(lon1, time1, letters[cpt], **textprop)
-# cb.set_label('')
-# cl = ax.contour(lon[:], time + 1, thetao[:, :], 6, **cprop)
-# cl2 = ax.contour(lon[:], time + 1, thetao[:, :], levels=[0], linewidths=2, colors=cprop['colors'])
-# plt.clabel(cl)
-
 plt.savefig('hov_compo_l_%d.png' %l0, bbox_inches='tight')
-# -
 
 
 # +
@@ -279,7 +237,7 @@ lon2 = 255
 
 axgr = ImageGrid(fig, 111, nrows_ncols=(3, 2), axes_pad=(1.1, 0.5), cbar_pad=0.1, direction='row', aspect=False, cbar_mode="each", share_all=True)
 
-ccc = 150
+ccc = 200
 cpt = -1
 
 wstep_l0 = float(wstep.sel(l=l0, method='nearest'))
@@ -291,7 +249,7 @@ cprop['linewidths']= 1
 cpt += 1
 toplot = (growth).sel(l=l0, method='nearest').cumsum(dim='time').values
 ax = axgr[cpt]
-cs, cl = plot(ax, toplot, wstep_l0, clim=500)
+cs, cl = plot(ax, toplot, wstep_l0, clim=ccc)
 cb = plt.colorbar(cs, cax=axgr.cbar_axes[cpt])
 ax.text(lon2, time2, 'G', **textprop)
 cb.set_label('J/m2')
@@ -300,7 +258,7 @@ ax.text(lon1, time1, letters[cpt], **textprop)
 cpt += 1
 toplot = (pred).sel(l=l0, method='nearest').cumsum(dim='time').values
 ax = axgr[cpt]
-cs, cl = plot(ax, toplot, wstep_l0, clim=500)
+cs, cl = plot(ax, toplot, wstep_l0, clim=ccc)
 cb = plt.colorbar(cs, cax=axgr.cbar_axes[cpt])
 ax.text(lon2, time2, 'P', **textprop)
 cb.set_label('J/m2')
@@ -315,19 +273,9 @@ ax.text(lon2, time2, 'P+G', **textprop)
 cb.set_label('J/m2')
 ax.text(lon1, time1, letters[cpt], **textprop)
 
-# cpt += 1
-# toplot = (zadv + madv + zdiff + mdiff).sel(l=l0, method='nearest').cumsum(dim='time').values
-# ax = axgr[cpt]
-# cs, cl = plot(ax, toplot, wstep_l0, clim=None, contour=cont)
-# cb = plt.colorbar(cs, cax=axgr.cbar_axes[cpt])
-# ax.text(lon2, time2, 'A+D', **textprop)
-# ax.text(lon1, time1, letters[cpt], **textprop)
-# cb.set_label('J/m2')
-
 cont = 0
 
 cpt += 1
-# toplot = (zadv + madv + zdiff + mdiff).sel(l=l0, method='nearest').cumsum(dim='time').values
 toplot = repfonct.sel(l=l0, method='nearest').values
 ax = axgr[cpt]
 cs, cl = plot(ax, toplot, 1, clim=None, contour=cont)
@@ -364,5 +312,16 @@ cl = ax.contour(lon[:], time + 1, thetao[:, :], 6, **cprop)
 cl2 = ax.contour(lon[:], time + 1, thetao[:, :], levels=[0], linewidths=2, colors=cprop['colors'])
 plt.clabel(cl)
 # -
+
+toplot = (oope).sel(l=l0, method='nearest').values
+ax = plt.axes()
+cs, cl = plot(ax, toplot, 1, clim=None, contour=cont)
+cb = plt.colorbar(cs)
+ax.text(lon2, time2, '$\gamma$', **textprop)
+ax.text(lon1, time1, letters[cpt], **textprop)
+cb.set_label('')
+#cl = ax.contour(lon[:], time + 1, thetao[:, :], 6, **cprop)
+#cl2 = ax.contour(lon[:], time + 1, thetao[:, :], levels=[0], linewidths=2, colors=cprop['colors'])
+#plt.clabel(cl)
 
 
