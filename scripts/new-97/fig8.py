@@ -8,9 +8,9 @@
 #       format_version: '1.5'
 #       jupytext_version: 1.13.7
 #   kernelspec:
-#     display_name: Python 3 (ipykernel)
+#     display_name: Python [conda env:nbarrier2]
 #     language: python
-#     name: python3
+#     name: conda-env-nbarrier2-py
 # ---
 
 import xarray as xr
@@ -158,6 +158,13 @@ zoo = read_pisces_variable('ZOO', 50, anom)
 goc = read_pisces_variable('GOC', 50, anom)
 plk = phy2 + zoo2 + zoo + goc
 
+
+def create_levels(lmax, step):
+    levels = np.arange(-lmax, lmax + step, step)
+    levels = levels[levels != 0]
+    return levels
+
+
 # +
 fig = plt.figure(figsize=(18, 13), facecolor='white')
 plt.rcParams['font.size'] = 15
@@ -207,21 +214,21 @@ cb = plt.colorbar(cs, )
 ax.text(lon1, time1, letters[cpt - 1], **textprop)
 ax.set_title('Pred. + Growth ($J.m^{-2}.s^{-1}$)')
 
-lmax = 200
-step = 50
+lmax = 150
+step = 75
 levels = np.arange(-lmax, lmax + step, step)
-levels = np.linspace(-lmax, lmax, 7)
 print(levels)
+levels = levels[levels != 0]
 
 cl = ax.contour(lon, time + 1, toplot.cumsum(dim='time'), colors='k', levels=levels, linewidths=lwc)
 #ax.contour(lon, time + 1, toplot.cumsum(dim='time'), colors='k', levels=[0], linewidths=2)
 plt.clabel(cl)
 set_ticks(ax, cpt)
 
-lmax = 400
-step = 100
+lmax = 450
+step = 150
 levels = np.arange(-lmax, lmax + step, step)
-levels = np.linspace(-lmax, lmax, 7)
+levels = levels[levels != 0]
 print(levels)
 
 ccc = 60
@@ -257,7 +264,9 @@ cb = plt.colorbar(cs, )
 ax.text(lon1, time1, letters[cpt - 1], **textprop)
 ax.set_title('Func. response')
 toplot = plk
-cl = ax.contour(lon, time + 1, toplot, 6, colors='k', linewidths=lwc)
+
+lll = create_levels(1.5, 0.5)
+cl = ax.contour(lon, time + 1, toplot, levels=lll, colors='k', linewidths=lwc)
 #ax.contour(lon, time + 1, toplot, colors='k', levels=[0], linewidths=2)
 plt.clabel(cl)
 set_ticks(ax, cpt)
@@ -270,7 +279,8 @@ cb = plt.colorbar(cs, )
 ax.text(lon1, time1, letters[cpt - 1], **textprop)
 ax.set_title('Growth rate ($kg.day^{-1}$)')
 toplot = thetao
-cl = ax.contour(lon, time + 1, toplot, 6, colors='k', linewidths=lwc)
+lll = create_levels(10, 2)
+cl = ax.contour(lon, time + 1, toplot, levels=lll, colors='k', linewidths=lwc)
 #ax.contour(lon, time + 1, toplot, colors='k', levels=[0], linewidths=2)
 plt.clabel(cl)
 set_ticks(ax, cpt)
@@ -283,7 +293,8 @@ cb = plt.colorbar(cs, )
 ax.text(lon1, time1, letters[cpt - 1], **textprop)
 ax.set_title('Pred. mort. rate ($day^{-1}$)')
 toplot = (oope * wstep).sel(l=20, method='nearest')
-cl = ax.contour(lon, time + 1, toplot, 6, colors='k', linewidths=lwc)
+lll = create_levels(15, 5)
+cl = ax.contour(lon, time + 1, toplot, levels=lll, colors='k', linewidths=lwc)
 #ax.contour(lon, time + 1, toplot, colors='k', levels=[0], linewidths=2)
 plt.clabel(cl)
 set_ticks(ax, cpt)

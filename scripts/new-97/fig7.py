@@ -6,11 +6,11 @@
 #       extension: .py
 #       format_name: light
 #       format_version: '1.5'
-#       jupytext_version: 1.10.3
+#       jupytext_version: 1.13.7
 #   kernelspec:
-#     display_name: Python 3 (ipykernel)
+#     display_name: Python [conda env:nbarrier2]
 #     language: python
-#     name: python3
+#     name: conda-env-nbarrier2-py
 # ---
 
 import xarray as xr
@@ -90,15 +90,18 @@ def plot(ax, toplot, wstep, contour=True, levels=None, clim=None, trend=True):
         cmin, cmax = [-clim, clim]
     if levels is None:
         levels = np.linspace(cmin, cmax, 11)
+        
+    levels = levels[levels != 0]
 
     time = np.arange(toplot.shape[0]) + 1
 
     cs = ax.pcolormesh(lon, time, toplot, shading='auto')
     #cs = ax.imshow(toplot, extent=[lon.min(), lon.max(), time.min(), time.max()], interpolation='none')
+    cl = None
     cs.set_clim(cmin, cmax)
     if contour:
-        cl = ax.contour(lon, time, toplot, levels=levels, colors='k', linewidths=1)
-        cl2 = ax.contour(lon, time, toplot, levels=0, linewidths=2, colors='k')
+        cl = ax.contour(lon, time, toplot, levels=levels, colors='k', linewidths=2)
+        #cl2 = ax.contour(lon, time, toplot, levels=0, linewidths=2, colors='k')
     stride = 3
     ax.xaxis.set_major_formatter(formatter0)
     ax.grid(True, linewidth=0.5, color='gray', linestyle='--')
@@ -110,7 +113,7 @@ def plot(ax, toplot, wstep, contour=True, levels=None, clim=None, trend=True):
     ax.set_ylim(time.min(), time.max())
     ax.set_yticks(time[::3])
     ax.set_yticklabels(tlabels[::3], va='top', rotation=45)
-    return cs, None
+    return cs, cl
 
 
 dicttext = dict(boxstyle='round', facecolor='lightgray', alpha=1)
@@ -177,17 +180,26 @@ cprop = {}
 cprop['colors'] = 'k'
 cprop['linewidths']= 1
 
-clist = [150, 15, 5]
+clist = [150, 15, 6]
 cont = True
 iii = 0
+
+levels0 = np.arange(-150, 150 + 75, 75)
+levels1 = np.arange(-15, 15 + 5, 5)
+levels2 = np.arange(-6, 6 + 2, 2)
+
+levels = [levels0, levels1, levels2]
+
 
 for l in [3, 20, 90]:
     ccc = clist[iii]
     cpt += 1    
     ax = axgr[cpt]
     toplot = (wstep * (zadv + madv + zdiff + mdiff + pred + growth)).cumsum(dim='time').sel(l=l, method='nearest')
-    cs, cl = plot(ax, toplot.values, 1, clim=ccc)
+    cs, cl = plot(ax, toplot.values, 1, clim=ccc, levels=levels[iii])
     cb = plt.colorbar(cs, cax=axgr.cbar_axes[cpt])
+    cb.add_lines(cl)
+    cb.set_ticks(levels[iii])
     #cb.set_label('J/m2')
     ax.text(lon1, time1, letters[cpt], **textprop)
     ax.text(lon2, time2, '%scm' %l, **textprop)
@@ -197,30 +209,30 @@ for l in [3, 20, 90]:
     cpt += 1
     ax = axgr[cpt]
     toplot = (wstep * (pred + growth)).cumsum(dim='time').sel(l=l, method='nearest')
-    cs, cl = plot(ax, toplot.values, 1, clim=ccc)
+    skipcont = (l == 90)
+    cs, cl = plot(ax, toplot.values, 1, clim=ccc, levels=levels[iii], contour=(skipcont == False))
     cb = plt.colorbar(cs, cax=axgr.cbar_axes[cpt])
     ax.text(lon1, time1, letters[cpt], **textprop)
     ax.text(lon2, time2, '%scm' %l, **textprop)
     if(l == 3):
         ax.set_title('P+G (J/m2)')
+    if not skipcont:
+        cb.add_lines(cl)
+    cb.set_ticks(levels[iii])
     
     cpt += 1
     ax = axgr[cpt]
     toplot = (wstep * (zadv + madv + zdiff + mdiff)).cumsum(dim='time').sel(l=l, method='nearest')
-#     toplot =  (u_pas).sel(l=l, method='nearest')
-    cs, cl = plot(ax, toplot.values, 1, clim=ccc, contour=True)
+    cs, cl = plot(ax, toplot.values, 1, clim=ccc, contour=True, levels=levels[iii])
     cb = plt.colorbar(cs, cax=axgr.cbar_axes[cpt])
-    #cb.set_label('J/m2')
+    cb.add_lines(cl)
+    cb.set_ticks(levels[iii])
     ax.text(lon1, time1, letters[cpt], **textprop)
     ax.text(lon2, time2, '%scm' %l, **textprop)
     if(l == 3):
         ax.set_title('A+D (J/m2)')
     toplot = (u_pas).sel(l=l, method='nearest')
     step = 0.2
-#     cl = ax.contour(lon, time, toplot, levels=np.arange(-2, 2 + step, step), colors='k', linewidths=1)
-#     plt.clabel(cl)
-#     cl2 = ax.contour(lon, time, toplot, levels=[0], colors='k', linewidths=2)
-#     ax.set_ylim(time.min() + 1, time.max() + 1)
     iii += 1
 
 plt.savefig('fig7.png', bbox_inches='tight')

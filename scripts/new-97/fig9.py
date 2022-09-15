@@ -8,9 +8,9 @@
 #       format_version: '1.5'
 #       jupytext_version: 1.13.7
 #   kernelspec:
-#     display_name: Python 3 (ipykernel)
+#     display_name: Python [conda env:nbarrier2]
 #     language: python
-#     name: python3
+#     name: conda-env-nbarrier2-py
 # ---
 
 import xarray as xr
@@ -90,15 +90,18 @@ def plot(ax, toplot, wstep, contour=True, levels=None, clim=None, trend=True):
         cmin, cmax = [-clim, clim]
     if levels is None:
         levels = np.linspace(cmin, cmax, 11)
+        
+    levels = levels[levels != 0]
 
     time = np.arange(toplot.shape[0]) + 1
 
     cs = ax.pcolormesh(lon, time, toplot, shading='auto')
     #cs = ax.imshow(toplot, extent=[lon.min(), lon.max(), time.min(), time.max()], interpolation='none')
     cs.set_clim(cmin, cmax)
+    cl = None
     if contour:
         cl = ax.contour(lon, time, toplot, levels=levels, colors='k', linewidths=1)
-        cl2 = ax.contour(lon, time, toplot, levels=0, linewidths=2, colors='k')
+        #cl2 = ax.contour(lon, time, toplot, levels=0, linewidths=2, colors='k')
     stride = 3
     ax.xaxis.set_major_formatter(formatter0)
     ax.grid(True, linewidth=0.5, color='gray', linestyle='--')
@@ -114,7 +117,7 @@ def plot(ax, toplot, wstep, contour=True, levels=None, clim=None, trend=True):
     tlabels
     ax.set_yticks(time[::3])
     ax.set_yticklabels(tlabels[::3], va='top', rotation=45)
-    return cs, None
+    return cs, cl
 
 
 dicttext = dict(boxstyle='round', facecolor='lightgray', alpha=1)
@@ -158,6 +161,13 @@ zoo = read_pisces_variable('ZOO', 50, anom)
 goc = read_pisces_variable('GOC', 50, anom)
 plk = phy2 + zoo2 + zoo + goc
 
+
+def create_levels(lmax, step):
+    levels = np.arange(-lmax, lmax + step, step)
+    levels = levels[levels != 0]
+    return levels
+
+
 # +
 fig = plt.figure(figsize=(18, 13), facecolor='white')
 plt.rcParams['font.size'] = 15
@@ -197,7 +207,7 @@ def set_ticks(ax, cpt):
 step = 5
 lmax = 15
 levels = np.arange(-lmax, lmax + step, step)
-levels = np.linspace(-lmax, lmax, 7)
+levels = levels[levels != 0]
 lwc = 2
 
 ccc = 3
@@ -209,7 +219,6 @@ cb = plt.colorbar(cs, )
 ax.text(lon1, time1, letters[cpt], **textprop)
 ax.set_title('Pred. + Growth ($J.m^{-2}.s^{-1}$)')
 cl = ax.contour(lon, time + 1, toplot.cumsum(dim='time'), colors='k', levels=levels, linewidths=lwc)
-#ax.contour(lon, time + 1, toplot.cumsum(dim='time'), colors='k', levels=[0], linewidths=2)
 plt.clabel(cl)
 set_ticks(ax, cpt)
         
@@ -234,8 +243,6 @@ cb = plt.colorbar(cs, )
 ax.text(lon1, time1, letters[cpt], **textprop)
 ax.set_title('Pred ($J.m^{-2}.s^{-1}$)')
 cl = ax.contour(lon, time + 1, toplot.cumsum(dim='time'), colors='k', levels=levels, linewidths=lwc)
-ax.contour(lon, time + 1, toplot.cumsum(dim='time'), colors='k', levels=[0], linewidths=2)
-plt.clabel(cl)
 set_ticks(ax, cpt)
 
 cpt += 1
@@ -246,8 +253,8 @@ cb = plt.colorbar(cs, )
 ax.text(lon1, time1, letters[cpt], **textprop)
 ax.set_title('Func. response')
 toplot = (oope * wstep).sel(l=3, method='nearest')
-cl = ax.contour(lon, time + 1, toplot, 6, colors='k', linewidths=lwc)
-#ax.contour(lon, time + 1, toplot, colors='k', levels=[0], linewidths=2)
+lll = create_levels(120, 40)
+cl = ax.contour(lon, time + 1, toplot, levels=lll, colors='k', linewidths=lwc)
 plt.clabel(cl)
 set_ticks(ax, cpt)
 
@@ -259,7 +266,8 @@ cb = plt.colorbar(cs, )
 ax.text(lon1, time1, letters[cpt], **textprop)
 ax.set_title('Growth rate ($kg.day^{-1}$)')
 toplot = thetao
-cl = ax.contour(lon, time + 1, toplot, 6, colors='k', linewidths=lwc)
+lll = create_levels(10, 2)
+cl = ax.contour(lon, time + 1, toplot, lll, colors='k', linewidths=lwc)
 #ax.contour(lon, time + 1, toplot, colors='k', levels=[0], linewidths=2)
 plt.clabel(cl)
 set_ticks(ax, cpt)
@@ -272,7 +280,8 @@ cb = plt.colorbar(cs, )
 ax.text(lon1, time1, letters[cpt], **textprop)
 ax.set_title('Pred. mort. rate ($day^{-1}$)')
 toplot = (oope * wstep).sel(l=90, method='nearest')
-cl = ax.contour(lon, time + 1, toplot, 6, colors='k', linewidths=lwc)
+lll = create_levels(3, 1.5)
+cl = ax.contour(lon, time + 1, toplot, levels=lll, colors='k', linewidths=lwc)
 #ax.contour(lon, time + 1, toplot, colors='k', levels=[0], linewidths=2)
 plt.clabel(cl)
 set_ticks(ax, cpt)
