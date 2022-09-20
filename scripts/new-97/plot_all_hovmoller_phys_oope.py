@@ -6,7 +6,7 @@
 #       extension: .py
 #       format_name: light
 #       format_version: '1.5'
-#       jupytext_version: 1.10.3
+#       jupytext_version: 1.13.7
 #   kernelspec:
 #     display_name: Python 3 (ipykernel)
 #     language: python
@@ -94,6 +94,15 @@ months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 
 tlabels = ['%s-%d' %(m, y) for y in [0, 1] for m in months]
 tlabels
 
+
+def make_levels(ccc, step):
+    
+    levels = np.arange(-ccc, ccc + step, step)
+    levels = levels[levels != 0]
+    return levels
+
+
+
 # +
 fig = plt.figure(facecolor='white', figsize=(14, 10))
 grid = ImageGrid(fig, 111,  # similar to subplot(111)
@@ -128,6 +137,17 @@ names['thetao'] = 'Temperature'
 names['PLK'] = 'Plankton conc.'
 names['uo'] = 'Zonal vel.'
 
+ccc = {}
+ccc['thetao'] = make_levels(6, 2)
+ccc['uo'] = make_levels(1, 0.25)
+ccc['PLK'] = make_levels(1.5, 0.5)
+
+ccc_oope = []
+ccc_oope.append(make_levels(100, 25))
+ccc_oope.append(make_levels(15, 5))
+ccc_oope.append(make_levels(5, 2))
+
+
 cpt = 0
 for v in ['thetao', 'uo', 'PLK']:
     ax = grid[cpt]
@@ -135,12 +155,15 @@ for v in ['thetao', 'uo', 'PLK']:
     if(v == 'thetao'):
         print('lala')
         ax.contour(x, y, warm_pool, levels=[28], colors='r', zorder=1000)
+    levels = ccc[v]
     cmax = float(abs(temp).quantile(quant))
     cs = ax.pcolormesh(x, y, temp, shading='auto')
-    cl = ax.contour(x, y, temp, levels=np.linspace(-cmax, cmax, 11), colors='k', linewidths=0.5)
-    cl0 = ax.contour(x, y, temp, levels=0, colors='k', linewidths=1)
-    cs.set_clim(-cmax, cmax)
+    cl = ax.contour(x, y, temp, levels=levels, colors='k', linewidths=2)
+    #cl0 = ax.contour(x, y, temp, levels=0, colors='k', linewidths=1)
+    cs.set_clim(levels.min(), levels.max())
     cb = plt.colorbar(cs, cbar_axes[cpt])
+    cb.add_lines(cl)
+    cb.set_ticks(levels)
     ax.grid(True)
     ax.set_xlabel('Longitude')
     #ax.set_ylabel('Months')
@@ -160,12 +183,15 @@ for l in range(nlength):
     temp = oope.isel(l=l)
     cmax = float(abs(temp).quantile(quant))
     cs = ax.pcolormesh(x, y, temp, shading='auto')
-    cl = ax.contour(x, y, temp, levels=np.linspace(-cmax, cmax, 11), colors='k', linewidths=0.5)
-    cl0 = ax.contour(x, y, temp, levels=0, colors='k', linewidths=1)
-    cs.set_clim(-cmax, cmax)
+    levels = ccc_oope[l]
+    cl = ax.contour(x, y, temp, levels=levels, colors='k', linewidths=2)
+    #cl0 = ax.contour(x, y, temp, levels=0, colors='k', linewidths=1)
+    cs.set_clim(levels.min(), levels.max())
     cb = plt.colorbar(cs, cbar_axes[cpt])
     ax.set_title('Biomass dens., L=%.f cm' %lengths[l])
     cb.set_label(units['oope'])
+    cb.add_lines(cl)
+    cb.set_ticks(levels)
     ax.grid(True)
     ax.set_xlabel('Longitude')
     #ax.set_ylabel('Months')

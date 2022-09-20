@@ -6,7 +6,7 @@
 #       extension: .py
 #       format_name: light
 #       format_version: '1.5'
-#       jupytext_version: 1.11.3
+#       jupytext_version: 1.13.7
 #   kernelspec:
 #     display_name: Python 3 (ipykernel)
 #     language: python
@@ -28,7 +28,7 @@ mesh = xr.open_dataset('data/pacific_mesh_mask.nc').isel(z=0)
 lonf = mesh['glamf'].values
 latf = mesh['gphif'].values
 
-const = xr.open_dataset('../data/ORCA1_JRAC02_CORMSK_CYC3_FINAL_ConstantFields.nc')
+const = xr.open_dataset('data/ORCA1_JRAC02_CORMSK_CYC3_FINAL_ConstantFields.nc')
 const = const.rename({'wpred': 'l', 'gpred': 'c'})
 length = const['length'] * 100
 const['l'] = length
@@ -79,3 +79,5 @@ for v in varnames[:]:
     filename = 'data/integrated_maps_%s.nc' %v
     with ProgressBar():
         newtrend.to_netcdf(filename)
+
+
