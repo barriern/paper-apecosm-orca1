@@ -6,7 +6,7 @@
 #       extension: .py
 #       format_name: light
 #       format_version: '1.5'
-#       jupytext_version: 1.11.3
+#       jupytext_version: 1.13.7
 #   kernelspec:
 #     display_name: Python 3 (ipykernel)
 #     language: python
@@ -118,7 +118,7 @@ latf
 proj = ccrs.PlateCarree(central_longitude=180)
 proj2 = ccrs.PlateCarree(central_longitude=0)
 
-tmask_noatl = xr.open_dataset('corrected_mask_noatl.nc')
+tmask_noatl = xr.open_dataset('data/corrected_mask_noatl.nc')
 tmask_noatl = tmask_noatl['tmask'].values
 tmask_noatl = (tmask_noatl == tmask_noatl.min()).astype(int)
 plt.imshow(tmask_noatl)
@@ -218,7 +218,7 @@ for l in range(3):
     ltemp = float(temp.l)
     tpclim = np.log10(temp.to_masked_array())
     
-    cl = ax.tricontour(lonout, latout, tpclim[imask], colors='k', linewidths=1, levels=levels)
+    cl = ax.tricontour(lonout, latout, tpclim[imask], colors='k', linewidths=2, levels=levels)
     plt.clabel(cl)
     
     temp = varanom.isel(l=l)
@@ -266,7 +266,7 @@ for l in range(3):
     ltemp = float(temp.l)
     tpclim = np.log10(temp.to_masked_array())
     
-    cl = ax.tricontour(lonout, latout, tpclim[imask], colors='k', linewidths=1, levels=levels)
+    cl = ax.tricontour(lonout, latout, tpclim[imask], colors='k', linewidths=2, levels=levels)
     plt.clabel(cl)
     
     temp = cov.isel(l=l)

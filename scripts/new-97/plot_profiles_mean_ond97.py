@@ -72,6 +72,9 @@ lontext = 260
 ztext = -210
 lontext2 = 160
 
+ncontours = 6
+cw = 2
+
 dictext2 = dict(ha='left', va='center', bbox=dicttext, zorder=20)
 
 # thetao (0)
@@ -87,7 +90,7 @@ clim = clim['thetao'].to_masked_array()
 anom = xr.open_dataset('data/composite_thetao_profile.nc')
 anom = anom['thetao'].values
 
-cl = ax.contour(lon0[iok], -depth[:-1], clim[:-1, iok], 11, colors='k')
+cl = ax.contour(lon0[iok], -depth[:-1], clim[:-1, iok], ncontours, colors='k', linewidths=cw)
 plt.clabel(cl)
 cs = ax.pcolormesh(lon0[iok], -depth[:-1], anom[:-1, iok], shading='auto')
 cb = plt.colorbar(cs, cbar_axes[cpt])
@@ -106,8 +109,8 @@ clim = clim['uo'].to_masked_array()
 anom = xr.open_dataset('data/composite_uo_profile.nc')
 anom = anom['uo'].to_masked_array()
 
-step = 0.1
-cl = ax.contour(lon0[iok], -depth[:-1], clim[:-1, iok], colors='k', levels = np.arange(-1, 1 + step, step))
+step = 0.2
+cl = ax.contour(lon0[iok], -depth[:-1], clim[:-1, iok], colors='k', levels = np.arange(-1, 1 + step, step), linewidths=cw)
 plt.clabel(cl)
 cs = ax.pcolormesh(lon0[iok], -depth[:-1], anom[:-1, iok], shading='auto')
 cb = plt.colorbar(cs, cbar_axes[cpt])
@@ -135,7 +138,7 @@ for v in varlist:
         anom += tempanom[v].to_masked_array()
 
 step = 0.05
-cl = ax.contour(lon0[iok], -depth[:-1], clim[:-1, iok], 21, colors='k')
+cl = ax.contour(lon0[iok], -depth[:-1], clim[:-1, iok], ncontours, colors='k', linewidths=cw)
 plt.clabel(cl)
 cs = ax.pcolormesh(lon0[iok], -depth[:-1], anom[:-1, iok], shading='auto')
 cb = plt.colorbar(cs, cbar_axes[cpt])
@@ -157,7 +160,7 @@ print(clim.shape)
 cpt = 1
 ax = axgr[cpt]
 step = 0.05
-cl = ax.contour(lon0[iok], -depth[:-1], clim[:, :, 0].T[:-1, iok], 11, colors='k')
+cl = ax.contour(lon0[iok], -depth[:-1], clim[:, :, 0].T[:-1, iok], ncontours, colors='k', linewidths=cw)
 plt.clabel(cl)
 cs = ax.pcolormesh(lon0[iok], -depth[:-1], anom[:, :, 0].T[:-1, iok], shading='auto')
 cb = plt.colorbar(cs, cbar_axes[cpt])
@@ -170,7 +173,7 @@ ax.set_ylabel('Depth (m)')
 cpt = 3
 ax = axgr[cpt]
 step = 0.05
-cl = ax.contour(lon0[iok], -depth[:-1], clim[:, :, 1].T[:-1, iok], 11, colors='k')
+cl = ax.contour(lon0[iok], -depth[:-1], clim[:, :, 1].T[:-1, iok], ncontours, colors='k', linewidths=cw)
 plt.clabel(cl)
 cs = ax.pcolormesh(lon0[iok], -depth[:-1], anom[:, :, 1].T[:-1, iok], shading='auto')
 cb = plt.colorbar(cs, cbar_axes[cpt])
@@ -183,7 +186,7 @@ ax.set_ylabel('Depth (m)')
 cpt = 5
 ax = axgr[cpt]
 step = 0.05
-cl = ax.contour(lon0[iok], -depth[:-1], clim[:, :, 2].T[:-1, iok], 11, colors='k')
+cl = ax.contour(lon0[iok], -depth[:-1], clim[:, :, 2].T[:-1, iok], ncontours, colors='k', linewidths=cw)
 plt.clabel(cl)
 cs = ax.pcolormesh(lon0[iok], -depth[:-1], anom[:, :, 2].T[:-1, iok], shading='auto')
 cb = plt.colorbar(cs, cbar_axes[cpt])
@@ -200,3 +203,6 @@ ax.set_xticks(xticks)
 ax.xaxis.set_major_formatter(formatter0)
 
 plt.savefig('forage_mean_ond97.png', bbox_inches='tight', facecolor='white')
+# -
+
+
