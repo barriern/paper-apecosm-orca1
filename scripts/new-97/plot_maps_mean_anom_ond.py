@@ -164,6 +164,8 @@ plt.rcParams['contour.negative_linestyle'] = 'solid'
 
 step = 0.5
 levels = np.arange(-1, 3 + step, step)
+step = 1
+levels = np.arange(-0.75, -0.75 + 6 * 0.75, 0.75)
 
 fig = plt.figure(figsize=(16, 16))
 plt.subplots_adjust(top=0.95)
