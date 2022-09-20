@@ -6,7 +6,7 @@
 #       extension: .py
 #       format_name: light
 #       format_version: '1.5'
-#       jupytext_version: 1.11.3
+#       jupytext_version: 1.13.7
 #   kernelspec:
 #     display_name: Python 3 (ipykernel)
 #     language: python
@@ -31,7 +31,7 @@ mesh = xr.open_dataset('data/pacific_mesh_mask.nc').isel(z=0)
 lonf = mesh['glamf'].values
 latf = mesh['gphif'].values
 
-const = xr.open_dataset('../data/ORCA1_JRAC02_CORMSK_CYC3_FINAL_ConstantFields.nc')
+const = xr.open_dataset('data/ORCA1_JRAC02_CORMSK_CYC3_FINAL_ConstantFields.nc')
 const = const.rename({'wpred': 'l', 'gpred': 'c'})
 length = const['length'] * 100
 const['l'] = length
@@ -79,12 +79,11 @@ def compute_trend(varnames):
     return trendmean
 
 
-def find_limits(data):
+def find_limits(data, thres=95):
     import numpy as np
     temp = np.abs(data[data.mask == False])
-    cmax = np.percentile(temp, 98)
+    cmax = np.percentile(temp, thres)
     return cmax
-    
 
 
 # +
@@ -96,19 +95,22 @@ plt.rcParams['font.size'] = 15
 plt.rcParams['image.cmap'] = 'RdBu_r'
 
 fig = plt.figure(figsize=(12, 8), facecolor='white')
-axgr = AxesGrid(fig, 111,  axes_class=axes_class, nrows_ncols=(2, 2), axes_pad=(0.7, 0.95), label_mode='', 
+axgr = AxesGrid(fig, 111,  axes_class=axes_class, nrows_ncols=(3, 2), axes_pad=(0.7, 0.95), label_mode='', 
                 cbar_mode='each', cbar_size=0.1, cbar_pad=0.3, cbar_location="bottom")
 
 cpt = 0
 toplot = oopemean.to_masked_array()[:-3, :][1:, 1:]
 cmax = find_limits(toplot)
-# cs = axgr[cpt].pcolormesh(lonf[:-3, :], latf[:-3, :], toplot, transform=projin)
-# cbax = axgr.cbar_axes[cpt]
-# cb = cbax.colorbar(cs)
-# axgr[cpt].add_feature(cfeature.LAND)
-# axgr[cpt].add_feature(cfeature.COASTLINE)
+cs = axgr[cpt].pcolormesh(lonf[:-3, :], latf[:-3, :], toplot, transform=projin)
+cbax = axgr.cbar_axes[cpt]
+cb = cbax.colorbar(cs)
+axgr[cpt].add_feature(cfeature.LAND)
+axgr[cpt].add_feature(cfeature.COASTLINE)
+cs.set_clim(-cmax, cmax)
+axgr[cpt].set_title('OOPE')
+cb.set_label('J/m2')
 
-#cpt += 1
+cpt += 1
 varnames = [
     'growthTrend',
     'madv_trend',
@@ -124,7 +126,7 @@ cb = cbax.colorbar(cs)
 axgr[cpt].add_feature(cfeature.LAND)
 axgr[cpt].add_feature(cfeature.COASTLINE)
 axgr[cpt].set_extent([130, -60, -40, 40], crs=projout)
-#cmax = find_limits(toplot)
+cmax = find_limits(toplot)
 cs.set_clim(-cmax, cmax)
 axgr[cpt].set_title('All')
 cb.set_label('J/m2')
