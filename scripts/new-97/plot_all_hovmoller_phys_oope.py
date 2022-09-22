@@ -6,7 +6,7 @@
 #       extension: .py
 #       format_name: light
 #       format_version: '1.5'
-#       jupytext_version: 1.13.7
+#       jupytext_version: 1.10.3
 #   kernelspec:
 #     display_name: Python 3 (ipykernel)
 #     language: python
@@ -102,7 +102,6 @@ def make_levels(ccc, step):
     return levels
 
 
-
 # +
 fig = plt.figure(facecolor='white', figsize=(14, 10))
 grid = ImageGrid(fig, 111,  # similar to subplot(111)
@@ -143,7 +142,7 @@ ccc['uo'] = make_levels(1, 0.25)
 ccc['PLK'] = make_levels(1.5, 0.5)
 
 ccc_oope = []
-ccc_oope.append(make_levels(100, 25))
+ccc_oope.append(make_levels(150, 50))
 ccc_oope.append(make_levels(15, 5))
 ccc_oope.append(make_levels(5, 2))
 
