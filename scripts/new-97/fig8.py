@@ -6,11 +6,11 @@
 #       extension: .py
 #       format_name: light
 #       format_version: '1.5'
-#       jupytext_version: 1.13.7
+#       jupytext_version: 1.10.3
 #   kernelspec:
-#     display_name: Python [conda env:nbarrier2]
+#     display_name: Python 3 (ipykernel)
 #     language: python
-#     name: conda-env-nbarrier2-py
+#     name: python3
 # ---
 
 import xarray as xr
@@ -157,14 +157,10 @@ zoo2 = read_pisces_variable('ZOO2', 50, anom)
 zoo = read_pisces_variable('ZOO', 50, anom)
 goc = read_pisces_variable('GOC', 50, anom)
 plk = phy2 + zoo2 + zoo + goc
-
-
 def create_levels(lmax, step):
     levels = np.arange(-lmax, lmax + step, step)
     levels = levels[levels != 0]
     return levels
-
-
 # +
 fig = plt.figure(figsize=(18, 13), facecolor='white')
 plt.rcParams['font.size'] = 15
@@ -215,7 +211,7 @@ ax.text(lon1, time1, letters[cpt - 1], **textprop)
 ax.set_title('Pred. + Growth ($J.m^{-2}.s^{-1}$)')
 
 lmax = 150
-step = 75
+step = 50
 levels = np.arange(-lmax, lmax + step, step)
 print(levels)
 levels = levels[levels != 0]

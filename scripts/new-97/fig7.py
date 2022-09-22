@@ -6,11 +6,11 @@
 #       extension: .py
 #       format_name: light
 #       format_version: '1.5'
-#       jupytext_version: 1.13.7
+#       jupytext_version: 1.10.3
 #   kernelspec:
-#     display_name: Python [conda env:nbarrier2]
+#     display_name: Python 3 (ipykernel)
 #     language: python
-#     name: conda-env-nbarrier2-py
+#     name: python3
 # ---
 
 import xarray as xr
@@ -152,6 +152,14 @@ months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 
 tlabels = ['%s-%d' %(m, y) for y in [0, 1] for m in months]
 tlabels
 
+
+def make_levels(ccc, step):
+    ccc = abs(ccc)
+    levels = np.arange(-ccc, ccc + step, step)
+    levels = levels[levels != 0]
+    return levels
+
+
 # +
 fig = plt.figure(figsize=(13, 14), facecolor='white')
 plt.rcParams['font.size'] = 15
@@ -184,15 +192,16 @@ clist = [150, 15, 6]
 cont = True
 iii = 0
 
-levels0 = np.arange(-150, 150 + 75, 75)
-levels1 = np.arange(-15, 15 + 5, 5)
-levels2 = np.arange(-6, 6 + 2, 2)
+levels0 = make_levels(125, 25)
+levels0 = make_levels(-150, 50)
+levels1 = make_levels(-15, 5)
+levels2 = make_levels(-5, 2)
 
 levels = [levels0, levels1, levels2]
 
 
 for l in [3, 20, 90]:
-    ccc = clist[iii]
+    ccc = levels[iii].max()
     cpt += 1    
     ax = axgr[cpt]
     toplot = (wstep * (zadv + madv + zdiff + mdiff + pred + growth)).cumsum(dim='time').sel(l=l, method='nearest')
