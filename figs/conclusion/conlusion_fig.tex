@@ -1,0 +1,103 @@
+\documentclass[convert={outext=.png}]{standalone}
+\usepackage[svgnames]{xcolor}
+\usepackage{tikz}
+
+
+\usetikzlibrary{arrows,decorations.pathmorphing,backgrounds,positioning,fit,matrix}
+\usetikzlibrary{patterns}
+\usepackage{subcaption}
+\tikzstyle{hatch1}=[pattern=north west lines, pattern color=green]
+\tikzstyle{hatch2}=[pattern=north west lines, pattern color=orange]
+\tikzstyle{hatch3}=[pattern=north west lines, pattern color=purple]
+\tikzstyle{hatch4}=[pattern=north east lines, pattern color=blue]
+%\tikzstyle{hatch5}=[pattern=north east lines, pattern color=yellow]
+%\tikzstyle{hatch6}=[pattern=north east lines, pattern color=magenta]
+\usepackage[margin=1in]{geometry}
+\tikzstyle{nodeleg}=[right, midway, inner sep = 0.7cm]
+
+\def \sca{1}
+\def \lonmax{12}
+\def \latmax{8}
+\def \off{1.2}
+\def \xmin{8}
+\def \ymin{4}
+\pgfmathtruncatemacro{\lonnc}{1}
+\pgfmathtruncatemacro{\latnc}{1}
+
+\def \small{0.03}
+\def \med{0.04}
+\def \large{0.05}
+\def \x{aaaaaaaa}
+\def \vvv{0.75em}
+
+\def \xce{-3.1}
+\def \xwe{-13.1}
+\def \ys{0.15}
+\def \ym{-0.8}
+\def \yl{-1.8}
+
+
+\begin{document}
+
+\begin{tikzpicture}
+
+    \tikzset{node/.style={draw, align=left, text width=8cm, minimum height=3.4cm, anchor=base, rounded corners, fill=Gainsboro}}
+        
+ 	\node [align=center] at(0, 2) {
+ 			\Large
+ 	   		\textbf{Central Pacific}\\
+     		};
+     		
+     \node [align=center] at(0, 1.3) {
+ 	   		\Large
+     		\textbf{Biomass} $\nearrow$\\
+     };
+     		
+     \node[node, fill=FireBrick!20] at (0, 0) {
+          	\Large
+		\hphantom{\x} H. adv + $\nearrow$ Growth (T $\nearrow$)\\
+		\vspace{\vvv}
+		     	\Large
+		\hphantom{\x} H. adv\\
+				\vspace{\vvv}
+		     	\Large
+		\hphantom{\x} H. adv\\
+				\vspace{\vvv}
+	};
+	
+ 	\node [align=center] at(-10, 2) {
+ 			\Large
+ 	   		\textbf{Western Pacific}\\
+     		};
+     		
+     \node [align=center] at(-10, 1.3) {
+ 	   		\Large
+     		\textbf{Biomass} {$\mathbf{\searrow}$}\\
+     };
+     		
+     \node[node,  fill=SteelBlue!20] at (-10, 0) {
+     	\Large
+		\hphantom{\x} $\nearrow$ Pred., $\searrow$ Growth ($\searrow$ T)\\
+				\vspace{\vvv}
+		\Large
+		\hphantom{\x} $\nearrow$ Pred., $\searrow$ f ( $\searrow$ T, $\nearrow$ F)\\
+				\vspace{\vvv}
+		\Large
+		\hphantom{\x} H. adv\\
+	};
+		
+    \node[align=center] (myfirstpic) at (\xce, \ys) {\includegraphics[scale=\small]{fish.png}};
+    \node[align=center] (myfirstpic) at (\xce, \ym) {\includegraphics[scale=\med]{fish.png}};  
+    \node[align=center] (myfirstpic) at (\xce, \yl) {\includegraphics[scale=\large]{fish.png}};  
+    
+    \node[align=center] (myfirstpic) at (\xwe, \ys) {\includegraphics[scale=\small]{fish.png}};
+    \node[align=center] (myfirstpic) at (\xwe, \ym) {\includegraphics[scale=\med]{fish.png}};  
+    \node[align=center] (myfirstpic) at (\xwe, \yl) {\includegraphics[scale=\large]{fish.png}};  
+
+    % \node[node, right = of small] (medium) {H. adv + $\nearrow$ Growth ($\nearrow$)};
+    
+
+\end{tikzpicture}
+
+
+\end{document}
