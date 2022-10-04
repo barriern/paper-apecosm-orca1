@@ -1,0 +1,17 @@
+#!/bin/bash
+#PBS -l mem=10g
+#PBS -l walltime=48:00:00
+
+cd $PBS_O_WORKDIR
+
+file="extract_compress_pisces_variables.sh"
+cp $file $SCRATCH
+cd $SCRATCH
+
+source /usr/share/Modules/3.2.10/init/bash
+module list
+module load nco
+
+date
+bash $file >& compress.log
+date
