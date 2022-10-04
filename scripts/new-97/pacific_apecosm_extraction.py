@@ -45,13 +45,12 @@ z1d = mesh['gdept_1d']
 depth = (z1d <= zmax)
 depth
 
-#dirin = '/home/datawork-marbec-pmod/outputs/APECOSM/ORCA1/final-runs/output'
-dirin = '/home/datawork-marbec-pmod/outputs/APECOSM/ORCA1/trends/output'
+dirin = '/home/datawork-marbec-pmod/outputs/APECOSM/ORCA1/final-runs/output'
 pattern = '%s/*%s*nc' %(dirin, grid)
 print(pattern)
 filelist = glob(pattern)
 filelist.sort()
-filelist
+filelist = filelist[:]
 
 data = xr.open_dataset(filelist[0])
 data
@@ -69,6 +68,9 @@ for f in filelist:
     basename = os.path.basename(f)
     outfile = os.path.join(os.getenv('SCRATCH'), 'pacific_' + basename)
     outfile
+    if os.path.isfile(outfile):
+        print('File %s exists. Skipped' %outfile)
+        continue
 
     data = xr.open_dataset(f, decode_times=False).isel(community=0)
     data
@@ -85,6 +87,6 @@ for f in filelist:
 
     print('writting ', outfile)
 
-    dataout.to_netcdf(outfile, unlimited_dims='time_counter')
+    dataout.to_netcdf(outfile, unlimited_dims='time')
 
 
