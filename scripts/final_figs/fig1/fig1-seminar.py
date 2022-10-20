@@ -39,6 +39,8 @@ lonf = mesh['glamf'].values
 latf = mesh['gphif'].values
 tmask = mesh['tmask'].values
 
+ilat = slice(None, -3)
+
 # fig = plt.figure(figsize=(8, 16), facecolor='white')
 # plt.subplots_adjust(top=0.95)
 # axes_class = (GeoAxes, dict(map_projection=proj))
@@ -357,6 +359,9 @@ tmask = mesh['tmask'].values
 
 
 # figplt.savefig('fig1', bbox_inches='tight')
+# -
+# # SST
+
 # +
 fig = plt.figure(facecolor='white', figsize=(12, 8))
 ax = plt.gca(projection=proj)
@@ -490,6 +495,172 @@ ax.set_xlim(time.min(), time.max())
 ax.set_ylim(-4, 4)
 #ax.text(time[-1] - 50, -3, 'a' + ")", ha='center', va='center', bbox=dicttext)
 plt.savefig('oni_index.png', bbox_inches='tight')
+# -
+# # SSH / Currents
+
+# +
+quivargs = {}
+quivargs['scale'] = 1
+quivargs['width'] = 0.004
+xkey = 0.92
+ykey = 0.32
+
+satcovu = xr.open_dataset('data/sat_covariance_nino34_uo.nc')
+satcovu = satcovu['__xarray_dataarray_variable__']
+satcovu
+
+satcovv = xr.open_dataset('data/sat_covariance_nino34_vo.nc')
+satcovv = satcovv['__xarray_dataarray_variable__']
+satcovv
+
+lonobs = satcovu['longitude'].values
+latobs = satcovu['latitude'].values
+    
+iiii = 1
+fig = plt.figure(facecolor='white', figsize=(12, 8))
+ax = plt.axes(projection=proj)
+
+cs = ax.pcolormesh(lonsat, latsat, obssshoni[:, :].T, transform=proj2, shading='auto')
+q = ax.quiver(lonobs, latobs, satcovu.values, satcovv.values, transform=ccrs.PlateCarree(), **quivargs, regrid_shape=(20, 20))
+ref = 0.05
+
+ax.add_feature(cfeature.LAND, color='lightgray')
+ax.add_feature(cfeature.COASTLINE)
+ax.text(lontext, lattext, 'e' + ")", ha='center', va='center', transform=proj, bbox=dicttext)
+ax.plot(lonbox, latbox, **dictpbox)
+
+ax.quiverkey(q, xkey, ykey , ref, '%dcm/s' %(ref * 100) , color='k', zorder=1003)
+
+gl = ax.gridlines(**gridparams)
+gl.top_labels = False
+gl.right_labels = False
+gl.xformatter = LONGITUDE_FORMATTER
+gl.yformatter = LATITUDE_FORMATTER
+xticks = np.array([150, 180, -180, -150, -120, -90, -60])
+gl.xlocator = mticker.FixedLocator(xticks)
+ax.set_ylim(-40, 40)
+ax.set_xlim(-60, 130)
+cs.set_clim(-8, 8)
+
+cb = plt.colorbar(cs, shrink=0.5)
+try:
+    cb.set_label('Covariance [cm]')
+except:
+    cb.set_label_text('Covariance [cm]')
+
+ax.set_title('Obs SSH / ONI')
+
+plt.savefig('obs_ssh_uv_cov.png', bbox_inches='tight')
+
+# +
+modcovv = xr.open_dataset('data/model_covariance_nino34_vo.nc').isel(y=ilat)
+modcovv = modcovv['__xarray_dataarray_variable__']
+
+modcovu = xr.open_dataset('data/model_covariance_nino34_uo.nc').isel(y=ilat)
+modcovu = modcovu['__xarray_dataarray_variable__']
+modcovu
+
+modmesh = xr.open_dataset('data/pacific_mesh_mask.nc').isel(z=0, y=ilat)
+lonvec = modmesh['glamt'].values
+latvec = modmesh['gphit'].values
+
+iiii = 3
+fig = plt.figure(facecolor='white', figsize=(12, 8))
+ax = plt.axes(projection=proj)
+
+cs = ax.pcolormesh(lonf, latf, modsshoni[1:, 1:].T, transform=proj2)
+q = ax.quiver(lonvec, latvec, modcovu.values, modcovv.values, transform=ccrs.PlateCarree(), **quivargs, regrid_shape=(40, 40))
+ref = 0.05
+
+#cs.set_clim(-ccc, ccc)
+ax.add_feature(cfeature.LAND, color='lightgray')
+ax.add_feature(cfeature.COASTLINE)
+ax.text(lontext, lattext, 'f' + ")", ha='center', va='center', transform=proj, bbox=dicttext)
+ax.plot(lonbox, latbox, **dictpbox)
+
+gl = ax.gridlines(**gridparams)
+gl.top_labels = False
+gl.right_labels = False
+gl.xformatter = LONGITUDE_FORMATTER
+gl.yformatter = LATITUDE_FORMATTER
+xticks = np.array([150, 180, -180, -150, -120, -90, -60])
+gl.xlocator = mticker.FixedLocator(xticks)
+ax.set_ylim(-40, 40)
+ax.set_xlim(-60, 130)
+cs.set_clim(-8, 8)
+
+plt.quiverkey(q, xkey, ykey , ref, '%dcm/s' %(ref * 100) , color='k', zorder=30000)
+
+cb = plt.colorbar(cs, shrink=0.5)
+try:
+    cb.set_label('Covariance [cm]')
+except:
+    cb.set_label_text('Covariance [cm]')
+
+ax.set_title('Model SSH / ONI')
+plt.savefig('mod_ssh_uv_cov.png', bbox_inches='tight')
+
+
+# +
+curobs = xr.open_dataset('data/satellite_nino_34_uo.nc')
+uobs = curobs['uo']
+uobs_clim = uobs.groupby('time.month').mean('time')
+uobs = uobs.groupby('time.month') - uobs_clim
+
+curobs = xr.open_dataset('data/satellite_nino_34_vo.nc')
+vobs = curobs['vo']
+vobs_clim = uobs.groupby('time.month').mean('time')
+vobs = uobs.groupby('time.month') - vobs_clim
+
+curmod = xr.open_dataset('data/model_nino_34_uo.nc')
+umod = curmod['__xarray_dataarray_variable__']  
+umod_clim = umod.groupby('time_counter.month').mean('time_counter')
+umod = umod.groupby('time_counter.month') - umod_clim
+
+curmod = xr.open_dataset('data/model_nino_34_vo.nc')
+vmod = curmod['__xarray_dataarray_variable__']
+vmod_clim = umod.groupby('time_counter.month').mean('time_counter')
+vmod = umod.groupby('time_counter.month') - vmod_clim
+
+dateobs = np.array([(y * 100 + m) for y, m in zip(uobs['time.year'].values, uobs['time.month'].values)])
+datemod = np.array([(y * 100 + m) for y, m in zip(umod['time_counter.year'].values, umod['time_counter.month'].values)])
+tmod = np.arange(len(umod))
+
+offset = np.nonzero(datemod == 199301)[0][0]
+tobs = np.arange(len(uobs)) + offset
+
+corrumod = umod.sel(time_counter=slice('1993-01-01', '2018-12-31'))
+corrumod
+
+corruobs = uobs.sel(time=slice('1993-01-01', '2018-12-31'))
+corruobs
+
+print('Correlation U', np.corrcoef(corruobs.values, corrumod.values)[0, 1])
+
+left = 0.55
+
+alpha = 0.7
+
+xticks = np.arange(2*12, len(time), 5 * 12)
+
+plt.figure(facecolor='white', figsize=(14, 8))
+ax = plt.gca()
+l3 = plt.plot(tmod, umod, 'k', label='Sim.', alpha=alpha)
+l1 = plt.plot(tobs, uobs, label='Sim.', alpha=alpha, color='orange')
+plt.legend([l1[0], l3[0]], ['Obs.', 'Model'], loc=0, fontsize=15, ncol=2)
+plt.ylabel('[m/s]')
+plt.title('U Nino34')
+
+#plt.legend(loc=0)
+ax.set_xticks(time[xticks])
+ax.set_xticklabels(labels[xticks], rotation=45, ha='right')
+ax.grid(True)
+ax.set_xlim(time.min(), time.max())
+ccc = 0.7
+ax.set_ylim(-0.4, ccc)
+ax.text(time[-1] - 50, -0.5, 'd' + ")", ha='center', va='center', bbox=dicttext)
+
+plt.savefig('u_nino34.png', bbox_inches='tight')
 # -
 
 
