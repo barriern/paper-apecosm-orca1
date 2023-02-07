@@ -1,0 +1,164 @@
+1. Are the objectives and the rationale of the study clearly stated?
+
+Please provide suggestions to the author(s) on how to improve the clarity of the objectives and rationale of the study. Please number each suggestion so that author(s) can more easily respond.
+
+Reviewer #1: Yes, objectives and rationale are clearly stated. This paper presents the results of a simulation study using a newly developed APECOSM multispecies model coupled to a physical oceanographic model (NEMO) and the biogeochemical model (PISCES) to understand the ecosystem dynamics of ENSO events in the tropical Pacific Ocean. The topic is one of great interest to stakeholders in this region – a better mechanistic understanding of the ecosystem response to extreme El Niño events.
+
+Reviewer #2: Yes - the rational provided is clearly stated and logical. Please see comments to the author below.
+
+2. If applicable, is the application/theory/method/study reported in sufficient detail to allow for its replicability and/or reproducibility?
+
+Please provide suggestions to the author(s) on how to improve the replicability/reproducibility of their study. Please number each suggestion so that the author(s) can more easily respond.
+
+Reviewer #1: Yes, methods are reported clearly and with enough detail. Some suggestions/questions that would improve the ms include:
+
+(1) A more thorough description of the functional response parameterization used in this model would be helpful to those of us interested in the topic. Specifically, inclusion of the detailed Type II equation (with more parameters than that provided in equation 2 of the ms) that clearly defines the dependence of consumption on temperature, schooling, and prey size.
+
+(2) Further, a more elaborated discussion of how excretion is handled in the model would be useful.
+
+(3) Can you clarify if the model is being forced with nutrients, phytoplankton groups and zooplankton groups - or is forcing done using some subset of these?
+
+(4) Is the food web vertically integrated (i.e., Are the mesopelagic community and epipelagic community contained within the same subregion in 3D space or is the model vertically disaggregated such that there is vertical migration and hence subsurface physical conditions as well as trophic effects are distributed throughout subregions throughout the water column?
+
+(5) Does oxygen modify any biological parameter in this model? If it doesn’t perhaps a brief mention of how it could be incorporated in the future could be interesting.
+
+(6) Can you please clarify/elaborate on the following statement: pg 11, l200: “we do not use a limited temperature range to any of the simulated communities in the model configuration used here.”
+
+(7) If not already done, would be useful to make code available in an online repo (Github, zenodo, etc)
+
+Reviewer #2: Generally yes -- though more detail on how response to temperature change is handled by APECOSM seems necessary. Please see comments to the author below.
+
+3. If applicable, are statistical analyses, controls, sampling mechanism, and statistical reporting (e.g., P-values, CIs, effect sizes) appropriate and well described?
+
+Please clearly indicate if the manuscript requires additional peer review by a statistician. Kindly provide suggestions to the author(s) on how to improve the statistical analyses, controls, sampling mechanism, or statistical reporting. Please number each suggestion so that the author(s) can more easily respond.
+
+Reviewer #1: Mark as appropriate with an X:
+Yes [X] No [] N/A []
+Provide further comments here:
+
+Reviewer #2: Mark as appropriate with an X:
+Yes [] No [X] N/A []
+Provide further comments here:
+
+4. Could the manuscript benefit from additional tables or figures, or from improving or removing (some of the) existing ones?
+
+Please provide specific suggestions for improvements, removals, or additions of figures or tables. Please number each suggestion so that author(s) can more easily respond.
+
+Reviewer #1: (1) A description of the food web used and how this varies (or not) for a certain species spatially would be useful to understand how the underlying inter-species interactions evolve under distinct ENSO conditions.
+
+Reviewer #2: No, all figures included help the narrative and no addtional figures are really needed. Some minor edits to one figure (fig 3) would help.
+
+5. If applicable, are the interpretation of results and study conclusions supported by the data?
+
+Please provide suggestions (if needed) to the author(s) on how to improve, tone down, or expand the study interpretations/conclusions. Please number each suggestion so that the author(s) can more easily respond.
+
+Reviewer #1: Mark as appropriate with an X:
+Yes [X] No [] N/A []
+Provide further comments here:
+
+Reviewer #2: Mark as appropriate with an X:
+Yes [X] No [] N/A []
+Provide further comments here:
+They provide evaluation of model skill against independent observations at the physical (SST, SSH, surface currents), lower trophic (satellite chlorophyll), and upper trophic levels (tuna catch records)
+
+6. Have the authors clearly emphasized the strengths of their study/theory/methods/argument?
+
+Please provide suggestions to the author(s) on how to better emphasize the strengths of their study. Please number each suggestion so that the author(s) can more easily respond.
+
+Reviewer #1: Yes, the results presented indicate that the shift in tuna biomass can be explained largely by the passive horizontal transport by ENSO-related currents, which emphasizes that ecosystem models must account for the dynamic role of ocean currents on the distribution of marine species and communities.
+
+Reviewer #2: Yes, they show how observed patterns of longitudinal tuna distributions in the tropical Pacific during El Nino and La Nina events can be replicated within a sophisticated ecosystem model. They then show how they can use this model to tease out specific ecological mechanisms (foraging success, physiological responses to temperature, predation pressure) and physical mechanisms (advection) contribute to the observed patterns for different size classes of tuna.
+
+7. Have the authors clearly stated the limitations of their study/theory/methods/argument?
+
+Please list the limitations that the author(s) need to add or emphasize. Please number each limitation so that author(s) can more easily respond.
+
+Reviewer #1: Yes, this manuscript acknowledges key limitations of the modeling. These include that a full eco-physiological treatment of tunas is not yet incorporated and that movement parameters from tagging data might add to further understanding of the role of active transport of these fish.
+
+Reviewer #2: Yes, the discussion section does include consideration of model limitations. They emphasize there that they are using a size-structured model that uses a size-class of a generic "epipelagic community" functional group as a proxy for tuna, and go on to state that future development of the APECOSM model could explicitly include tuna species.
+
+8. Does the manuscript structure, flow or writing need improving (e.g., the addition of subheadings, shortening of text, reorganization of sections, or moving details from one section to another)?
+
+Please provide suggestions to the author(s) on how to improve the manuscript structure and flow. Please number each suggestion so that author(s) can more easily respond.
+
+Reviewer #1: (1) The Conclusion section (Lines 684-714) coming before the discussion section is a bit awkward. I would suggest a different subtitle for the conclusions section.
+(2) Lines 130-137 are not necessary and could be removed.
+
+Reviewer #2: This manuscript is well-written and organized. No improvements are needed.
+
+9. Could the manuscript benefit from language editing?
+
+Reviewer #1: No
+
+Reviewer #2: No
+
+Wells: Thank you for your patience. It was a challenge finding reviewers over the Holidays. But, we did and they are positive. Please consider the comments provided specifically.
+
+Reviewer #1: Overall, I found this to be an excellent paper. The approach was elegant, and methods and results were thoroughly presented. I very much appreciate the work that went into validating the model and am impressed with the model's clear ability to capture both physical and biological spatiotemporal patterns in this region. I look forward to reading your forthcoming study on the mesopelagic community response to ENSO conditions using this modeling framework.
+
+Reviewer #2: Review of "Mechanisms underlying the epipelagic ecosystem response to ENSO in the equatorial Pacific ocean" by Barrier, Lengaigne, Rault, Person, Ethé, Aumont, and Maury.
+
+SYNOPSIS
+This study uses hindcast simulations of a mechanistic ecosystem model "APECOSM" to understand the longitudinal shifts in tuna distributions during El Niño and La Niña events.
+
+In order to evaluate the mechanisms of El Nino and La Nina impact on the epipelagic community and tuna, their simulation was parameterized as the average physical and lower trophic conditions over several El Nino/La Nina events.
+
+They present an elegant analysis of the mechanisms of latitudinal distribution change by separately analyzing how each term of the underlying growth equation of the epipelagic community changes over time during and between ENSO anomalies. In doing so, they were able to differentiate how these processes differ for three epipelagic community size classes.
+
+An impressive amount of detail is provided about the model structure. The manuscript also includes an evaluation of model physical and biological skill via comparison of model results with observed surface temperatures, surface currents, sea-level heights, chlorophyll concentration, and tuna catch.
+
+I found this to be an interesting paper that is well organized and clearly written. As a modeler, I believe that this will be a study with practical value.
+
+I have a suggestion for additional detail about the model structure to add to the text. I want to understand better about how temperature influences growth in APECOSM. In section 4, the authors show that growth of small and intermediate size-classes increase in warmer waters and attribute this to physiological responses to temperature.
+-- What do the temperature response curves actually look like for the small and intermediate size-classes? Are they a dome-shaped response?
+-- Do the smaller animals usually live in waters below their optimal temperature, and the warmer waters in the east during El Nino are closer to their optimal temperature?
+-- Can you speculate on how easy it would be to generate a very different pattern of growth (and zonal distribution) by assuming a different temperature response curve or slightly different parameterization?
+-- Similarly, the description of the model structure should include a brief description of what the DEB physiological theory actually is and how its application here benefits the capacities of APECOSM.
+
+Specific suggestions and questions:
+ABSTRACT
+-- P. 1, Line 36: Consider changing the word "resource" to "tuna" or "tuna population distribution" or "tuna catch".
+-- P. 2, Line 9: Consider "…El Niño-related surface current anomalies for all size classes."
+-- P. 2 Line 26: "intermediate-sized organisms"
+
+INTRODUCTION
+ Line 11: Consider "purchase of fishing rights"
+ Line 61: Consider "… may be eventually by detected in the adult population some time later …".
+ Line 67 and elsewhere: "dynamic"
+ Line 86: "understanding of future"
+ Line 113: Can you add more detail to this statement "…APECOSM …, which doesn't suffer from most of the limitations highlighted above …"? What sets APECOSM apart from the other ecosystem models (or model classes) that were discussed in the previous paragraph?
+
+NUMERICAL MODELS
+ Line 142: "lower-trophic level concentrations"
+ Line 143: "… forced by the information from …"
+ Line 255: Consider "In the remainder of this paper, the focus is solely …".
+
+Evaluation of the modeled response to ENSO
+ Line 265: "Previous studies have already …".
+ Line 299: "Figure 1b-c illustrate …".
+ Line 317: "… are seen over …".
+ Line 324: "As shown in …".
+ Line 346: "Figure 2b-c show …".
+ Line 366: "1°×1° grid".
+ Fig. 3: Reverse the position of Figs 3a and 3b-c.
+ Fig. 3a: Switch the axes on the time-longitude plot to have longitude on the x-axis. This would then be consistent with Fig. 4.
+ Fig. 3d: Please define Sardara and Det Sardara curves in the caption. Please define the meaning of the dashed line in the caption.
+ Line 393: "Figure 3b-c show …".
+ Line 398: Consider "Observed catches are greater in the central and eastern Pacific and lower in the Western Pacific under El Niño conditions compared to La Niña conditions, …".
+
+Response of the epipelagic community to extreme El Niño events
+ Line 458: "… Pacific warmed …"
+ Fig. 4b: Please state direction of positive zonal velocity, unless direction is not considered and this is just magnitude.
+ Fig. 5 caption and the main text description at Line 521 needs some clarification. Do the iso-lines represent climatology over both El Nino conditions and non-El Nino conditions, and the shading represents the anomalies during the El Nino? Or do the iso-lines and shading represent only El Nino conditions?
+ Line 544: "… importance of each of these …".
+ Line 550: Consider "One inference that can be drawn is that the relative …".
+ Line 567 and Fig. 6 caption: Use "physical" instead of "dynamical".
+ Line 571: By "active velocity" do you mean active swimming? Consider "volitional velocity".
+ Line 581: To be consistent in text and figure captions, "Figure 7b-c". (and elsewhere)
+ Line 667: "On average …".
+
+Conclusion and discussion
+ Line 691: Consider "… fish populations, are insufficient to address …".
+ Line 694: Consider "… community in response to ENSO. Model results are similar to the response of tuna catches and allow, …, us to …".
+ Line 730: "… is a particularly powerful tool to isolate …".
+ Line 735: There should be a very brief description in the discussion or the model description of what the DEB theory actually is and how its application here benefits the capacities of APECOSM.
