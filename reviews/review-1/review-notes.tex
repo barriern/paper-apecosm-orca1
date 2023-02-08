@@ -18,17 +18,33 @@ Reviewer \#1: Yes, methods are reported clearly and with enough detail. Some sug
 
 (1) A more thorough description of the functional response parameterization used in this model would be helpful to those of us interested in the topic. Specifically, inclusion of the detailed Type II equation (with more parameters than that provided in equation 2 of the ms) that clearly defines the dependence of consumption on temperature, schooling, and prey size. \\
 
+% A faire: include dans la reponse, mais dire que ca alourdirait le manuscrit. Citer une reference 
+
 (2) Further, a more elaborated discussion of how excretion is handled in the model would be useful. \\ 
+
+% Pas pertinent. Reference aux papiers couples pour l'excretion (Aumont, Leonard)
 
 (3) Can you clarify if the model is being forced with nutrients, phytoplankton groups and zooplankton groups - or is forcing done using some subset of these? \\
 
+%  Facile, a faire
+
 (4) Is the food web vertically integrated (i.e., Are the mesopelagic community and epipelagic community contained within the same subregion in 3D space or is the model vertically disaggregated such that there is vertical migration and hence subsurface physical conditions as well as trophic effects are distributed throughout subregions throughout the water column? \\ 
+
+% Preciser que ce n'est pas un modele en couche
 
 (5) Does oxygen modify any biological parameter in this model? If it doesn’t perhaps a brief mention of how it could be incorporated in the future could be interesting. \\ 
 
+% Oxygene n'influence que l'habitat (advection horizontale et verticale). Pas pertinenent pour la region Pacifique Ouest.
+% Futur: explicitation de la respiration dans le DEB
+
 (6) Can you please clarify/elaborate on the following statement: pg 11, l200: “we do not use a limited temperature range to any of the simulated communities in the model configuration used here.” \\
 
+% Preciser qu'on ne force pas les communautes a se confiner dans une gamme de temperature. 
+% La temperature affecte le metabolisme mais pas l'advection horizontale.
+
 (7) If not already done, would be useful to make code available in an online repo (Github, zenodo, etc) \\ 
+
+% Soon. Preciser que reference paper is on the go.
 
 Reviewer \#2: Generally yes -- though more detail on how response to temperature change is handled by APECOSM seems necessary. Please see comments to the author below. \\
 
@@ -49,6 +65,9 @@ Provide further comments here:\\
 Please provide specific suggestions for improvements, removals, or additions of figures or tables. Please number each suggestion so that author(s) can more easily respond.
 
 Reviewer \#1: (1) A description of the food web used and how this varies (or not) for a certain species spatially would be useful to understand how the underlying inter-species interactions evolve under distinct ENSO conditions.\\
+
+% Adding description of opportunistic predation, point to one figure (cf. Apecosm website). Pas de figure mais 
+% une description plus detaillee.
 
 Reviewer \#2: No, all figures included help the narrative and no addtional figures are really needed. Some minor edits to one figure (fig 3) would help.\\
 
@@ -90,6 +109,12 @@ Please provide suggestions to the author(s) on how to improve the manuscript str
 Reviewer \#1: (1) The Conclusion section (Lines 684-714) coming before the discussion section is a bit awkward. I would suggest a different subtitle for the conclusions section.\\
 (2) Lines 130-137 are not necessary and could be removed.\\
 
+%% Section 5: Conclusion
+% Subsection 5.1: Summary
+% Subsection 5.2: Discussion
+
+% We would prefer to keep lines 130 - 137 but leave to the editor the decision
+
 Reviewer \#2: This manuscript is well-written and organized. No improvements are needed.\\
 
 \textbf{9. Could the manuscript benefit from language editing?}\\
@@ -120,11 +145,19 @@ I have a suggestion for additional detail about the model structure to add to th
 
 -- What do the temperature response curves actually look like for the small and intermediate size-classes? Are they a dome-shaped response?\\
 
+% Precision sur la temperature (@Olivier)
+
 -- Do the smaller animals usually live in waters below their optimal temperature, and the warmer waters in the east during El Nino are closer to their optimal temperature?\\
+
+% No optimal temperature. New configuration with 5 communities and temperature range. Adding sentence.
 
 -- Can you speculate on how easy it would be to generate a very different pattern of growth (and zonal distribution) by assuming a different temperature response curve or slightly different parameterization?\\
 
+% This will be tested on a new configuration. But the paper shows that this is not necessary to include temp. range.
+
 -- Similarly, the description of the model structure should include a brief description of what the DEB physiological theory actually is and how its application here benefits the capacities of APECOSM.\\
+
+% Ajouter une phrase sur le DEB (@Olivier)
 
 Specific suggestions and questions:\\
 
@@ -147,6 +180,8 @@ INTRODUCTION\\
 - Line 86: "understanding of future" \\
 
 - Line 113: Can you add more detail to this statement "...APECOSM ..., which doesn't suffer from most of the limitations highlighted above ..."? What sets APECOSM apart from the other ecosystem models (or model classes) that were discussed in the previous paragraph?\\
+
+% Rapell entre () des points evoques plus haut
 
 NUMERICAL MODELS\\
 
