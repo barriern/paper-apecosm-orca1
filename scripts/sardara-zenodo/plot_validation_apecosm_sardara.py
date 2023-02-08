@@ -195,8 +195,8 @@ lw = 3
 #plt.plot(np.arange(baryape.shape[0]), baryape, label='Apecosm', linewidth=0.5)
 plt.plot(np.arange(apefilt.shape[0]), apefilt, label='Apecosm', linewidth=lw)
 #plt.plot(np.arange(len(barysar[ioksar])), barysar[ioksar], label='Sardara', linewidth=0.5)
-plt.plot(np.arange(sarfilt[ioksar].shape[0]), sarfilt[ioksar], label='Sardara', linewidth=lw)
-plt.plot(np.arange(corr0.shape[0]), corr0, label='Det. Sardara', linewidth=lw)
+plt.plot(np.arange(corr0.shape[0]), corr0, label='Det. Obs.', linewidth=lw)
+plt.plot(np.arange(sarfilt[ioksar].shape[0]), sarfilt[ioksar], label='Raw Obs.', linewidth=0.5 * lw, linestyle='--')
 
 plt.legend(ncol=3, fontsize=15, loc='lower right')
 plt.axvline(time[iline], color='k', linestyle='--')
@@ -324,6 +324,7 @@ cb = plt.colorbar(cs, cax=cax, orientation='vertical', shrink=0.5)
 cb.set_label('Tons/m2')
 
 plt.savefig('plot_validation_apecosm.png', bbox_inches='tight')
+plt.savefig('plot_validation_apecosm.eps', bbox_inches='tight')
 # -
 ts1 = tempape
 ts2 = corr0
@@ -338,7 +339,3 @@ from significativity import sig
 sig(ts1, ts2, use_bres=False, dof=2)
 
 sig(ts1, ts2, use_bres=True, dof=2)
-
-
-
-
