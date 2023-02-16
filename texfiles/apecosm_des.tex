@@ -5,8 +5,15 @@
 
 We use the Apex Predators Ecosystem Model (APECOSM, \citealp{mauryModelingEnvironmentalEffects2007, mauryOverviewAPECOSMSpatialized2010}) to simulate the energy transfer through marine ecosystems. 
 APECOSM is a eulerian ecosystem model that represents the three-dimensional dynamics of size-structured pelagic populations and communities mechanistically. It integrates individual, population and community levels and includes the effects of life-history diversity with a trait-based approach \citep{mauryIndividualsPopulationsCommunities2013}. In APECOSM, energy uptake and utilization for individual growth, development, reproduction, somatic and maturity maintenance are modeled according to the Dynamic Energy Budget (DEB) theory \citep{koojmanDynamicEnergyBudget2010}. The model considers important ecological processes such as opportunistic size-structured trophic interactions and competition for food, predatory, disease, ageing and starvation mortality, key physiological aspects such as vision and respiration, as well as essential processes such as three-dimensional passive transport by marine currents and active habitat-based movements \citep{faugerasAdvectiondiffusionreactionSizestructuredFish2005}, schooling and swarming (see \citealp{mauryModelingEnvironmentalEffects2007, mauryIndividualsPopulationsCommunities2013, mauryCanSchoolingRegulate2017} for a detailed description of the model). 
-%APECOSM is driven by the 3D fields of temperature, horizontal currents, large phytoplankton, small and large zooplankton, big particulate organic matter, light and oxygen provided by the NEMO-PISCES simulation (section \ref{sec:nemo}), which constrain the biological and ecological dynamics at various levels.
- All the metabolic rates are temperature-dependent and corrected by an Arrhenius factor \citep{mauryModelingEnvironmentalEffects2007, mauryIndividualsPopulationsCommunities2013}. While it can be prescribed in the model code, we do not use a limited temperature range to any of the simulated communities in the model configuration used here.
+
+As discussed in \cite{mauryIndividualsPopulationsCommunities2013}, size-based predation implies that predation rates are controlled by the ratio of sizes
+between prey and predators (all organisms can be potentially predators and
+preys at the same time, depending on their relative size, cf. equation D1 of \cite{mauryIndividualsPopulationsCommunities2013} for the detailed equation of the selectivity curve). Opportunistic predation implies that preys
+of a given weight are eaten in proportion to their selected
+available biomass relatively to the biomass of all possible preys
+available.
+
+All the metabolic rates are temperature-dependent and corrected by an Arrhenius factor \citep{mauryModelingEnvironmentalEffects2007, mauryIndividualsPopulationsCommunities2013}. While it can be prescribed in the model configuration, no preferred temperature habitat has been used in this study. Therefore, temperature does not influence horizontal displacements of the fish.
 
 In APECOSM, the dynamics of communities is determined by integrating the core state equation below:
 
@@ -30,7 +37,7 @@ f_{w} = \frac{P_{w}}{C_{w} + P_{w}}
 with $P_{w}$ the prey biomass that is available to predator of size $w$ and $C_{w}$ the half-saturation constant.
 %, which depends on weight, light and temperature.
 
-Tn the APECOSM model, oxygen concentration only modifies the horizontal and vertical habitat of the different communities and size-classes and do not modify, in its current state, the  biological parameters or the physiological rates. Considering the region of interest of the given study, this limitation has barely no consequence. Which would not be the case if analysing outputs within an Oxygen Minimum Zone (OMZ). 
+In the APECOSM model, oxygen concentration only modifies the horizontal and vertical habitat of the different communities and size-classes and do not modify, in its current state, the  biological parameters or the physiological rates. Considering the region of interest of the given study, this limitation has barely no consequence. Which would not be the case if analysing outputs within an Oxygen Minimum Zone (OMZ). 
 
 % \begin{displaymath}
 % p_{c, u} = \sum_{k=1}^{N_{com}} \left[\int_{v=w_{egg}}^{w_{max}} P^{sch}_{k, v}\ s_{u, v}\ \xi_{k, v}\ dv\right] + \sum_{p=1}^{N_{ltl}} \left[ P^{sch}_{p}\ s_{u, p}\ \xi_{p}\right]
@@ -44,7 +51,7 @@ The APECOSM simulation used in this study is forced by three-dimensional tempera
 
 The APECOSM simulation runs with a daily time step for the biological processes, which is decomposed into a day/night cycle, the duration of which  depends on latitude and day of the year \citep{forsytheModelComparisonDaylength1995}. A sub time-stepping ($dt =0.8h$) is used for horizontal advection and diffusion to ensure numerical stability.
 
-In APECOSM, the depth dimension is explicit, i.e. each biological variable (mortality, functional response) is computed in 3 dimensions (depth, latitude, longitude). The vertical distribution is thus determined from habitat functions that depend on the choice of the communities. In this study, three interactive communities are simulated:
+The depth dimension is explicit, i.e. each biological variable (mortality, functional response) is computed in 3 dimensions (depth, latitude, longitude). The vertical distribution is thus determined from habitat functions that depend on the choice of the communities. In this study, three interactive communities are simulated:
 \begin{itemize}
 \item{The epipelagic community, which includes the organisms that are feeding during the day near the surface such as yellowfin or skipjack tunas for example. Its vertical distribution is influenced by light and visible food during daytime as well as temperature and oxygen during both day and night, while its functional response is influenced by light and temperature.}
 \item{The migratory mesopelagic community, which feeds in the surface layer at night and migrates to deeper waters during the day. Its vertical distribution is influenced by light and visible food during the night.}
