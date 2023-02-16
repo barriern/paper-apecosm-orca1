@@ -1,6 +1,9 @@
 \documentclass[12pt]{article}
 \usepackage{setspace}
 \usepackage[svgnames]{xcolor}
+\usepackage{natbib}
+\bibliographystyle{abbrvnat}
+\usepackage{hyperref}
 
 \newcommand{\resp}[1]{\textcolor{SteelBlue}{#1}}
 
@@ -14,13 +17,13 @@
 
 \maketitle
 
-The authors gratefully thank the editor and the two reviewers for their time and their very encouraging reviews. \\
+The authors gratefully thank the editor and the two reviewers for the	ir time and their very encouraging reviews. \\
 
 Please find below the detailed answer (in blue) to the reviewers' kind remarks.
 
 \textbf{1. Are the objectives and the rationale of the study clearly stated?} \\
 
-Please provide suggestions to the author(s) on how to improve the clarity of the objectives and rationale of the study. Please number each suggestion so that author(s) can more easily respond.\\
+Please provide suggestions to the author(s) on how to improve the clarity of the objectives and rationale of the study. Please number each suggestion so that author(s) can more easily respond.\\	
 
 Reviewer \#1: Yes, objectives and rationale are clearly stated. This paper presents the results of a simulation study using a newly developed APECOSM multispecies model coupled to a physical oceanographic model (NEMO) and the biogeochemical model (PISCES) to understand the ecosystem dynamics of ENSO events in the tropical Pacific Ocean. The topic is one of great interest to stakeholders in this region – a better mechanistic understanding of the ecosystem response to extreme El Niño events. \\
 
@@ -38,29 +41,35 @@ Reviewer \#1: Yes, methods are reported clearly and with enough detail. Some sug
 
 (2) Further, a more elaborated discussion of how excretion is handled in the model would be useful. \\ 
 
-% Pas pertinent. Reference aux papiers couples pour l'excretion (Aumont, Leonard)
+\resp{Excrection is not discussed in the manuscript because it is not pertinent in the present studty. It matters 
+when Apecosm is two-way coupled with the physical/biogeochemical model NEMO-PISCES, as in \cite{aumontEvaluatingPotentialImpacts2018, lemezoNaturalVariabilityMarine2016, dupontHighTrophicLevel}} \\
+
 
 (3) Can you clarify if the model is being forced with nutrients, phytoplankton groups and zooplankton groups - or is forcing done using some subset of these? \\
 
-%  Facile, a faire
+\resp{The NEMO/PISCES forcing variables used by the APECOSM model were described in the original manuscript (lines  196-200). Nevertheless, the sentence has been slightly rephrased to make it clearer}\\
 
 (4) Is the food web vertically integrated (i.e., Are the mesopelagic community and epipelagic community contained within the same subregion in 3D space or is the model vertically disaggregated such that there is vertical migration and hence subsurface physical conditions as well as trophic effects are distributed throughout subregions throughout the water column? \\ 
 
-% Preciser que ce n'est pas un modele en couche
+\resp{Contrary to some other models, in which the vertical is considered through different layers, Apecosm uses an explicit vertical dimension. I.e. all variables are computed in 3D (z, y, x). We understand the confusion, since in the manuscript, variables are presented without the depth dimension. This is because to avoid heavy files, APECOSM outputs vertical averages. This has been clarified in the manuscript}\\
 
 (5) Does oxygen modify any biological parameter in this model? If it doesn’t perhaps a brief mention of how it could be incorporated in the future could be interesting. \\ 
 
-% Oxygene n'influence que l'habitat (advection horizontale et verticale). Pas pertinenent pour la region Pacifique Ouest.
-% Futur: explicitation de la respiration dans le DEB
+\resp{In the current state of the model, oxygen only influences the vertical and horizontal habitats, not the physiological parameters. Considering the region of interest, this limitation has barely no impact. This has been precisied in the corrected manuscript.}\\
 
 (6) Can you please clarify/elaborate on the following statement: pg 11, l200: “we do not use a limited temperature range to any of the simulated communities in the model configuration used here.” \\
 
 % Preciser qu'on ne force pas les communautes a se confiner dans une gamme de temperature. 
 % La temperature affecte le metabolisme mais pas l'advection horizontale.
 
+\resp{The different communities are not forced to stay within a given temperature range. Therefore, temperature
+only influences the metabolism but not the horizontal displacements. This has been clarified in the text} \\
+
 (7) If not already done, would be useful to make code available in an online repo (Github, zenodo, etc) \\ 
 
-% Soon. Preciser que reference paper is on the go.
+\resp{The Apecosm code is actually stored in a \emph{private} repository. The code will be made fully public as soon as the updated APECOSM reference paper, currently in preparation, is published.} \\
+
+\resp{However, the APECOSM outputs presented in this study and the scripts will be made available on Zenodo (\url{https://doi.org/10.5281/zenodo.7142804}) prior to the final publication. This has been precised in the manuscript} \\
 
 Reviewer \#2: Generally yes -- though more detail on how response to temperature change is handled by APECOSM seems necessary. Please see comments to the author below. \\
 
@@ -259,5 +268,7 @@ CONCLUSION AND DISCUSSION\\
 - Line 730: "... is a particularly powerful tool to isolate ...".\\
 
 - Line 735: There should be a very brief description in the discussion or the model description of what the DEB theory actually is and how its application here benefits the capacities of APECOSM.\\
+
+\bibliography{../../ApecosmBib2}
 
 \end{document}

@@ -30,6 +30,8 @@ f_{w} = \frac{P_{w}}{C_{w} + P_{w}}
 with $P_{w}$ the prey biomass that is available to predator of size $w$ and $C_{w}$ the half-saturation constant.
 %, which depends on weight, light and temperature.
 
+Tn the APECOSM model, oxygen concentration only modifies the horizontal and vertical habitat of the different communities and size-classes and do not modify, in its current state, the  biological parameters or the physiological rates. Considering the region of interest of the given study, this limitation has barely no consequence. Which would not be the case if analysing outputs within an Oxygen Minimum Zone (OMZ). 
+
 % \begin{displaymath}
 % p_{c, u} = \sum_{k=1}^{N_{com}} \left[\int_{v=w_{egg}}^{w_{max}} P^{sch}_{k, v}\ s_{u, v}\ \xi_{k, v}\ dv\right] + \sum_{p=1}^{N_{ltl}} \left[ P^{sch}_{p}\ s_{u, p}\ \xi_{p}\right]
 % \end{displaymath}
@@ -38,31 +40,25 @@ with $P_{w}$ the prey biomass that is available to predator of size $w$ and $C_{
 % C_{c, w} = \frac{C_{REF}}{T_{ahr}\times h_c^{light}\times h_c^{tlim}\times W_{w}^{\chi}}
 % \end{displaymath}
 
-The APECOSM simulation used in this study is forced by three-dimensional temperature, horizontal current velocities, dissolved oxygen concentration, low-trophic level concentration (diatoms, mesozooplankton and microzooplankton, big particulate organic matter), photosynthetically active radiation (PAR) and dynamical layer thickness outputs from the NEMO-PISCES simulation (section \ref{sec:nemo}). It uses a daily time step for the biological processes, which is decomposed into a day/night cycle, the duration of which  depends on latitude and day of the year \citep{forsytheModelComparisonDaylength1995}. A sub time-stepping ($dt =0.8h$) is used for horizontal advection and diffusion to ensure numerical stability.
+The APECOSM simulation used in this study is forced by three-dimensional temperature, horizontal current velocities, dissolved oxygen concentration, diatoms, mesozooplankton, microzooplankton and big particulate organic matter carbon concentrations \citep{aumontPISCESv2OceanBiogeochemical2015}, photosynthetically active radiation (PAR) and dynamical layer thickness outputs from the NEMO-PISCES simulation (section \ref{sec:nemo}). Nutrients concentrations simulated by NEMO/PISCES are not used as a forcing to Apecosm.
 
-%In order to assess the mechanisms of fish biomass response to ENSO variability, biomass changes induced by growth, predation, advection and diffusion are stored for the entire simulation. Therefore, the biomass for a given size class, at a given location and for a specific time can be reconstructed by using the following equation:
-%
-%\begin{equation}
-%\varepsilon(T) = \varepsilon(T=0) + \int_{t=0}^{T} \left[ 
-%T_{pred}(t) +
-%T_{growth}(t) + 
-%T_{adv}(t) + 
-%T_{diff}(t) 
-%\right] dt 
-%\label{eq:rec_oope}
-%\end{equation}
-%
-%with $\varepsilon(x,y,s,T=0)$ the fish biomass at the beginning of the simulation and $T_{pred}$, $T_{growth}$, $T_{adv}$ and $T_{diff}$ the respective biomass increments due to predation, growth, advection and diffusion, given by equations \ref{eq:pred}, \ref{eq:growth} and \ref{eq:move}, respectively.
+The APECOSM simulation runs with a daily time step for the biological processes, which is decomposed into a day/night cycle, the duration of which  depends on latitude and day of the year \citep{forsytheModelComparisonDaylength1995}. A sub time-stepping ($dt =0.8h$) is used for horizontal advection and diffusion to ensure numerical stability.
 
-Three interactive communities are simulated:
+In APECOSM, the depth dimension is explicit, i.e. each biological variable (mortality, functional response) is computed in 3 dimensions (depth, latitude, longitude). The vertical distribution is thus determined from habitat functions that depend on the choice of the communities. In this study, three interactive communities are simulated:
 \begin{itemize}
 \item{The epipelagic community, which includes the organisms that are feeding during the day near the surface such as yellowfin or skipjack tunas for example. Its vertical distribution is influenced by light and visible food during daytime as well as temperature and oxygen during both day and night, while its functional response is influenced by light and temperature.}
 \item{The migratory mesopelagic community, which feeds in the surface layer at night and migrates to deeper waters during the day. Its vertical distribution is influenced by light and visible food during the night.}
 \item{The resident mesopelagic community, which remains at depth during both night and day. Its vertical distribution is influenced by light and visible food during the day.}
 \end{itemize}
 
-For each community, equation \ref{eq:apecosm_trend} is integrated over 100 logarithmically distributed size classes, ranging from $0.123cm$ to $196cm$. To ensure that the size-spectrum is fully unfolded and a pseudo-steady state is achieved, the model was integrated successively over three 1958-2018 cycles. It was first initialized with an arbitrary small biomass value in each size-class and community and integrated from 1958 to 2018 (61 years). Then, the end of this first integration phase was used to run another cycle, which in turn was used to initialize the simulation analyzed in this study.
+To ensure that the size-spectrum is fully unfolded and a pseudo-steady state is achieved, the model was integrated successively over three 1958-2018 cycles. It was first initialized with an arbitrary small biomass value in each size-class and community and integrated from 1958 to 2018 (61 years). Then, the end of this first integration phase was used to run another cycle, which in turn was used to initialize the simulation analyzed in this study.
 
-%Epilagic feed on other epilagic fish only during night daytime. Migrants feed on other migrants and epipelagics, only during night-time. While mesopelagics feed on migrant and mesopelagic during daytime, and only on other mesopelagic during night-time.
+For each community, equation \ref{eq:apecosm_trend} is integrated over 100 logarithmically distributed size classes, ranging from $0.123cm$ to $196cm$. Since saving the outputs in 3D for the 3 communities and 100 size-classes is very costly, mortality rate, growth rate and functional response for each community and size are vertically averaged as follows:
+
+\begin{equation}
+F(y,x,c,w) = \frac{\sum_{z=0}^{H} F(z, y, x, c, w) B(z, y, x, c, w)}{\sum_{z=0}^{H}B(z, y, x, c, w	)}
+\end{equation}
+
+with $x$ the longitude, $y$ the latitude, $z$ the depth, $c$ the community, $w$ the size-class, $F$ the variable to consider (functional response, mortality rate, growth rate) and $B$ the 3D biomass (in $J.m^{-3}$).
 
 In what follows, the focus is solely put on the response of the epipelagic community; its near-surface location makes it more sensitive to ENSO variability \citep{lemezoNaturalVariabilityMarine2016}, it corresponds to organisms such as skipjack and yellowfin that are targeted by the industrial purse seine fleet, it accounts for the majority of tuna catches in the region, and have been reported to respond markedly to ENSO \citep{lehodeyNinoSouthernOscillation1997}.
