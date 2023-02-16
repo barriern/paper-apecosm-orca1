@@ -164,12 +164,12 @@ dicttext = dict(boxstyle='round', facecolor='lightgray', alpha=1)
 
 ymax = 1985
 
-plt.figure(figsize = (12, 14), facecolor='white')
+plt.figure(figsize = (14, 12), facecolor='white')
 
 ############################################################ plotting barycenter time series
 
 xxx0 = 0.02
-ax = plt.axes([xxx0, 0.2, 1 - 2 * xxx0, 0.2])
+ax = plt.axes([0.6, xxx0, 0.3, 1 - 2 * xxx0])
 
 datebaryape = baryape['time'].values
 datebaryape = np.array([d.year * 100 + d.month for d in datebaryape])
@@ -186,29 +186,29 @@ apefilt = apefilt[iape]
 time = np.arange(len(baryape))
 datestr = np.array(['%.4d-%.2d' %(y, m) for y, m in zip(yyy, mmm)])
 stride = 24
-ax.set_xticks(time[::stride])
-ax.set_xticklabels(datestr[::stride], ha='right', rotation=45)
+ax.set_yticks(time[::stride])
+ax.set_yticklabels(datestr[::stride], ha='right', rotation=45)
 
 iline = np.nonzero(datestr=='2008-01')[0]
 lw = 3
 
 #plt.plot(np.arange(baryape.shape[0]), baryape, label='Apecosm', linewidth=0.5)
-plt.plot(np.arange(apefilt.shape[0]), apefilt, label='Apecosm', linewidth=lw)
+plt.plot(apefilt, np.arange(apefilt.shape[0]), label='Apecosm', linewidth=lw)
 #plt.plot(np.arange(len(barysar[ioksar])), barysar[ioksar], label='Sardara', linewidth=0.5)
-plt.plot(np.arange(corr0.shape[0]), corr0, label='Det. Obs.', linewidth=lw)
-plt.plot(np.arange(sarfilt[ioksar].shape[0]), sarfilt[ioksar], label='Raw Obs.', linewidth=0.5 * lw, linestyle='--')
+plt.plot(corr0, np.arange(corr0.shape[0]), label='Det. Obs.', linewidth=lw)
+plt.plot(sarfilt[ioksar], np.arange(sarfilt[ioksar].shape[0]), label='Raw Obs.', linewidth=0.5 * lw, linestyle='--')
 
 plt.legend(ncol=3, fontsize=15, loc='lower right')
-plt.axvline(time[iline], color='k', linestyle='--')
-plt.xlim(time.min(), time.max())
+plt.axhline(time[iline], color='k', linestyle='--')
+plt.ylim(time.min(), time.max())
 
-ax.yaxis.set_major_formatter(formatter0)
-ax.set_yticks(np.arange(160, -170 + 360, 10))
-plt.setp(ax.get_yticklabels(), rotation=45, ha='right')
+ax.xaxis.set_major_formatter(formatter0)
+ax.set_xticks(np.arange(160, -170 + 360, 10))
+plt.setp(ax.get_xticklabels(), rotation=45, ha='right')
 
 #ax.set_xlim(xlim)
 ax.set_title('Biomass and catch barycenters')
-plt.text(time[-10], 180, 'd)', bbox=dicttext, ha='center', va='center')
+plt.text(180, time[-10], 'd)', bbox=dicttext, ha='center', va='center')
 #ax.yaxis.tick_right()
 ax.grid(True)
 
@@ -216,10 +216,11 @@ ax.grid(True)
 
 pos1 = ax.get_position()
 
-xcoord = lambda year : pos1.x0 + (year - 1985) * (pos1.width) / (2019 - 1985) 
+xcoord = lambda year : pos1.y0 + (year - 1985) * (pos1.height) / (2019 - 1985) 
 
 xxx = xcoord(2008)
-ax = plt.axes([xxx, 0.43, pos1.x0 + pos1.width - xxx, 0.3])
+#ax = plt.axes([xxx, 0.43, pos1.x0 + pos1.width - xxx, 0.3])
+ax = plt.axes([0.01, xxx, 0.45, pos1.y0 + pos1.height - xxx])
 pos2 = ax.get_position()
 
 apeyears = apecosm['time.year'].values
@@ -228,36 +229,38 @@ apedates = apeyears * 100 + apemonths
 time = np.arange(len(apedates))
 
 toplot = np.log10(apecosm.values)
-cl = plt.contour(time, apecosm['x'].values, toplot.T, 6, linewidths=1, colors='k')
+cl = plt.contour(apecosm['x'].values, time, toplot, 6, linewidths=1, colors='k')
 plt.clabel(cl)
 
 toplot = np.log10(catch.values, where=catch>0, out=np.zeros(catch.values.shape))
 toplot = np.ma.masked_where(toplot == 0, toplot)
-cs = plt.pcolormesh(time, catch['lon'].values, toplot.T, shading='auto', cmap=plt.cm.Spectral_r)
+cs = plt.pcolormesh(catch['lon'].values, time, toplot, shading='auto', cmap=plt.cm.Spectral_r)
 cs.set_clim(0, 4.5)
 
 datestr = ['%.4d-%.2d' %(y, m) for y, m in zip(apeyears, apemonths)]
 stride = 12
-ax.set_xticks(time[::stride])
-ax.set_xticklabels(datestr[::stride], va='top', rotation=45)
+ax.set_yticks(time[::stride])
+#ax.set_yticklabels(datestr[::stride], va='top', rotation=45)
+plt.setp(ax.get_yticklabels(), visible=False)
 
-ax.yaxis.set_major_formatter(formatter0)
-ax.set_yticks(np.arange(160, -120 + 360, 20))
+ax.xaxis.set_major_formatter(formatter0)
+ax.set_xticks(np.arange(160, -120 + 360, 20))
 #ax.set_xticks(np.arange(140, -120 + 360, 20))
-plt.setp(ax.get_yticklabels(), rotation=45, ha='right')
-plt.text(time[-10], apecosm['x'].values[-10], 'a)', bbox=dicttext, ha='center', va='center', zorder=3000, )
+plt.setp(ax.get_xticklabels(), rotation=45, ha='right')
+plt.text(apecosm['x'].values[-10], time[-10],  'a)', bbox=dicttext, ha='center', va='center', zorder=3000, )
 
-cb = plt.colorbar(cs, orientation='horizontal', pad=0.17)
-ax.set_ylim(140, -120+360)
-xlim = ax.get_ylim()
+cb = plt.colorbar(cs, orientation='vertical', pad=0.05, location='left')
+ax.set_xlim(140, -120+360)
+xlim = ax.get_xlim()
 ax.set_title('Catch (colors) \& sim. biomass (contours)')
 cb.set_label('Tons (Log-scale)')
 ax.grid(True, zorder=10000, color='k')
 
 ############################################################ plotting catch composites
 
+offsetx = 70
 xxx0 = -0.0 + 0.03
-yyy0 = 0.2 + 0.37
+yyy0 = 0.2 + 0.37 - 0.2
 www0 = 0.45
 hhh0 = 0.2
 pos = np.array([xxx0, yyy0, www0, hhh0])
@@ -272,7 +275,7 @@ gl = ax.gridlines(**gridparams, zorder=10)
 gl.top_labels = False
 gl.right_labels = False
 gl.bottom_labels = False
-gl.xlocator = mticker.FixedLocator(np.arange(-180, 180 + 40, 40))
+gl.xlocator = mticker.FixedLocator(np.arange(-180, 180 + 20, 20))
 gl.ylocator = mticker.FixedLocator(np.arange(-90, 90 + 20, 20))
 gl.xformatter = LONGITUDE_FORMATTER
 gl.yformatter = LATITUDE_FORMATTER
@@ -283,13 +286,13 @@ cs.set_clim(-ccc, ccc)
 ax.add_feature(cfeature.LAND, color='lightgray')
 ax.add_feature(cfeature.COASTLINE)
 ax.set_title('NINO - NINA composites (Catches)')
-ax.set_extent([130, -60 + 360, -20, 20], crs=projin)
-plt.text(compo_sar['lon'].values[-10], 0, 'b)', bbox=dicttext, ha='center', zorder=3000, va='center', transform=projin)
+ax.set_extent([130, -60 + 360 - offsetx, -20, 20], crs=projin)
+plt.text(-140, 10,  'b)', bbox=dicttext, ha='center', zorder=3000, va='center', transform=projin)
 #plt.text(compo_sar['lon'].values[30], compo_sar['lat'].values[10], 'Catches', bbox=dicttext, ha='center', va='center', transform=projin, zorder=3000)
 
 #################################################################### Plot Apecosm composites
 
-yyy0 -= 0.15 - 0.0
+yyy0 -= 0.1 + 0.15
 #xxx0 += 0.1
 pos = np.array([xxx0, yyy0, www0, hhh0])
 
@@ -302,7 +305,7 @@ gridparams = {'crs': ccrs.PlateCarree(central_longitude=0),
 gl = ax.gridlines(**gridparams, zorder=10)
 gl.top_labels = False
 gl.right_labels = False
-gl.xlocator = mticker.FixedLocator(np.arange(-180, 180 + 40, 40))
+gl.xlocator = mticker.FixedLocator(np.arange(-180, 180 + 20, 20))
 gl.ylocator = mticker.FixedLocator(np.arange(-90, 90 + 20, 20))
 gl.xformatter = LONGITUDE_FORMATTER
 gl.yformatter = LATITUDE_FORMATTER
@@ -312,15 +315,13 @@ ax.add_feature(cfeature.LAND, color='lightgray')
 ax.add_feature(cfeature.COASTLINE)
 ccc = 3e-8
 cs.set_clim(-ccc, ccc)
-ax.set_extent([130, -60 + 360, -20, 20], crs=projin)
-plt.text(compo_sar['lon'].values[-10], 0, 'c)', bbox=dicttext, ha='center', va='center', transform=projin, zorder=3000)
+ax.set_extent([130, -60 + 360 - offsetx, -20, 20], crs=projin)
+plt.text(-140, 10,  'c)', bbox=dicttext, ha='center', va='center', transform=projin, zorder=3000)
 ax.set_title('NINO - NINA composites (Biomass)')
-#plt.text(compo_sar['lon'].values[30], compo_sar['lat'].values[10], 'Biomass', bbox=dicttext, ha='center', va='center', transform=projin, zorder=3000)
 
-
-pos = np.array([xxx0 + www0 + 0.05, yyy0 + 0.05, 0.02, hhh0 + 0.05])
+pos = np.array([xxx0, 0.03, www0, 0.02])
 cax = plt.axes(pos)
-cb = plt.colorbar(cs, cax=cax, orientation='vertical', shrink=0.5)
+cb = plt.colorbar(cs, cax=cax, orientation='horizontal', shrink=0.5)
 cb.set_label('Tons/m2')
 
 plt.savefig('plot_validation_apecosm.png', bbox_inches='tight')
