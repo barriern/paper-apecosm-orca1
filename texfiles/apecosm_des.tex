@@ -47,7 +47,7 @@ In the APECOSM model, oxygen concentration only modifies the horizontal and vert
 % C_{c, w} = \frac{C_{REF}}{T_{ahr}\times h_c^{light}\times h_c^{tlim}\times W_{w}^{\chi}}
 % \end{displaymath}
 
-The APECOSM simulation used in this study is forced by three-dimensional temperature, horizontal current velocities, dissolved oxygen concentration, diatoms, mesozooplankton, microzooplankton and big particulate organic matter carbon concentrations \citep{aumontPISCESv2OceanBiogeochemical2015}, photosynthetically active radiation (PAR) and dynamical layer thickness outputs from the NEMO-PISCES simulation (section \ref{sec:nemo}). Nutrients concentrations simulated by NEMO/PISCES are not used as a forcing to Apecosm.
+The APECOSM simulation used in this study is forced by three-dimensional temperature, horizontal current velocities, dissolved oxygen concentration, diatoms, mesozooplankton, microzooplankton and big particulate organic matter carbon concentrations \citep{aumontPISCESv2OceanBiogeochemical2015}, photosynthetically active radiation (PAR) and dynamic layer thickness outputs from the NEMO-PISCES simulation (section \ref{sec:nemo}). Nutrients concentrations simulated by NEMO/PISCES are not used as a forcing to Apecosm.
 
 The APECOSM simulation runs with a daily time step for the biological processes, which is decomposed into a day/night cycle, the duration of which  depends on latitude and day of the year \citep{forsytheModelComparisonDaylength1995}. A sub time-stepping ($dt =0.8h$) is used for horizontal advection and diffusion to ensure numerical stability.
 
@@ -68,4 +68,4 @@ F(y,x,c,w) = \frac{\sum_{z=0}^{H} F(z, y, x, c, w) B(z, y, x, c, w)}{\sum_{z=0}^
 
 with $x$ the longitude, $y$ the latitude, $z$ the depth, $c$ the community, $w$ the size-class, $F$ the variable to consider (functional response, mortality rate, growth rate) and $B$ the 3D biomass (in $J.m^{-3}$).
 
-In what follows, the focus is solely put on the response of the epipelagic community; its near-surface location makes it more sensitive to ENSO variability \citep{lemezoNaturalVariabilityMarine2016}, it corresponds to organisms such as skipjack and yellowfin that are targeted by the industrial purse seine fleet, it accounts for the majority of tuna catches in the region, and have been reported to respond markedly to ENSO \citep{lehodeyNinoSouthernOscillation1997}.
+In the remainder of the paper, the focus is solely put on the response of the epipelagic community; its near-surface location makes it more sensitive to ENSO variability \citep{lemezoNaturalVariabilityMarine2016}, it corresponds to organisms such as skipjack and yellowfin that are targeted by the industrial purse seine fleet, it accounts for the majority of tuna catches in the region, and have been reported to respond markedly to ENSO \citep{lehodeyNinoSouthernOscillation1997}.
