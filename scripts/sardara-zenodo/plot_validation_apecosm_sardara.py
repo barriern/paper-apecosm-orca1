@@ -164,12 +164,14 @@ dicttext = dict(boxstyle='round', facecolor='lightgray', alpha=1)
 
 ymax = 1985
 
+xloc_hov = np.arange(160, -120 + 360, 20)
+
 plt.figure(figsize = (14, 12), facecolor='white')
 
 ############################################################ plotting barycenter time series
 
 xxx0 = 0.02
-ax = plt.axes([0.6, xxx0, 0.3, 1 - 2 * xxx0])
+ax = plt.axes([0.55, xxx0, 0.3, 1 - 2 * xxx0])
 
 datebaryape = baryape['time'].values
 datebaryape = np.array([d.year * 100 + d.month for d in datebaryape])
@@ -195,22 +197,22 @@ lw = 3
 #plt.plot(np.arange(baryape.shape[0]), baryape, label='Apecosm', linewidth=0.5)
 plt.plot(apefilt, np.arange(apefilt.shape[0]), label='Apecosm', linewidth=lw)
 #plt.plot(np.arange(len(barysar[ioksar])), barysar[ioksar], label='Sardara', linewidth=0.5)
-plt.plot(corr0, np.arange(corr0.shape[0]), label='Det. Obs.', linewidth=lw)
-plt.plot(sarfilt[ioksar], np.arange(sarfilt[ioksar].shape[0]), label='Raw Obs.', linewidth=0.5 * lw, linestyle='--')
+plt.plot(sarfilt[ioksar], np.arange(sarfilt[ioksar].shape[0]), label='Raw Obs.', linewidth=0.5 * lw, linestyle='--', color='green')
+plt.plot(corr0, np.arange(corr0.shape[0]), label='Det. Obs.', linewidth=lw, color='orange')
 
-plt.legend(ncol=3, fontsize=15, loc='lower right')
-plt.axhline(time[iline], color='k', linestyle='--')
+plt.legend(ncol=1, fontsize=15, loc='upper left')
+# plt.axhline(time[iline], color='k', linestyle='--')
 plt.ylim(time.min(), time.max())
 
 ax.xaxis.set_major_formatter(formatter0)
-ax.set_xticks(np.arange(160, -170 + 360, 10))
+ax.set_xticks(np.arange(150, -170 + 360, 10))
 plt.setp(ax.get_xticklabels(), rotation=45, ha='right')
 
 #ax.set_xlim(xlim)
 ax.set_title('Biomass and catch barycenters')
 plt.text(180, time[-10], 'd)', bbox=dicttext, ha='center', va='center')
 #ax.yaxis.tick_right()
-ax.grid(True)
+ax.grid(True, color='k', linewidth=1)
 
 ########################################################### Plotting Hovmoller diagram
 
@@ -238,14 +240,13 @@ cs = plt.pcolormesh(catch['lon'].values, time, toplot, shading='auto', cmap=plt.
 cs.set_clim(0, 4.5)
 
 datestr = ['%.4d-%.2d' %(y, m) for y, m in zip(apeyears, apemonths)]
-stride = 12
-ax.set_yticks(time[::stride])
+stride = 24
+ax.set_yticks(time[12::stride])
 #ax.set_yticklabels(datestr[::stride], va='top', rotation=45)
 plt.setp(ax.get_yticklabels(), visible=False)
 
 ax.xaxis.set_major_formatter(formatter0)
-ax.set_xticks(np.arange(160, -120 + 360, 20))
-#ax.set_xticks(np.arange(140, -120 + 360, 20))
+ax.set_xticks(xloc_hov)
 plt.setp(ax.get_xticklabels(), rotation=45, ha='right')
 plt.text(apecosm['x'].values[-10], time[-10],  'a)', bbox=dicttext, ha='center', va='center', zorder=3000, )
 
@@ -254,7 +255,7 @@ ax.set_xlim(140, -120+360)
 xlim = ax.get_xlim()
 ax.set_title('Catch (colors) \& sim. biomass (contours)')
 cb.set_label('Tons (Log-scale)')
-ax.grid(True, zorder=10000, color='k')
+ax.grid(True, zorder=10000, color='k', linewidth=1)
 
 ############################################################ plotting catch composites
 
