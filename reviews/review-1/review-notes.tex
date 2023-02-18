@@ -19,7 +19,7 @@
 
 The authors gratefully thank the editor and the two reviewers for the	ir time and their very encouraging reviews. \\
 
-Please find below the detailed answer (in blue) to the reviewers' kind remarks.
+Please find below the detailed answer (in blue) to the reviewers' kind remarks. \\
 
 \textbf{1. Are the objectives and the rationale of the study clearly stated?} \\
 
@@ -41,9 +41,8 @@ Reviewer \#1: Yes, methods are reported clearly and with enough detail. Some sug
 
 (2) Further, a more elaborated discussion of how excretion is handled in the model would be useful. \\ 
 
-\resp{Excrection is not discussed in the manuscript because it is not pertinent in the present studty. It matters 
+\resp{Excrection is not discussed in the manuscript because it is not pertinent for the present studty. It matters 
 when Apecosm is two-way coupled with the physical/biogeochemical model NEMO-PISCES, as in \cite{aumontEvaluatingPotentialImpacts2018, lemezoNaturalVariabilityMarine2016, dupontHighTrophicLevel2023}} \\
-
 
 (3) Can you clarify if the model is being forced with nutrients, phytoplankton groups and zooplankton groups - or is forcing done using some subset of these? \\
 
@@ -51,7 +50,7 @@ when Apecosm is two-way coupled with the physical/biogeochemical model NEMO-PISC
 
 (4) Is the food web vertically integrated (i.e., Are the mesopelagic community and epipelagic community contained within the same subregion in 3D space or is the model vertically disaggregated such that there is vertical migration and hence subsurface physical conditions as well as trophic effects are distributed throughout subregions throughout the water column? \\ 
 
-\resp{Contrary to some other models, in which the vertical is considered through different layers, Apecosm uses an explicit vertical dimension. I.e. all variables are computed in 3D (z, y, x). We understand the confusion, since in the manuscript, variables are presented without the depth dimension. This is because to avoid heavy files, APECOSM outputs vertical averages. This has been clarified in the manuscript}\\
+\resp{Contrary to some other models, in which the vertical is considered through different layers, Apecosm uses an explicit vertical dimension. I.e. all variables are computed in 3D (z, y, x). We understand the confusion, since in the manuscript, variables are presented without the depth dimension. This is because to avoid heavy files, APECOSM outputs vertical averages for most variables, except biomass which can be saved in 2D and/or 3D. This has been clarified in the manuscript}\\
 
 (5) Does oxygen modify any biological parameter in this model? If it doesn’t perhaps a brief mention of how it could be incorporated in the future could be interesting. \\ 
 
@@ -133,7 +132,7 @@ Please provide suggestions to the author(s) on how to improve the manuscript str
 
 Reviewer \#1: (1) The Conclusion section (Lines 684-714) coming before the discussion section is a bit awkward. I would suggest a different subtitle for the conclusions section.\\
 
-\resp{The sections have been renamed. Section 5 has been renamed \emph{Conclusion} instead of \emph{Conclusion and discussion}. Subsection 5.1 has been renamed \emph{Summary} (instead of \emph{Conclusion}), which is indeed more natural.}
+\resp{Section 5 has been renamed \emph{Conclusion} instead of \emph{Conclusion and discussion}. Subsection 5.1 has been renamed \emph{Summary} (instead of \emph{Conclusion}). We hope that the new labels sound more natural.} \\
 
 (2) Lines 130-137 are not necessary and could be removed.\\
 
@@ -177,7 +176,7 @@ I have a suggestion for additional detail about the model structure to add to th
 
 -- Can you speculate on how easy it would be to generate a very different pattern of growth (and zonal distribution) by assuming a different temperature response curve or slightly different parameterization?\\
 
-% This will be tested on a new configuration. But the paper shows that this is not necessary to include temp. range.
+\resp{A configuration with 5 communities and prescribed temperature preferences is currently being tested. But it is too early to provide any conclusions}
 
 -- Similarly, the description of the model structure should include a brief description of what the DEB physiological theory actually is and how its application here benefits the capacities of APECOSM.\\
 
@@ -189,25 +188,25 @@ ABSTRACT\\
 
 -- P. 1, Line 36: Consider changing the word "resource" to "tuna" or "tuna population distribution" or "tuna catch".\\
 
-\resp{Done} \\
+\resp{Corrected} \\
 
 -- P. 2, Line 9: Consider "...El Niño-related surface current anomalies for all size classes."\\
 
-\resp{Done}\\
+\resp{Corrected}\\
 
 -- P. 2 Line 26: "intermediate-sized organisms"\\
 
-\resp{Done}\\
+\resp{Corrected}\\
 
 INTRODUCTION\\
 
 - Line 11: Consider "purchase of fishing rights"\\
 
-\resp{Done}\\
+\resp{Corrected}\\
 
 - Line 61: Consider "... may be eventually by detected in the adult population some time later ...".\\
 
-\resp{Done}   \\
+\resp{Corrected}   \\
 
 - Line 67 and elsewhere: "dynamic"\\
 
@@ -249,7 +248,7 @@ Evaluation of the modeled response to ENSO\\
 
 \resp{Corrected}\\
 
-- Line 324: "As shown in ...".
+- Line 324: "As shown in ...". \\
 
 \resp{Corrected}\\
 
@@ -263,11 +262,15 @@ Evaluation of the modeled response to ENSO\\
 
 - Fig. 3: Reverse the position of Figs 3a and 3b-c.\\
 
+\resp{Panel a) has been switched with panels b) and c) } \\
+
 - Fig. 3a: Switch the axes on the time-longitude plot to have longitude on the x-axis. This would then be consistent with Fig. 4.\\
+
+\resp{The axes of panels a) and d) have been reversed so that longitudes is displayed on the x-axis, as for the rest of the figures.} \\
 
 - Fig. 3d: Please define Sardara and Det Sardara curves in the caption. Please define the meaning of the dashed line in the caption.\\
 
-\resp{Figure 3 has been modified to take into account the reviewer's remark. The caption has also been modified accordingly} \\
+\resp{The dashed line on the original Fig. 3d emphasized the first year displayed on the Hovmoller diagram. In the corrected Fig. 3d, the dashed line has been removed but the figure's grid lines have been made consistent with the Hovmoller diagram. Besides, the caption now precises that the time axes of both panels are aligned.} \\
 
 - Line 393: "Figure 3b-c show ...".\\
 
@@ -285,27 +288,27 @@ RESPONSE OF THE EPIPELAGIC COMMUNITY TO EXTREME EL NIÑO EVENTS\\
 
 - Fig. 4b: Please state direction of positive zonal velocity, unless direction is not considered and this is just magnitude.\\
 
-\resp{This has been added to the caption}
+\resp{This has been added to the caption} \\
 
 - Fig. 5 caption and the main text description at Line 521 needs some clarification. Do the iso-lines represent climatology over both El Nino conditions and non-El Nino conditions, and the shading represents the anomalies during the El Nino? Or do the iso-lines and shading represent only El Nino conditions?\\
 
-\resp{The contours depict the climatological mean computed over the entire simulated time-period,  including El Nino and La Nina conditions. This has been precised in the caption and in the text.}
+\resp{The contours depict the climatological mean computed over the entire simulated time-period,  including El Nino and La Nina conditions. This has been precised in the caption and in the text.} \\
 
 - Line 544: "... importance of each of these ...".\\
 
-\resp{Corrected}
+\resp{Corrected}\\
 
 - Line 550: Consider "One inference that can be drawn is that the relative ...".\\
 
-\resp{Corrected}
+\resp{Corrected} \\
 
 - Line 567 and Fig. 6 caption: Use "physical" instead of "dynamical".\\
 
-\resp{Corrected}
+\resp{Corrected} \\
 
 - Line 571: By "active velocity" do you mean active swimming? Consider "volitional velocity".\\
 
-\resp{We indeed mean active swimming. Volitional has been used}
+\resp{We indeed mean active swimming. Volitional has been used and its definition (active swimming) has been precised.} \\
 
 - Line 581: To be consistent in text and figure captions, "Figure 7b-c". (and elsewhere)\\
 
