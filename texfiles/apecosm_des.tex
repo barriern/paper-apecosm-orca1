@@ -30,12 +30,20 @@ where $\varepsilon$  is the organisms' biomass density in the community, $w$ the
 In APECOSM, the energy ingested by organisms fuels individual metabolism according to the DEB theory. Ingestion is proportional to a functional Holing type II response function that depends on the size-dependent visibility of prey, their aggregation in schools and temperature. This functional response can be written in a simplified way as follows:
 
 \begin{equation}
-f_{w} = \frac{P_{w}}{C_{w} + P_{w}}
+f_{c, w} = \dfrac
+{P_{c, w}}
+{
+\dfrac
+{C_{c, w} A(T)}
+{h_c^{light} s_{c, w}(T)} + P_{c, w}
+}
 \label{eq:repfonct}
 \end{equation}
 
-with $P_{w}$ the prey biomass that is available to predator of size $w$ and $C_{w}$ the half-saturation constant.
-%, which depends on weight, light and temperature.
+with $P_{c,w}$ the prey biomass that is available to predator of community $c$ (see \citealt{mauryIndividualsPopulationsCommunities2013} for details) and size $w$, $C_{c,w}$ the half-saturation constant, $A(T)$ the
+Arrhenius response of metabolism to temperature $T$, $h_c^{light}$
+the response of vision to
+ambient light and $s_{c,w}$ the predator speed.
 
 In the APECOSM model, oxygen concentration only modifies the horizontal and vertical habitat of the different communities and size-classes and do not modify, in its current state, the  biological parameters or the physiological rates. Considering the region of interest of the given study, this limitation has barely no consequence. Which would not be the case if analysing outputs within an Oxygen Minimum Zone (OMZ). 
 
