@@ -25,7 +25,9 @@ lonwest = 110
 loneast = -60
 zmax = 250
 
-grid = 'FORAGE'
+ltoe = [3, 20, 90]
+
+grid = 'OOPE_init'
 # -
 
 dirmd = '/home/datawork-marbec-pmod/forcings/APECOSM/ORCA1_HINDCAST/'
@@ -53,7 +55,20 @@ filelist.sort()
 filelist = filelist[:]
 filelist[:5]
 
+pattern = '%s/*%s*nc' %(dirin, 'Constant')
+print(pattern)
+constfile = glob(pattern)[0]
+constfile
+
+const = xr.open_dataset(constfile)
+const
+
+length = const['length'] * 100
+length = length.rename({'wpred': 'w'})
+length
+
 data = xr.open_dataset(filelist[0])
+data['w'] = length
 data
 
 if(grid == 'FORAGE'):
@@ -67,14 +82,17 @@ for f in filelist:
     print('++++++++++++++++++++++++ Processing file ', f)
 
     basename = os.path.basename(f)
-    outfile = os.path.join(os.getenv('SCRATCH'), 'pacific_' + basename)
+    outfile = os.path.join(os.getenv('SCRATCH'), '3size_pacific_' + basename)
     outfile
     if os.path.isfile(outfile):
         print('File %s exists. Skipped' %outfile)
         continue
 
     data = xr.open_dataset(f, decode_times=False).isel(community=0)
-    data
+    if(grid != 'FORAGE'):
+        data['w'] = length
+        data = data.sel(w=ltoe, method='nearest')
+        data
 
     if(grid == 'FORAGE'):
         dataout = data.where((domain == True) & (depth == True), drop=True)
@@ -89,8 +107,9 @@ for f in filelist:
     print('writting ', outfile)
     
     varname = [v for v in dataout.variables if v != 'time'][0]
+    print(varname)
     encode = {varname: {'zlib': True, "complevel": 9}}
-
+    
     dataout.to_netcdf(outfile, encoding=encode, unlimited_dims='time')
 
 

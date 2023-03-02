@@ -25,8 +25,8 @@ lonwest = 110
 loneast = -60
 zmax = 250
 
-grid = 'speed_U'
-varlist = ['uo']
+grid = 'add_T'
+varlist = ['DCHL', 'NCHL']
 # -
 
 dirmd = '/home/datawork-marbec-pmod/forcings/APECOSM/ORCA1_HINDCAST/'
@@ -61,20 +61,19 @@ for f in filelist[:]:
     data = xr.open_dataset(f, decode_times=False)[varlist]
     data
 
-    if(grid == 'ssh_T'):
-        dataout = data.where((domain == True), drop=True)
-        dataout
-    else:
-        dataout = data.where((domain == True) & (depth == True), drop=True)
-        dataout
-        
+    dataout = data.where((domain == True) & (depth == True), drop=True)
+    dataout
+
     dataout.attrs['loneast'] = loneast
     dataout.attrs['lonwest'] = lonwest
     dataout.attrs['zmax'] = zmax
-
+    
+    plk = dataout['DCHL'] + dataout['NCHL']
+    plk.name = 'CHL'
+    
     encoding = {}
-    for v in varlist:
-        encoding[v] = {'zlib': True, "complevel": 9}
-    dataout.to_netcdf(outfile, encoding=encoding, unlimited_dims='time_counter')
+    encoding['CHL'] = {'zlib': True, "complevel": 9}
+    
+    plk.to_netcdf(outfile, encoding=encoding, unlimited_dims='time_counter')
 
 
