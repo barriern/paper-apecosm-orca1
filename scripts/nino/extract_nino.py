@@ -16,8 +16,10 @@ import os.path
 
 ''' Reads the ONI index and returns a date (YYYYMM) and the ONI time series '''
 
-def read_index(filename='index/oni.data', keepnan=True, skipfooter=8, na=-99.90, keepperiod=True):
+def read_index1(filename='../data/index/oni.data', keepnan=True, skipfooter=8, na=-99.90, keepperiod=True):
 
+    print('Filename ', filename)
+    
     # reads the data
     data = pd.read_csv(filename, skiprows=1, skipfooter=skipfooter, engine='python', header=None, index_col=0, delim_whitespace=True, na_values=na)
 
@@ -43,6 +45,29 @@ def read_index(filename='index/oni.data', keepnan=True, skipfooter=8, na=-99.90,
         ts = ts[iok]
 
     return date, ts
+
+def read_index(filename='../data/index/oni.ascii.txt', keepnan=True, skipfooter=8, na=-99.90, keepperiod=True):
+
+    print('Filename ', filename)
+    data = pd.read_csv(filename, delim_whitespace=True)
+    months = data.index.values % 12
+    data.columns
+
+    year = data.loc[:, 'YR'].values
+    ts = data.loc[:, 'ANOM'].values
+    date = 100 * year + months
+
+    # reads the years
+    years = data.index
+    months = np.arange(1, 13)
+
+    if(keepperiod):
+        iok = np.nonzero((date >= 195801) & (date <= 201812))[0]
+        date = date[iok]
+        ts = ts[iok]
+
+    return date, ts
+
 
 if __name__ == '__main__':
 
