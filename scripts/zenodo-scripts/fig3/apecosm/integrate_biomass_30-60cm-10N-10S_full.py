@@ -6,11 +6,11 @@
 #       extension: .py
 #       format_name: light
 #       format_version: '1.5'
-#       jupytext_version: 1.10.3
+#       jupytext_version: 1.13.7
 #   kernelspec:
-#     display_name: Python 3 (ipykernel)
+#     display_name: Python [conda env:nbarrier2]
 #     language: python
-#     name: python3
+#     name: conda-env-nbarrier2-py
 # ---
 
 import xarray as xr
@@ -28,8 +28,9 @@ const = const.rename({'wpred': 'l'})
 const['l'] = const['length'] * 100
 const
 
-data = xr.open_mfdataset('../../data/apecosm/*OOPE*Y*nc')
-data = data.isel(community=0)
+data = xr.open_mfdataset('../../data/apecosm/*_OOPE_Y*nc')
+data
+
 data = data.rename({'w': 'l'})
 data['l'] = const['l']
 data

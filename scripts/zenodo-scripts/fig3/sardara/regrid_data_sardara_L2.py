@@ -37,7 +37,7 @@ pacific_lonmax = -60
 
 resolution = 1
 gear = 'PS'
-species = 'SKJ'
+species = 'YFT'
 # -
 
 # ## Extracting the code of the gear
