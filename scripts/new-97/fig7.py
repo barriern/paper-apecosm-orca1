@@ -245,5 +245,6 @@ for l in [3, 20, 90]:
     iii += 1
 
 plt.savefig('fig7.png', bbox_inches='tight')
+plt.savefig('gr7.jpg', bbox_inches='tight')
 # -
 

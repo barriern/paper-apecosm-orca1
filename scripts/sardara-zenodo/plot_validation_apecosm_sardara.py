@@ -6,7 +6,7 @@
 #       extension: .py
 #       format_name: light
 #       format_version: '1.5'
-#       jupytext_version: 1.13.7
+#       jupytext_version: 1.10.3
 #   kernelspec:
 #     display_name: Python 3 (ipykernel)
 #     language: python
@@ -326,7 +326,7 @@ cb = plt.colorbar(cs, cax=cax, orientation='horizontal', shrink=0.5)
 cb.set_label('Tons/m2')
 
 plt.savefig('plot_validation_apecosm.png', bbox_inches='tight')
-plt.savefig('plot_validation_apecosm.eps', bbox_inches='tight')
+plt.savefig('gr3.jpg', bbox_inches='tight')
 # -
 ts1 = tempape
 ts2 = corr0

@@ -6,7 +6,7 @@
 #       extension: .py
 #       format_name: light
 #       format_version: '1.5'
-#       jupytext_version: 1.13.7
+#       jupytext_version: 1.10.3
 #   kernelspec:
 #     display_name: Python 3 (ipykernel)
 #     language: python
@@ -305,6 +305,6 @@ for l in range(3):
     
     
 plt.savefig('map_mean_anom_OND_97.png', bbox_inches='tight', facecolor='white')
-plt.show()
+plt.savefig('gr10.jpg', bbox_inches='tight', facecolor='white')
 # -
 

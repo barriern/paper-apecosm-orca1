@@ -164,8 +164,6 @@ def create_levels(lmax, step):
     levels = np.arange(-lmax, lmax + step, step)
     levels = levels[levels != 0]
     return levels
-
-
 # +
 fig = plt.figure(figsize=(18, 13), facecolor='white')
 plt.rcParams['font.size'] = 15
@@ -285,5 +283,6 @@ plt.clabel(cl)
 set_ticks(ax, cpt)
 
 plt.savefig('fig9.png', bbox_inches='tight')
+plt.savefig('gr9.jpg', bbox_inches='tight')
 # -
 

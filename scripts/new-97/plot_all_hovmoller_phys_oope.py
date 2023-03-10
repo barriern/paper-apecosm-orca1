@@ -100,8 +100,6 @@ def make_levels(ccc, step):
     levels = np.arange(-ccc, ccc + step, step)
     levels = levels[levels != 0]
     return levels
-
-
 # +
 fig = plt.figure(facecolor='white', figsize=(14, 10))
 grid = ImageGrid(fig, 111,  # similar to subplot(111)
@@ -207,5 +205,6 @@ for l in range(nlength):
     cpt += 1
 
 plt.savefig('plot_all_hovmoller_phys_oope.png', bbox_inches='tight')
+plt.savefig('gr4.jpg', bbox_inches='tight')
 # -
 

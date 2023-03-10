@@ -296,5 +296,6 @@ plt.clabel(cl)
 set_ticks(ax, cpt)
 
 plt.savefig('fig8.png', bbox_inches='tight')
+plt.savefig('gr8.jpg', bbox_inches='tight')
 # -
 

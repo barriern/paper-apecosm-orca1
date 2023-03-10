@@ -203,6 +203,7 @@ ax.set_xticks(xticks)
 ax.xaxis.set_major_formatter(formatter0)
 
 plt.savefig('forage_mean_ond97.png', bbox_inches='tight', facecolor='white')
+plt.savefig('gr5.jpg', bbox_inches='tight', facecolor='white')
 # -
 
 

@@ -29,7 +29,7 @@ proj2 = ccrs.PlateCarree(central_longitude=0)
 latbox = [-2, -2, 2, 2, -2]
 lonbox = [150, 150, -80, -80, 150]
 lonbox = [150, -80 + 360, -80 + 360, 150, 150]
-dictpbox = {'transform': proj2, 'linestyle': '--', 'linewidth': 1, 'color':'k'}
+dictpbox = {'transform': proj2, 'linestyle': '--', 'linewidth': 1, 'color':'k', 'zorder': 100}
 
 gridparams = {'crs': ccrs.PlateCarree(central_longitude=0), 'draw_labels':True, 'linewidth':0.5, 'color':'gray', 'alpha':0.5, 'linestyle':'--'}
 
@@ -214,6 +214,7 @@ axes = (left, bottom, width, height)
 alpha = 0.7
 
 plt.savefig('fig2', bbox_inches='tight')
+plt.savefig('gr2.jpg', bbox_inches='tight')
 # -
 
 
