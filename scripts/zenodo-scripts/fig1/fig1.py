@@ -244,7 +244,7 @@ ax.set_title('Obs SSH / ONI')
 
 # ################################################################### Plotting time-series ONI index
 
-dnino, nino = read_index(os.path.join('..', 'data', 'external', 'oni.data'))
+dnino, nino = read_index(os.path.join('..', 'data', 'external', 'oni.ascii.txt'))
 iok = np.nonzero((dnino >= 195801) & (dnino <= 201812))[0]
 dnino = dnino[iok]
 nino = nino[iok]
