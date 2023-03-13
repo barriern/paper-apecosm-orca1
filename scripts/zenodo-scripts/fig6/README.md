@@ -1,0 +1,2 @@
+- `extract_equatorial_mesh_mask.py`: extracts the mesh mask along the equator
+- `fig6.py`: Draws the figure
