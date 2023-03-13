@@ -211,7 +211,7 @@ axes = (left, bottom, width, height)
 
 alpha = 0.7
 
-plt.savefig('fig2', bbox_inches='tight')
+plt.savefig('gr2.jpg', bbox_inches='tight')
 # -
 
 

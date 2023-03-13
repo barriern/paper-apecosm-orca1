@@ -355,6 +355,6 @@ ccc = 0.7
 ax.set_ylim(-ccc, ccc)
 ax.text(time[-1] - 50, -0.5, 'd' + ")", ha='center', va='center', bbox=dicttext)
 
-plt.savefig('fig1', bbox_inches='tight')
+plt.savefig('gr1.jpg', bbox_inches='tight')
 # -
 

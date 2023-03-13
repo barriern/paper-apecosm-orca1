@@ -1,0 +1,3 @@
+- `compute_pisces_profiles_composites.py`: Computes the composite for Pisces variables
+- `compute_FORAGE_profiles_composites.py`: Computes the composite for the 3D biomass in Apecosm (FORAGE)
+- `fig5.py`: Draws the figure

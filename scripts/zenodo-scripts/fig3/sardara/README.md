@@ -1,0 +1,6 @@
+- 1) `process_areas_sardara.py`: process the Sardara areas (extract lon/lat of the polygon areas)
+- 2) `process_data_sardara.py`: first pre-processing of the Sardara data (extract Pacific ocean and removing wrong geographic identifiers)
+- 3) `process_data_sardara_L2.py`: second pre-processing of the Sardara data (keeps monthly data)
+- 4) `regrid_data_sardara_L2.py`: regrid Sardara catches on a regular 1x1 grid. Need to be applied twice, one with `YFT` and one with `SKJ`
+- 5) `compute_composites_nino_nino_sardara.py`: computes the Nina and Nino composites
+- 6) `compute_maps_to_plot_apecosm_sardara.py`: computes the map to draw (biomass density difference between Nino and Nina)

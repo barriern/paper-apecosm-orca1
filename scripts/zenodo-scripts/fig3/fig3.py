@@ -317,7 +317,6 @@ cax = plt.axes(pos)
 cb = plt.colorbar(cs, cax=cax, orientation='horizontal', shrink=0.5)
 cb.set_label('Tons/m2')
 
-plt.savefig('plot_validation_apecosm.png', bbox_inches='tight')
 plt.savefig('gr3.jpg', bbox_inches='tight')
 # -
 ts1 = tempape
