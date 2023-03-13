@@ -49,16 +49,12 @@ def read_index(filename='../data/index/oni.ascii.txt', keepnan=True, skipfooter=
 
     print('Filename ', filename)
     data = pd.read_csv(filename, delim_whitespace=True)
-    months = data.index.values % 12
+    months = (data.index.values % 12) + 1
     data.columns
 
     year = data.loc[:, 'YR'].values
     ts = data.loc[:, 'ANOM'].values
     date = 100 * year + months
-
-    # reads the years
-    years = data.index
-    months = np.arange(1, 13)
 
     if(keepperiod):
         iok = np.nonzero((date >= 195801) & (date <= 201812))[0]

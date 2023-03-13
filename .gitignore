@@ -1,6 +1,7 @@
 article-enso.synctex.gz
 **/.ipynb_checkpoints
 **/*.pdf
+*.jpg
 scripts/**/*.png
 save-figs
 **/*.aux
