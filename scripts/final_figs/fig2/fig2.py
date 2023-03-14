@@ -196,7 +196,7 @@ ax.set_ylabel('[mg/m3]')
 ax.set_xticks(timemod[xticks])
 ax.set_xticklabels(labels[xticks], rotation=45, ha='right')
 ax.grid(True)
-#ax.set_xlim(time.min(), time.max())
+ax.set_xlim(timemod.min(), timemod.max())
 ax.set_ylim(-0.2, 0.2)
 ax.text(timemod[-1] -20, -0.15, 'a' + ")", ha='center', va='center', bbox=dicttext)
 
@@ -216,5 +216,7 @@ alpha = 0.7
 plt.savefig('fig2', bbox_inches='tight')
 plt.savefig('gr2.jpg', bbox_inches='tight')
 # -
+timemod
+
 
 
